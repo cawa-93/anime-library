@@ -2,6 +2,8 @@
   "extends": [
     "config:base",
     ":semanticCommits",
+    ":semanticCommitTypeAll(deps)",
+    ":semanticCommitScope(dev)",
     ":automergeTypes"
   ],
   "labels": [
@@ -27,9 +29,9 @@
     },
     {
       "depTypeList": [
-        "devDependencies"
+        "dependencies"
       ],
-      "semanticCommitType": "build"
+      "semanticCommitScope": "prod"
     },
     {
       "matchSourceUrlPrefixes": [
