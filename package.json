@@ -54,9 +54,6 @@
     "vue": "^3.0.11",
     "vue-router": "^4.0.6"
   },
-  "directories": {
-    "test": "tests"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cawa-93/anime-library.git"
