@@ -78,7 +78,7 @@
 
 <script lang="ts">
 import {defineComponent, ref, watch} from 'vue';
-import {asyncComputed, get, set, useTitle} from '@vueuse/core';
+import {asyncComputed, useTitle} from '@vueuse/core';
 import type {Episode, Translation} from '/@/utils/anime';
 import {getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/anime';
 
@@ -97,22 +97,23 @@ export default defineComponent({
       if (typeof searchText !== 'string') {
         throw new Error('Search value must be a string, but got ' + typeof searchText);
       }
-      set(animeID, /\/animes\/(?<animeID>[0-9]+)/.exec(searchText)?.groups?.animeID);
+      animeID.value = /\/animes\/(?<animeID>[0-9]+)/.exec(searchText)?.groups?.animeID || '';
     };
-    const anime = asyncComputed(() => get(animeID) ? getSeries(get(animeID)) : null, null);
+    const anime = asyncComputed(() => animeID.value ? getSeries(animeID.value) : null, null);
 
 
     const title = useTitle();
     watch(anime, () => anime.value && (title.value = anime.value.title));
 
-    const episodes = asyncComputed<Episode[]>(() => get(animeID) ? getEpisodes(get(animeID)) : [], []);
+
+    const episodes = asyncComputed(() => animeID.value ? getEpisodes(animeID.value) : [], []);
     const selectedEpisode = ref<Episode | null>(null);
-    watch(episodes, () => set(selectedEpisode, get(episodes, 0)));
+    watch(episodes, () => selectedEpisode.value = episodes.value[0]);
 
 
-    const translations = asyncComputed(() => selectedEpisode.value ? getTranslations(selectedEpisode.value.id) : [], []);
+    const translations = asyncComputed(() => selectedEpisode.value ? getTranslations(selectedEpisode.value.id) : [] as Translation[], [] as Translation[]);
     const selectedTranslation = ref<Translation | null>(null);
-    watch(translations, () => set(selectedTranslation, get(translations, 0)));
+    watch(translations, () => selectedTranslation.value = translations.value[0]);
 
 
     const videos = asyncComputed(() => selectedTranslation.value ? getVideos(selectedTranslation.value.id) : [], []);
