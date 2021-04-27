@@ -1,4 +1,4 @@
-import {app, BrowserWindow} from 'electron';
+import {app, BrowserWindow, session} from 'electron';
 import {join} from 'path';
 import {URL} from 'url';
 
@@ -34,6 +34,8 @@ let mainWindow: BrowserWindow | null = null;
 const createWindow = async () => {
   mainWindow = new BrowserWindow({
     show: true,
+    width:1920,
+    height:1080,
     webPreferences: {
       preload: join(__dirname, '../../preload/dist/index.cjs'),
       contextIsolation: env.MODE !== 'test',   // Spectron tests can't work with contextIsolation: true
@@ -75,6 +77,20 @@ app.on('window-all-closed', () => {
 
 
 app.whenReady()
+  .then(() => {
+    session.defaultSession.webRequest.onHeadersReceived({
+      urls: ['https://*/*'],
+    }, (details, callback) => {
+
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          'Access-Control-Allow-Origin': '*',
+          // 'Content-Security-Policy': [`script-src ${isDevelopment ? `'unsafe-eval'` : ''} 'unsafe-inline' 'self'; connect-src 'self' 'unsafe-hashes' 'unsafe-inline' 'unsafe-eval' https://smotret-anime.online/api/*`]
+        },
+      });
+    });
+  })
   .then(createWindow)
   .catch((e) => console.error('Failed create window:', e));
 

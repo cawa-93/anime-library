@@ -10,7 +10,7 @@ const mode = process.env.MODE = process.env.MODE || 'development';
 
 
 /** @type {import('vite').LogLevel} */
-const LOG_LEVEL = 'warn';
+const LOG_LEVEL = 'info';
 
 
 /** @type {import('vite').InlineConfig} */
