@@ -79,14 +79,13 @@ app.on('window-all-closed', () => {
 app.whenReady()
   .then(() => {
     session.defaultSession.webRequest.onHeadersReceived({
-      urls: ['https://*/*'],
+      urls: ['https://smotret-anime.online/api/*'],
     }, (details, callback) => {
 
       callback({
         responseHeaders: {
           ...details.responseHeaders,
           'Access-Control-Allow-Origin': '*',
-          // 'Content-Security-Policy': [`script-src ${isDevelopment ? `'unsafe-eval'` : ''} 'unsafe-inline' 'self'; connect-src 'self' 'unsafe-hashes' 'unsafe-inline' 'unsafe-eval' https://smotret-anime.online/api/*`]
         },
       });
     });

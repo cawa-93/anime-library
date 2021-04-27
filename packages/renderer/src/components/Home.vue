@@ -1,12 +1,16 @@
 <template>
-  <form @submit.prevent="onSearch">
+  <form
+    @submit.prevent="onSearch"
+  >
     <label>
       Ссылка на Шикимори<br>
+      <!-- https://shikimori.one/animes/40938-hige-wo-soru-soshite-joshikousei-wo-hirou -->
       <input
-        v-model="searchText"
+        autocomplete="on"
+        name="searchText"
         placeholder="https://shikimori.one/animes/..."
         required
-        type="search"
+        type="url"
       >
     </label>
     <button>Найти</button>
@@ -74,38 +78,47 @@
 
 <script lang="ts">
 import {defineComponent, ref, watch} from 'vue';
-import {asyncComputed, get, set} from '@vueuse/core';
+import {asyncComputed, get, set, useTitle} from '@vueuse/core';
 import type {Episode, Translation} from '/@/utils/anime';
 import {getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/anime';
+
+
+interface SubmitEvent extends Event {
+  target: HTMLFormElement
+}
 
 export default defineComponent({
   name: 'HelloWorld',
   setup() {
 
-    // https://shikimori.one/animes/40938-hige-wo-soru-soshite-joshikousei-wo-hirou
-    const searchText = ref('');
-
     const animeID = ref('');
-    const onSearch = () => {
-      set(animeID, /\/animes\/(?<animeID>[0-9]+)/.exec(get(searchText))?.groups?.animeID);
+    const onSearch = (event: SubmitEvent) => {
+      const {searchText} = Object.fromEntries(new FormData(event.target));
+      if (typeof searchText !== 'string') {
+        throw new Error('Search value must be a string, but got ' + typeof searchText);
+      }
+      set(animeID, /\/animes\/(?<animeID>[0-9]+)/.exec(searchText)?.groups?.animeID);
     };
     const anime = asyncComputed(() => get(animeID) ? getSeries(get(animeID)) : null, null);
 
 
+    const title = useTitle();
+    watch(anime, () => anime.value && (title.value = anime.value.title));
+
     const episodes = asyncComputed<Episode[]>(() => get(animeID) ? getEpisodes(get(animeID)) : [], []);
     const selectedEpisode = ref<Episode | null>(null);
-    watch(episodes, () => set(selectedEpisode, get(episodes)[0]));
+    watch(episodes, () => set(selectedEpisode, get(episodes, 0)));
 
 
     const translations = asyncComputed(() => selectedEpisode.value ? getTranslations(selectedEpisode.value.id) : [], []);
     const selectedTranslation = ref<Translation | null>(null);
-    watch(translations, () => set(selectedTranslation, get(translations)[0]));
+    watch(translations, () => set(selectedTranslation, get(translations, 0)));
 
 
     const videos = asyncComputed(() => selectedTranslation.value ? getVideos(selectedTranslation.value.id) : [], []);
 
 
-    return {searchText, onSearch, animeID, anime, episodes, selectedEpisode, translations, selectedTranslation, videos};
+    return {onSearch, anime, episodes, selectedEpisode, translations, selectedTranslation, videos};
   },
 });
 </script>
