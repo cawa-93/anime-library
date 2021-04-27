@@ -83,17 +83,19 @@ import type {Episode, Translation} from '/@/utils/anime';
 import {getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/anime';
 
 
-interface SubmitEvent extends Event {
-  target: HTMLFormElement
-}
-
 export default defineComponent({
   name: 'HelloWorld',
   setup() {
 
     const animeID = ref('');
-    const onSearch = (event: SubmitEvent) => {
-      const {searchText} = Object.fromEntries(new FormData(event.target));
+
+    /**
+     * Вместо `Event` нужно использовать `SubmitEvent`
+     * Но `SubmitEvent` не добавлен в TypeScript
+     * @see https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/1005
+     */
+    const onSearch = (event: Event) => {
+      const {searchText} = Object.fromEntries(new FormData(event.target as HTMLFormElement));
       if (typeof searchText !== 'string') {
         throw new Error('Search value must be a string, but got ' + typeof searchText);
       }
