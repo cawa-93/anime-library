@@ -68,18 +68,24 @@
     v-if="videos.length"
   >
     <video
+      ref="videoElement"
       autoplay
       controls
       width="300"
-      :src="videos[0].url"
-    />
+    >
+      <source
+        v-for="video of videos"
+        :key="video.url"
+        :src="video.url"
+      >
+    </video>
   </section>
 </template>
 
 <script lang="ts">
 import {defineComponent, ref, watch} from 'vue';
 import {asyncComputed, useTitle} from '@vueuse/core';
-import type {Episode, Translation} from '/@/utils/anime';
+import type {Episode, Translation, Video} from '/@/utils/anime';
 import {getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/anime';
 
 
@@ -118,10 +124,11 @@ export default defineComponent({
     watch(translations, () => selectedTranslation.value = translations.value[0]);
 
 
-    const videos = asyncComputed(() => selectedTranslation.value ? getVideos(selectedTranslation.value.id) : [], []);
+    const videos = asyncComputed(() => selectedTranslation.value ? getVideos(selectedTranslation.value.id) : [] as Video[], [] as Video[]);
+    const videoElement = ref<HTMLVideoElement | null>(null);
+    watch(videos, () => videoElement.value && videoElement.value.load());
 
-
-    return {onSearch, anime, episodes, selectedEpisode, translations, selectedTranslation, videos};
+    return {onSearch, anime, episodes, selectedEpisode, translations, selectedTranslation, videos, videoElement};
   },
 });
 </script>
