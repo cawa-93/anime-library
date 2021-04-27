@@ -12,9 +12,9 @@
     <button>Найти</button>
   </form>
 
-  <section v-if="anime">
+  <h3 v-if="anime">
     {{ anime.title }} :
-  </section>
+  </h3>
 
   <section v-if="episodes.length">
     <ol>
@@ -34,9 +34,10 @@
     </ol>
   </section>
 
-
-  <section v-if="translations.length">
+  <h3 v-if="selectedEpisode">
     {{ selectedEpisode.title }}:
+  </h3>
+  <section v-if="translations.length">
     <ol>
       <li
         v-for="translation of translations"
@@ -55,11 +56,13 @@
   </section>
 
 
+  <h3 v-if="selectedTranslation">
+    {{ selectedTranslation.title }}:<br>
+  </h3>
 
   <section
     v-if="videos.length"
   >
-    {{ selectedTranslation.title }}:<br>
     <video
       autoplay
       controls
@@ -72,8 +75,8 @@
 <script lang="ts">
 import {defineComponent, ref, watch} from 'vue';
 import {asyncComputed, get, set} from '@vueuse/core';
-import type {Episode, Translation} from '/@/utils/anime.ts';
-import {getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/anime.ts';
+import type {Episode, Translation} from '/@/utils/anime';
+import {getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/anime';
 
 export default defineComponent({
   name: 'HelloWorld',
@@ -94,12 +97,12 @@ export default defineComponent({
     watch(episodes, () => set(selectedEpisode, get(episodes)[0]));
 
 
-    const translations = asyncComputed(() => get(selectedEpisode) ? getTranslations(get(selectedEpisode).id) : [], []);
+    const translations = asyncComputed(() => selectedEpisode.value ? getTranslations(selectedEpisode.value.id) : [], []);
     const selectedTranslation = ref<Translation | null>(null);
     watch(translations, () => set(selectedTranslation, get(translations)[0]));
 
 
-    const videos = asyncComputed(() => get(selectedTranslation) ? getVideos(get(selectedTranslation).id) : [], []);
+    const videos = asyncComputed(() => selectedTranslation.value ? getVideos(selectedTranslation.value.id) : [], []);
 
 
     return {searchText, onSearch, animeID, anime, episodes, selectedEpisode, translations, selectedTranslation, videos};
