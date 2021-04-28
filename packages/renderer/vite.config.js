@@ -6,8 +6,8 @@ import {builtinModules} from 'module';
 import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
 import {loadAndSetEnv} from '../../scripts/loadAndSetEnv.mjs';
-import {generateSW} from 'rollup-plugin-workbox';
-
+// import {generateSW} from 'rollup-plugin-workbox';
+import { VitePWA } from 'vite-plugin-pwa';
 
 const PACKAGE_ROOT = __dirname;
 
@@ -28,7 +28,7 @@ export default defineConfig({
       '/@/': join(PACKAGE_ROOT, 'src') + '/',
     },
   },
-  base: '',
+  base: './',
   build: {
     sourcemap: true,
     target: `chrome${chrome}`,
@@ -51,22 +51,25 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    generateSW({
-      swDest: join(PACKAGE_ROOT, 'dist/sw.js'),
-      globDirectory: join(PACKAGE_ROOT, './assets'),
+    VitePWA({
       mode: 'development',
-      runtimeCaching: [
-        {
-          urlPattern: /^https:\/\/smotret-anime\.online\/api\/.*/,
-          handler: 'CacheFirst',
-          options: {
-            cacheName: 'sm-api-calls',
-            expiration: {
-              maxAgeSeconds: 60 * 60,
+      injectRegister: 'script',
+      manifest: false,
+      workbox: {
+        globPatterns: [],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/smotret-anime\.online\/api\/.*/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'sm-api-calls',
+              expiration: {
+                maxAgeSeconds: 60 * 60,
+              },
             },
           },
-        },
-      ],
+        ],
+      },
     }),
   ],
 });
