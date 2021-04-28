@@ -93,7 +93,7 @@ export default defineComponent({
   name: 'HelloWorld',
   setup() {
 
-    const animeID = ref('');
+    const animeID = ref<`${number}` | undefined>(undefined);
 
     /**
      * Вместо `Event` нужно использовать `SubmitEvent`
@@ -105,7 +105,7 @@ export default defineComponent({
       if (typeof searchText !== 'string') {
         throw new Error('Search value must be a string, but got ' + typeof searchText);
       }
-      animeID.value = /\/animes\/(?<animeID>[0-9]+)/.exec(searchText)?.groups?.animeID || '';
+      animeID.value = /\/animes\/(?<animeID>[0-9]+)/.exec(searchText)?.groups?.animeID as `${number}`;
     };
     const anime = asyncComputed(() => animeID.value ? getSeries(animeID.value) : null, null);
 
