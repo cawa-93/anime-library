@@ -2,10 +2,11 @@
 
 import {chrome} from '../../electron-vendors.config.json';
 import {join} from 'path';
-import { builtinModules } from 'module';
+import {builtinModules} from 'module';
 import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
 import {loadAndSetEnv} from '../../scripts/loadAndSetEnv.mjs';
+import {generateSW} from 'rollup-plugin-workbox';
 
 
 const PACKAGE_ROOT = __dirname;
@@ -27,7 +28,6 @@ export default defineConfig({
       '/@/': join(PACKAGE_ROOT, 'src') + '/',
     },
   },
-  plugins: [vue()],
   base: '',
   build: {
     sourcemap: true,
@@ -49,5 +49,25 @@ export default defineConfig({
     },
     emptyOutDir: true,
   },
+  plugins: [
+    vue(),
+    generateSW({
+      swDest: join(PACKAGE_ROOT, 'dist/sw.js'),
+      globDirectory: join(PACKAGE_ROOT, './assets'),
+      mode: 'development',
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/smotret-anime\.online\/api\/.*/,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'sm-api-calls',
+            expiration: {
+              maxAgeSeconds: 60 * 60,
+            },
+          },
+        },
+      ],
+    }),
+  ],
 });
 
