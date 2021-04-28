@@ -20,13 +20,18 @@ export function getSeries(id: NumberLike): Promise<Series> {
 export interface Episode {
   id: number
   title: string
+  number: NumberLike
+}
+
+function convertEpisode(data: any): Episode {
+  return {id: data.id, title: data.episodeTitle || data.episodeFull, number: data.episodeInt};
 }
 
 export function getEpisodes(id: NumberLike): Promise<Episode[]> {
   return fetch(`${API_BASE}/series/?myAnimeListId=${id}&fields=episodes`)
     .then(r => r.json())
     .then(({data}: { data: any[] }) => {
-      return data[0].episodes.map((e: any) => ({id: e.id, title: e.episodeTitle || e.episodeFull}));
+      return data[0].episodes.map(convertEpisode);
     });
 }
 
