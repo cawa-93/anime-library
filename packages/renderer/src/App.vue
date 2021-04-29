@@ -8,10 +8,15 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import AppTitleBar from '/@/components/title-bar/AppTitleBar.vue';
+import {useBrowserLocation} from '@vueuse/core';
 
 export default defineComponent({
   name: 'App',
   components: {AppTitleBar},
+  setup() {
+    const location = useBrowserLocation();
+    return {location};
+  },
 });
 </script>
 

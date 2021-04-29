@@ -1,7 +1,7 @@
-import {app, BrowserWindow, session} from 'electron';
+import {app, BrowserWindow, protocol, session} from 'electron';
 import {join} from 'path';
-import {URL} from 'url';
 import {initialize} from '@electron/remote/dist/src/main';
+import {createProtocol} from '/@/createCustomProtocol';
 
 initialize();
 
@@ -12,11 +12,26 @@ if (!isSingleInstance) {
   process.exit(0);
 }
 
+
+const PROTOCOL = 'anime-lib';
+
+
 /**
  * Workaround for TypeScript bug
  * @see https://github.com/microsoft/TypeScript/issues/41468#issuecomment-727543400
  */
 const env = import.meta.env;
+
+
+if (env.MODE !== 'development') {
+  protocol.registerSchemesAsPrivileged([{
+    scheme: PROTOCOL,
+    privileges: {secure: true, standard: true, allowServiceWorkers: true, supportFetchAPI: true, stream: true},
+  }]);
+
+  app.setAsDefaultProtocolClient(PROTOCOL);
+}
+
 
 app.disableHardwareAcceleration();
 
@@ -49,14 +64,6 @@ const createWindow = async () => {
     },
   });
 
-  /**
-   * URL for main window.
-   * Vite dev server for development.
-   * `file://../renderer/index.html` for production and test
-   */
-  const pageUrl = env.MODE === 'development'
-    ? env.VITE_DEV_SERVER_URL
-    : new URL('../renderer/dist/index.html', 'file://' + __dirname).toString();
 
   if (env.MODE === 'development') {
     mainWindow.webContents.once('dom-ready', () => mainWindow?.webContents.openDevTools());
@@ -64,6 +71,12 @@ const createWindow = async () => {
 
   mainWindow.addListener('ready-to-show', () => mainWindow?.show());
 
+  /**
+   * URL for main window.
+   * `http://localhost:3000` - in development
+   * `app://./` - in production and test
+   */
+  const pageUrl = env.MODE === 'development' ? env.VITE_DEV_SERVER_URL : `${PROTOCOL}://./`;
   await mainWindow.loadURL(pageUrl);
 };
 
@@ -85,6 +98,9 @@ app.on('window-all-closed', () => {
 
 
 app.whenReady()
+  .then(() => {
+    env.MODE !== 'development' && createProtocol(PROTOCOL);
+  })
   .then(() => {
     session.defaultSession.webRequest.onHeadersReceived({
       urls: ['https://smotret-anime.online/api/*'],
