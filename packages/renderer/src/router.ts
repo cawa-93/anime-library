@@ -1,11 +1,11 @@
 import type {RouteLocation} from 'vue-router';
-import {createRouter, createWebHashHistory} from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 import Home from '/@/components/Home.vue';
 
 const routes = [
   {path: '/', name: 'Home', component: Home},
   {
-    path: '/watch/:seriesId(\\d+)/:episodeNum(\\d+)?/:translationId(\\d+)?',
+    path: '/watch/:seriesId(\\d+)/:episodeNum(\\d+)?/:translationId(\\d+)?/',
     name: 'Watch',
     component: () => import('/@/components/Watch.vue'),
     props: ({params}: RouteLocation) => Object.fromEntries(Object.entries(params).map(([k, v]) => {
@@ -26,5 +26,5 @@ const routes = [
 
 export default createRouter({
   routes,
-  history: createWebHashHistory(),
+  history: createWebHistory('/'),
 });
