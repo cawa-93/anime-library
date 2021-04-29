@@ -74,9 +74,14 @@ const createWindow = async () => {
   /**
    * URL for main window.
    * `http://localhost:3000` - in development
-   * `app://./` - in production and test
+   * {@link PROTOCOL}://./ - in production and test
    */
-  const pageUrl = env.MODE === 'development' ? env.VITE_DEV_SERVER_URL : `${PROTOCOL}://./`;
+  const pageUrl = env.MODE === 'development'
+    ? env.VITE_DEV_SERVER_URL
+    : process.argv?.[1].startsWith?.(PROTOCOL)
+      ? process.argv?.[1]
+      : `${PROTOCOL}://./`;
+  
   await mainWindow.loadURL(pageUrl);
 };
 
