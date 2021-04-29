@@ -1,7 +1,9 @@
 import {app, BrowserWindow, session} from 'electron';
 import {join} from 'path';
 import {URL} from 'url';
+import {initialize} from '@electron/remote/dist/src/main';
 
+initialize();
 
 const isSingleInstance = app.requestSingleInstanceLock();
 
@@ -16,6 +18,7 @@ if (!isSingleInstance) {
  */
 const env = import.meta.env;
 
+app.disableHardwareAcceleration();
 
 // Install "Vue.js devtools"
 if (env.MODE === 'development') {
@@ -33,13 +36,16 @@ let mainWindow: BrowserWindow | null = null;
 
 const createWindow = async () => {
   mainWindow = new BrowserWindow({
-    show: true,
-    width:1920,
-    height:1080,
+    show: false,
+    width: 1920,
+    height: 1080,
+    minWidth: 380,
+    frame: false,
+    backgroundColor: '#fff',
     webPreferences: {
       preload: join(__dirname, '../../preload/dist/index.cjs'),
       contextIsolation: env.MODE !== 'test',   // Spectron tests can't work with contextIsolation: true
-      enableRemoteModule: env.MODE === 'test', // Spectron tests can't work with enableRemoteModule: false
+      enableRemoteModule: true,//env.MODE === 'test', // Spectron tests can't work with enableRemoteModule: false
     },
   });
 
@@ -55,6 +61,8 @@ const createWindow = async () => {
   if (env.MODE === 'development') {
     mainWindow.webContents.once('dom-ready', () => mainWindow?.webContents.openDevTools());
   }
+
+  mainWindow.addListener('ready-to-show', () => mainWindow?.show());
 
   await mainWindow.loadURL(pageUrl);
 };

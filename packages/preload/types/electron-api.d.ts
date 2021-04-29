@@ -1,6 +1,10 @@
 
 interface ElectronApi {
-  readonly versions: Readonly<NodeJS.ProcessVersions>
+  readonly close: () => void
+  readonly minimize: () => void
+  readonly maximize: () => void
+  readonly unmaximize: () => void
+  readonly onMaximizeChange: (callback: (isMaximized: boolean) => void) => void
 }
 
 declare interface Window {

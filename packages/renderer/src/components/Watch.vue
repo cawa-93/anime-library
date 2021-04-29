@@ -1,4 +1,5 @@
 <template>
+  {{ title }}
   <h3 v-if="anime">
     {{ anime.title }} :
   </h3>
@@ -64,7 +65,7 @@
 <script lang="ts">
 import {asyncComputed, useTitle} from '@vueuse/core';
 import {computed, defineComponent, ref, watch} from 'vue';
-import type {Translation, Video} from '/@/utils/anime';
+import type {Episode, Translation, Video} from '/@/utils/anime';
 import {getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/anime';
 
 export default defineComponent({
@@ -88,10 +89,9 @@ export default defineComponent({
     const anime = asyncComputed(() => props.seriesId ? getSeries(props.seriesId) : null, null);
 
     const title = useTitle();
-    watch(anime, () => anime.value && (title.value = anime.value.title));
 
 
-    const episodes = asyncComputed(() => props.seriesId ? getEpisodes(props.seriesId) : [], []);
+    const episodes = asyncComputed(() => props.seriesId ? getEpisodes(props.seriesId) : [] as Episode[], [] as Episode[]);
     const selectedEpisode = computed(() => episodes.value.find(e => e.number == props.episodeNum) || episodes.value[0]);
 
 
@@ -102,7 +102,8 @@ export default defineComponent({
     const videoElement = ref<HTMLVideoElement | null>(null);
     watch(videos, () => videoElement.value && videoElement.value.load());
 
-    return {anime, episodes, selectedEpisode, translations, selectedTranslation, videos, videoElement};
+    watch([anime, selectedEpisode, selectedTranslation], () => title.value = anime.value?.title + ', ' + selectedEpisode.value?.number + ', ' + selectedTranslation.value?.title);
+    return {anime, episodes, selectedEpisode, translations, selectedTranslation, videos, videoElement, title};
   },
 });
 </script>

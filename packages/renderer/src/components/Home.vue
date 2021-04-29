@@ -2,7 +2,7 @@
   <form
     @submit.prevent="onSearch"
   >
-    <p>
+    <p v-if="!isProd">
       <label>
         Для отладки<br>
         <input
@@ -57,7 +57,9 @@ export default defineComponent({
       }
     };
 
-    return {onSearch};
+    const isProd = import.meta.env.PROD;
+
+    return {onSearch, isProd};
   },
 });
 </script>

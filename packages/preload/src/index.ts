@@ -1,11 +1,29 @@
 import {contextBridge} from 'electron';
+import {getCurrentWindow} from '@electron/remote';
+
 
 const apiKey = 'electron';
 /**
  * @see https://github.com/electron/electron/issues/21437#issuecomment-573522360
  */
 const api: ElectronApi = {
-  versions: process.versions,
+  minimize: () => getCurrentWindow().minimize(),
+  maximize: () => getCurrentWindow().maximize(),
+  unmaximize: () => getCurrentWindow().unmaximize(),
+  close: () => getCurrentWindow().close(),
+  onMaximizeChange: (cb) => {
+    const win = getCurrentWindow();
+
+    const sendState = () => cb(win.isMaximized());
+
+    win.addListener('maximize', sendState);
+    win.addListener('unmaximize', sendState);
+    window.addEventListener('beforeunload', () => {
+      console.log('Remove onMaximize listener');
+      win.removeListener('maximize', sendState);
+      win.removeListener('unmaximize', sendState);
+    });
+  },
 };
 
 if (import.meta.env.MODE !== 'test') {

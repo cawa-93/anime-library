@@ -1,0 +1,34 @@
+.button {
+  user-select: none;
+  background: transparent;
+  border: none;
+  -webkit-app-region: no-drag;
+  transition: background-color linear 150ms;
+}
+
+.button:focus {
+  outline: none;
+}
+
+.button:focus-visible {
+  outline: -webkit-focus-ring-color auto 1px;
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  background: transparent;
+  border: none;
+}
+
+.button:not(:disabled):hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.button:not(:disabled):active {
+  background: rgba(0, 0, 0, 0.2);
+}
