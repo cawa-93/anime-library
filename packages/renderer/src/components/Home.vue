@@ -19,6 +19,7 @@
         autocomplete="on"
         name="searchText"
         placeholder="https://shikimori.one/animes/..."
+        pattern=".*/animes/[a-z]*[0-9]+.*"
         required
         type="url"
       >
@@ -50,7 +51,7 @@ export default defineComponent({
       if (typeof searchText !== 'string') {
         throw new Error('Search value must be a string, but got ' + typeof searchText);
       }
-      animeID.value = /\/animes\/(?<animeID>[0-9]+)/.exec(searchText)?.groups?.animeID as `${number}`;
+      animeID.value = /\/animes\/[a-z]*(?<animeID>[0-9]+)/.exec(searchText)?.groups?.animeID as `${number}`;
 
       if (animeID.value) {
         router.push({name: 'Watch', params: {seriesId: animeID.value}});
@@ -68,4 +69,9 @@ export default defineComponent({
 label {
   display: block;
 }
+
+input:invalid {
+  border-color: red;
+}
+
 </style>
