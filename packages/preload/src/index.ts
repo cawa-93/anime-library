@@ -16,6 +16,8 @@ const api: ElectronApi = {
 
     const sendState = () => cb(win.isMaximized());
 
+    sendState();
+
     win.addListener('maximize', sendState);
     win.addListener('unmaximize', sendState);
     window.addEventListener('beforeunload', () => {

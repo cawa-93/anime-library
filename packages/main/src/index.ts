@@ -2,6 +2,7 @@ import {app, BrowserWindow, protocol, session} from 'electron';
 import {join} from 'path';
 import {initialize} from '@electron/remote/dist/src/main';
 import {createProtocol} from '/@/createCustomProtocol';
+import windowStateKeeper from 'electron-window-state';
 
 initialize();
 
@@ -50,10 +51,14 @@ if (env.MODE === 'development') {
 let mainWindow: BrowserWindow | null = null;
 
 const createWindow = async () => {
+  const mainWindowState = windowStateKeeper({});
+
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1920,
-    height: 1080,
+    width: mainWindowState.width,
+    height: mainWindowState.height,
+    x: mainWindowState.x,
+    y: mainWindowState.y,
     minWidth: 380,
     frame: false,
     backgroundColor: '#fff',
@@ -65,11 +70,19 @@ const createWindow = async () => {
   });
 
 
-  if (env.MODE === 'development') {
-    mainWindow.webContents.once('dom-ready', () => mainWindow?.webContents.openDevTools());
-  }
+  mainWindow.addListener('ready-to-show', () => {
+    if (mainWindow) {
+      mainWindowState.manage(mainWindow);
+      mainWindow.show();
 
-  mainWindow.addListener('ready-to-show', () => mainWindow?.show());
+      if (env.MODE === 'development') {
+        mainWindow.webContents.openDevTools();
+      }
+    }
+  });
+
+
+
 
   /**
    * URL for main window.
