@@ -78,10 +78,10 @@ const createWindow = async () => {
    */
   const pageUrl = env.MODE === 'development'
     ? env.VITE_DEV_SERVER_URL
-    : process.argv?.[1].startsWith?.(PROTOCOL)
+    : process.argv?.[1]?.startsWith?.(PROTOCOL)
       ? process.argv?.[1]
       : `${PROTOCOL}://./`;
-  
+
   await mainWindow.loadURL(pageUrl);
 };
 
