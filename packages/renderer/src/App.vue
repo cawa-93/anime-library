@@ -1,35 +1,48 @@
 <template>
   <app-title-bar />
   <div id="main">
+    <pre><code>{{ route }}</code></pre>
     <router-view />
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {defineComponent, reactive} from 'vue';
 import AppTitleBar from '/@/components/title-bar/AppTitleBar.vue';
-import {useBrowserLocation} from '@vueuse/core';
-
+import {useRoute} from 'vue-router';
+import {reactivePick} from '@vueuse/core';
 export default defineComponent({
   name: 'App',
   components: {AppTitleBar},
   setup() {
-    const location = useBrowserLocation();
-    return {location};
+    const r = reactive(useRoute());
+    return {route: reactivePick(r, 'fullPath', 'params')};
   },
 });
 </script>
 
 <style>
-html {box-sizing: border-box;}
-*, *:before, *:after {box-sizing: inherit;}
-html, body, #app {height: 100%; margin: 0;}
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+/*noinspection CssUnusedSymbol*/
+html, body, #app {
+  height: 100%;
+  margin: 0;
+}
+
 /**/
 body {
   border: 1px solid #48545c;
   overflow: hidden;
-  font-family: "Segoe UI",sans-serif;
+  font-family: "Segoe UI", sans-serif;
 }
+
 /**/
 #main {
   height: calc(100% - 32px);

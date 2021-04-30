@@ -1,20 +1,20 @@
 <template>
   <button
-    id="back"
     class="button"
-    :disabled="!state.back"
+    :disabled="isDisabled"
     @click="goBack"
   >
     <win-icon>&#xE830;</win-icon>
   </button>
 </template>
 <script lang="ts">
-import {defineComponent, ref} from 'vue';
+import {computed, defineComponent, ref} from 'vue';
 import WinIcon from '/@/components/WinIcon.vue';
 import {useRouter} from 'vue-router';
 
 interface HistoryState {
   back: string | null
+  current: string
 }
 
 export default defineComponent({
@@ -28,9 +28,17 @@ export default defineComponent({
       state.value = window.history.state;
     });
 
-    const goBack = () => router.back();
+    const isDisabled = computed(() => !state.value.back && state.value.current === '/');
 
-    return {goBack, state};
+    const goBack = () => {
+      if (state.value.back) {
+        return router.back();
+      }
+
+      return router.replace({name: 'Home'});
+    };
+
+    return {goBack, isDisabled};
   },
 });
 </script>
@@ -38,7 +46,7 @@ export default defineComponent({
 <style scoped>
 @import "button.css";
 
-#back {
+.button {
   width: auto;
   min-width: 50px;
   margin: -4px 4px -4px -4px;
