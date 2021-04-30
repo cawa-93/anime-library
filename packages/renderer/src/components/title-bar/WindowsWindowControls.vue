@@ -60,7 +60,7 @@ export default defineComponent({
   grid-template-columns: repeat(3, 45px);
   position: absolute;
   top: 0;
-  right: 0;
+  right: -1px;
   height: 100%;
   -webkit-app-region: no-drag;
 }
