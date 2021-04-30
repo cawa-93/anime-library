@@ -1,9 +1,8 @@
 import type {RouteLocation} from 'vue-router';
 import {createRouter, createWebHistory} from 'vue-router';
-import Home from '/@/components/Home.vue';
 
 const routes = [
-  {path: '/', name: 'Home', component: Home},
+  {path: '/', name: 'Home', component: () => import('/@/components/Home.vue')},
   {
     path: '/watch/:seriesId(\\d+)/:episodeNum(\\d+)?/:translationId(\\d+)?/',
     name: 'Watch',
