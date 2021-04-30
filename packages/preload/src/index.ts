@@ -1,4 +1,5 @@
 import {contextBridge} from 'electron';
+// TODO: Отказаться от `@electron/remote` в пользу `ipc`
 import {getCurrentWindow} from '@electron/remote';
 
 
@@ -10,18 +11,15 @@ const api: ElectronApi = {
   minimize: () => getCurrentWindow().minimize(),
   maximize: () => getCurrentWindow().maximize(),
   unmaximize: () => getCurrentWindow().unmaximize(),
-  close: () => getCurrentWindow().close(),
+  close: () => window.close(),
   onMaximizeChange: (cb) => {
     const win = getCurrentWindow();
-
     const sendState = () => cb(win.isMaximized());
-
     sendState();
 
     win.addListener('maximize', sendState);
     win.addListener('unmaximize', sendState);
     window.addEventListener('beforeunload', () => {
-      console.log('Remove onMaximize listener');
       win.removeListener('maximize', sendState);
       win.removeListener('unmaximize', sendState);
     });

@@ -41,10 +41,7 @@ export default defineComponent({
 
     const isMaximized = ref(false);
 
-    onMaximizeChange((state) => {
-      console.log({state});
-      isMaximized.value = state;
-    });
+    onMaximizeChange((state) => isMaximized.value = state);
 
     const toggleMaximizeState = () => {
       return isMaximized.value ? unmaximize() : maximize();
