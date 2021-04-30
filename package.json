@@ -1,10 +1,19 @@
 {
-  "name": "vite-electron-builder",
-  "description": "Приложение для просмотра аниме (в работе).",
   "private": true,
+  "name": "vite-electron-builder",
+  "author": "Alex Kozack (https://kozack.me)",
+  "description": "Приложение для просмотра аниме (в работе).",
+  "homepage": "https://github.com/cawa-93/anime-library#readme",
   "engines": {
     "node": ">=v14.16",
     "npm": ">=7.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cawa-93/anime-library.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cawa-93/anime-library/issues"
   },
   "main": "packages/main/dist/index.cjs",
   "scripts": {
@@ -26,7 +35,8 @@
     "Chrome 89"
   ],
   "simple-git-hooks": {
-    "pre-commit": "npx lint-staged && npm run typecheck"
+    "pre-commit": "npx lint-staged",
+    "pre-push": "npm run typecheck"
   },
   "lint-staged": {
     "*.{js,ts,vue}": "eslint --cache --fix"
@@ -55,14 +65,5 @@
     "electron-updater": "^4.3.8",
     "vue": "^3.0.11",
     "vue-router": "^4.0.6"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cawa-93/anime-library.git"
-  },
-  "author": "Alex Kozack (https://kozack.me)",
-  "bugs": {
-    "url": "https://github.com/cawa-93/anime-library/issues"
-  },
-  "homepage": "https://github.com/cawa-93/anime-library#readme"
+  }
 }
