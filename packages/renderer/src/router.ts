@@ -6,7 +6,7 @@ const routes = [
   {
     path: '/watch/:seriesId(\\d+)/:episodeNum(\\d+)?/:translationId(\\d+)?/',
     name: 'Watch',
-    component: () => import('/@/components/Watch.vue'),
+    component: () => import('/@/components/WatchPage/WatchPage.vue'),
     props: ({params}: RouteLocation) => Object.fromEntries(Object.entries(params).map(([k, v]) => {
       if (typeof v !== 'string' || !v) {
         return [k, 0];

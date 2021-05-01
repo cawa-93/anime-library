@@ -1,7 +1,7 @@
 <template>
   <app-title-bar />
   <div id="main">
-    <pre><code>{{ route }}</code></pre>
+    <!--    <pre><code>{{ route }}</code></pre>-->
     <router-view />
   </div>
 </template>
@@ -47,7 +47,10 @@ body {
 #main {
   height: calc(100% - 32px);
   margin-top: 32px;
-  padding: 20px;
   overflow: auto;
+}
+
+a {
+  color: inherit;
 }
 </style>
