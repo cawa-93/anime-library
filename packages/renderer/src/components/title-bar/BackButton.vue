@@ -12,30 +12,38 @@ import {computed, defineComponent, ref} from 'vue';
 import WinIcon from '/@/components/WinIcon.vue';
 import {useRouter} from 'vue-router';
 
-interface HistoryState {
-  back: string | null
-  current: string
-}
-
 export default defineComponent({
   name: 'BackButton',
   components: {WinIcon},
   setup() {
     const router = useRouter();
 
-    const state = ref<HistoryState>(window.history.state);
+    const history = ref({...window.history});
+
     router.afterEach(() => {
-      state.value = window.history.state;
+      history.value.length = window.history.length;
+      history.value.state = window.history.state;
     });
 
-    const isDisabled = computed(() => !state.value.back && state.value.current === '/');
+    const canGoBack = computed(() => history.value.length > 1 && history.value.state.position > 0 && history.value.state.back !== null);
+    const isDisabled = computed(() => !canGoBack.value && router.currentRoute.value.name === 'Home');
 
     const goBack = () => {
-      if (state.value.back) {
-        return router.back();
+
+      /**
+       * Странный хак. Исправляет возврат назад после перезагрузки страницы,
+       * когда по каким-то причинам electron сбрасывает историю навигации
+       */
+      if (history.value.length === 1 && history.value.state.position === 1) {
+        console.warn('Невозможно вернуться назад. Обновляю стек истории');
+        window.history.pushState(window.history.state, document.title);
+        window.history.back();
+
+        history.value.length = window.history.length;
+        history.value.state = window.history.state;
       }
 
-      return router.replace({name: 'Home'});
+      router.back();
     };
 
     return {goBack, isDisabled};
