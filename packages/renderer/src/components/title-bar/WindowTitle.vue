@@ -27,5 +27,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+  span {
+    padding-right: 135px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+  }
 </style>
