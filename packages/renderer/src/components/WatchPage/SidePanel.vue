@@ -36,7 +36,7 @@ section {
   background-color: rgba(255, 255, 255, 0.75);
   height: 100%;
   overflow-y: auto;
-  padding: 0 0 1rem 0;
+  padding: 1rem 0;
 }
 
 section.open {

@@ -2,6 +2,10 @@ h3 {
   padding: 0 1rem;
 }
 
+h3:first-of-type {
+  margin-top: 0;
+}
+
 .playlist {
   margin: 0;
   padding: 0;
@@ -11,13 +15,12 @@ h3 {
 .playlist a {
   padding: 5px 10px;
   display: flex;
-  /*border-bottom: 1px solid gray;*/
   text-decoration: none;
   align-items: center;
   gap: 8px;
 }
 .playlist a:hover, .playlist a:focus-visible {
-  background-color: rgba(0, 0, 0, 0.15);
+  background-color: rgba(0, 0, 0, 0.15) !important;
 }
 
 .play-icon {
@@ -26,7 +29,8 @@ h3 {
 
 
 .playlist a.active {
-  font-weight: bold;
+  font-weight: 500;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .playlist a.active .play-icon {
