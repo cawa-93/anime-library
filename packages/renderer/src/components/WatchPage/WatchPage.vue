@@ -43,7 +43,10 @@
       id="translations"
       :is-opened="state.matches('translationsExpanded')"
     >
-      <translations-list :translations="translations" />
+      <translations-list
+        :translations="translations"
+        :selected-episode-num="selectedEpisode.number"
+      />
     </side-panel>
   </section>
 </template>
@@ -105,13 +108,11 @@ export default defineComponent({
   },
   setup(props) {
     const anime = asyncComputed(() => props.seriesId ? getSeries(props.seriesId) : null, null);
-
     const title = useTitle();
 
 
     const episodes = asyncComputed(() => props.seriesId ? getEpisodes(props.seriesId) : [] as Episode[], [] as Episode[]);
     const selectedEpisode = computed(() => episodes.value.find(e => e.number == props.episodeNum) || episodes.value[0]);
-
 
     const translations = asyncComputed(() => selectedEpisode.value ? getTranslations(selectedEpisode.value.id) : [] as Translation[], [] as Translation[]);
     const selectedTranslation = computed(() => translations.value.find(e => e.id === props.translationId) || translations.value[0]);
@@ -126,14 +127,14 @@ export default defineComponent({
     const {state, send} = useMachine(PanelStateMachine);
 
     return {
-      anime,
+      // anime,
       episodes,
       selectedEpisode,
       translations,
-      selectedTranslation,
+      // selectedTranslation,
       videos,
       videoElement,
-      title,
+      // title,
 
       state,
       send,

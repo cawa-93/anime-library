@@ -11,5 +11,16 @@
     "parser": "@typescript-eslint/parser",
     "ecmaVersion": 12,
     "sourceType": "module"
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.vue"
+      ],
+      "rules": {
+        "no-undef": "off"
+      }
+    }
+  ]
 }

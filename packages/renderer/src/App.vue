@@ -1,22 +1,25 @@
 <template>
   <app-title-bar />
   <div id="main">
-    <!--    <pre><code>{{ route }}</code></pre>-->
+    <pre v-if="isDebug"><code>{{ route }}</code></pre>
     <router-view />
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive} from 'vue';
+import {defineComponent} from 'vue';
 import AppTitleBar from '/@/components/title-bar/AppTitleBar.vue';
 import {useRoute} from 'vue-router';
 import {reactivePick} from '@vueuse/core';
+
 export default defineComponent({
   name: 'App',
   components: {AppTitleBar},
   setup() {
-    const r = reactive(useRoute());
-    return {route: reactivePick(r, 'fullPath', 'params')};
+    const isDebug = import.meta.env.MODE === 'development';
+    const route = useRoute();
+
+    return {isDebug, route: reactivePick(route, 'fullPath', 'params', 'meta', 'query', 'name', 'redirectedFrom')};
   },
 });
 </script>

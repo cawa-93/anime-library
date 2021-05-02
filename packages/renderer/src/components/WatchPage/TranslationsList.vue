@@ -14,7 +14,7 @@
       >
         <router-link
           replace
-          :to="{params: {translationId: translation.id}}"
+          :to="{params: {translationId: translation.id, episodeNum: selectedEpisodeNum}}"
           :class="{active: selectedTranslation === translation}"
         >
           <win-icon class="play-icon">
@@ -40,6 +40,10 @@ export default defineComponent({
     translations: {
       type: Array as PropType<Translation[]>,
       required: true,
+    },
+    selectedEpisodeNum: {
+      required: true,
+      type: [String, Number] as PropType<NumberLike>,
     },
   },
   setup(props) {
