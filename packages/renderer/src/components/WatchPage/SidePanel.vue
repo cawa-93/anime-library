@@ -34,6 +34,9 @@ section {
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   background-color: rgba(255, 255, 255, 0.75);
+  height: 100%;
+  overflow-y: auto;
+  padding: 0 0 1rem 0;
 }
 
 section.open {
