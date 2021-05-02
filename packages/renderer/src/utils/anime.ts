@@ -39,13 +39,18 @@ export function getEpisodes(id: NumberLike): Promise<Episode[]> {
 export interface Translation {
   id: number
   title: string
+  type: string
 }
 
 export function getTranslations(id: NumberLike): Promise<Translation[]> {
   return fetch(`${API_BASE}/episodes/${id}`)
     .then(r => r.json())
     .then(({data}: { data: { translations: any[] } }) => {
-      return data.translations.map((e: any) => ({id: e.id, title: e.authorsSummary}));
+      return data.translations.filter(e => e.isActive && e.typeLang === 'ru').map((e: any) => ({
+        id: e.id,
+        title: e.authorsSummary,
+        type: e.typeKind,
+      }));
     });
 }
 

@@ -20,7 +20,7 @@ const routes = [
 
       return [k, numValue];
     })),
-  }, // Lazy load route component
+  },
 ];
 
 export default createRouter({

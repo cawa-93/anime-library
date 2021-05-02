@@ -61,7 +61,7 @@ import {useMachine} from '@xstate/vue';
 
 
 const PanelStateMachine = Machine({
-  initial: 'allCollapsed',
+  initial: 'episodesExpanded',
   states: {
     allCollapsed: {
       on: {

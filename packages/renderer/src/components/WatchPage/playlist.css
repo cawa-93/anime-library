@@ -1,0 +1,34 @@
+h3 {
+  padding: 0 1rem;
+}
+
+.playlist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.playlist a {
+  padding: 5px 10px;
+  display: flex;
+  /*border-bottom: 1px solid gray;*/
+  text-decoration: none;
+  align-items: center;
+  gap: 8px;
+}
+.playlist a:hover, .playlist a:focus-visible {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.play-icon {
+  visibility: hidden;
+}
+
+
+.playlist a.active {
+  font-weight: bold;
+}
+
+.playlist a.active .play-icon {
+  visibility: visible;
+}

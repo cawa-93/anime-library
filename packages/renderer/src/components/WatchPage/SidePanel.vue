@@ -33,7 +33,7 @@ section {
   min-width: 300px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.75);
 }
 
 section.open {

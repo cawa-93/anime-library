@@ -54,7 +54,7 @@ export default defineComponent({
       animeID.value = /\/animes\/[a-z]*(?<animeID>[0-9]+)/.exec(searchText)?.groups?.animeID as `${number}`;
 
       if (animeID.value) {
-        router.push({name: 'Watch', params: {seriesId: animeID.value}});
+        router.push({name: 'Watch', params: {seriesId: animeID.value, episodeNum: '1'}});
       }
     };
 

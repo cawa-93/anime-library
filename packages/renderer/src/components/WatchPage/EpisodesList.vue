@@ -1,5 +1,5 @@
 <template>
-  <ul>
+  <ul class="playlist">
     <li
       v-for="episode of episodes"
       :key="episode.id"
@@ -7,9 +7,12 @@
       <router-link
         replace
         :to="{params: {episodeNum: episode.number, translationId: ''}}"
+        :class="{active: selectedEpisode === episode}"
       >
-        <strong v-if="selectedEpisode === episode">{{ episode.title }}</strong>
-        <span v-else>{{ episode.title }}</span>
+        <win-icon class="play-icon">
+          &#xF5B0;
+        </win-icon>
+        {{ episode.title }}
       </router-link>
     </li>
   </ul>
@@ -20,9 +23,11 @@ import type { PropType} from 'vue';
 import {computed, defineComponent} from 'vue';
 import {useRoute} from 'vue-router';
 import type {Episode} from '/@/utils/anime';
+import WinIcon from '/@/components/WinIcon.vue';
 
 export default defineComponent({
   name: 'EpisodesList',
+  components: {WinIcon},
   props: {
     episodes: {
       type: Array as PropType<Episode[]>,
@@ -39,5 +44,5 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+@import "playlist.css";
 </style>
