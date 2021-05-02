@@ -16,7 +16,7 @@
 
     <button
       style="position: absolute; top: 10px; left: 10px;"
-      @click="() => toggleEpisodeListState(true)"
+      @click="send('TOGGLE_EPISODES')"
     >
       Episodes
     </button>
@@ -24,7 +24,7 @@
     <side-panel
       v-if="episodes"
       id="episodes"
-      :is-opened="isEpisodeListOpened"
+      :is-opened="state.matches('episodesExpanded')"
     >
       <episodes-list
         :episodes="episodes"
@@ -34,14 +34,14 @@
 
     <button
       style="position: absolute; top: 30px; left: 10px;"
-      @click="() => toggleTranslationListState(true)"
+      @click="send('TOGGLE_TRANSLATIONS')"
     >
       Translations
     </button>
     <side-panel
       v-if="translations"
       id="translations"
-      :is-opened="isTranslationListOpened"
+      :is-opened="state.matches('translationsExpanded')"
     >
       <translations-list :translations="translations" />
     </side-panel>
@@ -56,6 +56,34 @@ import {getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/anime
 import SidePanel from '/@/components/WatchPage/SidePanel.vue';
 import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
 import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
+import {Machine} from 'xstate';
+import {useMachine} from '@xstate/vue';
+
+
+const PanelStateMachine = Machine({
+  initial: 'allCollapsed',
+  states: {
+    allCollapsed: {
+      on: {
+        TOGGLE_EPISODES: 'episodesExpanded',
+        TOGGLE_TRANSLATIONS: 'translationsExpanded',
+      },
+    },
+    episodesExpanded: {
+      on: {
+        TOGGLE_EPISODES: 'allCollapsed',
+        TOGGLE_TRANSLATIONS: 'translationsExpanded',
+      },
+    },
+    translationsExpanded: {
+      on: {
+        TOGGLE_TRANSLATIONS: 'allCollapsed',
+        TOGGLE_EPISODES: 'episodesExpanded',
+      },
+    },
+  },
+});
+
 
 export default defineComponent({
   components: {TranslationsList, EpisodesList, SidePanel},
@@ -94,22 +122,9 @@ export default defineComponent({
 
     watch([anime, selectedEpisode, selectedTranslation], () => title.value = anime.value?.title + ', ' + selectedEpisode.value?.number + ', ' + selectedTranslation.value?.title);
 
-    const isEpisodeListOpened = ref(false);
-    const toggleEpisodeListState = (val?: boolean) => {
-      isEpisodeListOpened.value = val ?? !isEpisodeListOpened.value;
-      isEpisodeListOpened.value && (isTranslationListOpened.value = false);
-    };
-    const episodeListElement = ref(null);
 
-    const isTranslationListOpened = ref(false);
-    const toggleTranslationListState = (val?: boolean) => {
-      isTranslationListOpened.value = val ?? !isTranslationListOpened.value;
-      isTranslationListOpened.value && (isEpisodeListOpened.value = false);
-    };
-    const translationListElement = ref(null);
+    const {state, send} = useMachine(PanelStateMachine);
 
-
-    // onClickOutside(episodeListElement, () => isEpisodeListOpened.value && toggleEpisodeListState(false));
     return {
       anime,
       episodes,
@@ -119,12 +134,9 @@ export default defineComponent({
       videos,
       videoElement,
       title,
-      isEpisodeListOpened,
-      toggleEpisodeListState,
-      episodeListElement,
-      isTranslationListOpened,
-      toggleTranslationListState,
-      translationListElement,
+
+      state,
+      send,
     };
   },
 });
@@ -136,6 +148,7 @@ export default defineComponent({
   height: 100%;
   position: relative;
   overflow: hidden;
+  background-color: black;
 }
 
 
