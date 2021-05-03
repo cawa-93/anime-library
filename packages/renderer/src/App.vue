@@ -1,5 +1,5 @@
 <template>
-  <app-title-bar />
+  <app-window-title-bar />
   <div id="main">
     <pre v-if="isDebug"><code>{{ route }}</code></pre>
     <router-view />
@@ -8,13 +8,13 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue';
-import AppTitleBar from '/@/components/title-bar/AppTitleBar.vue';
+import AppWindowTitleBar from '/@/components/AppWindowTitleBar/AppWindowTitleBar.vue';
 import {useRoute} from 'vue-router';
 import {reactivePick} from '@vueuse/core';
 
 export default defineComponent({
   name: 'App',
-  components: {AppTitleBar},
+  components: {AppWindowTitleBar},
   setup() {
     const isDebug = import.meta.env.MODE === 'development';
     const route = useRoute();

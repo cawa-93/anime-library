@@ -1,7 +1,8 @@
 <template>
   <button
-    class="button"
     :disabled="isDisabled"
+    aria-label="Вернутся назад"
+    class="button"
     @click="goBack"
   >
     <win-icon>&#xE830;</win-icon>
@@ -57,7 +58,17 @@ export default defineComponent({
 .button {
   width: auto;
   min-width: 50px;
-  margin: -4px 4px -4px -4px;
-  height: calc(100% + 8px);
+}
+
+button:not(:disabled):hover {
+  background: #E81123 !important;
+}
+
+button:not(:disabled):active {
+  background: #F1707A !important;
+}
+
+button:not(:disabled):active, button:not(:disabled):hover {
+  color: white;
 }
 </style>

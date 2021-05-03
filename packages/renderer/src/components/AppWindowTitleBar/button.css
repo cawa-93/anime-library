@@ -3,7 +3,9 @@
   background: transparent;
   border: none;
   -webkit-app-region: no-drag;
-  transition: background-color linear 150ms;
+  transition-property: background-color, color;
+  transition-duration: 100ms;
+  transition-timing-function: linear;
 }
 
 .button:focus {
