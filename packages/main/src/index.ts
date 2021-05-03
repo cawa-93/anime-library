@@ -3,6 +3,8 @@ import {join} from 'path';
 import {initialize} from '@electron/remote/dist/src/main';
 import {createProtocol} from '/@/createCustomProtocol';
 import windowStateKeeper from 'electron-window-state';
+import {registerIpcHost} from '/@/ipc';
+import WindowControllersHost from '/@/ipc/WindowControllersHost';
 
 initialize();
 
@@ -82,8 +84,6 @@ const createWindow = async () => {
   });
 
 
-
-
   /**
    * URL for main window.
    * `http://localhost:3000` - in development
@@ -132,6 +132,9 @@ app.whenReady()
       });
     });
   })
+  .then(() => {
+    registerIpcHost('WindowController', WindowControllersHost);
+  })
   .then(createWindow)
   .catch((e) => console.error('Failed create window:', e));
 
@@ -143,4 +146,5 @@ if (env.PROD) {
     .then(({autoUpdater}) => autoUpdater.checkForUpdatesAndNotify())
     .catch((e) => console.error('Failed check updates:', e));
 }
+
 

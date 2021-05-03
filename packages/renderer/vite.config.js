@@ -7,7 +7,7 @@ import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
 import {loadAndSetEnv} from '../../scripts/loadAndSetEnv.mjs';
 // import {generateSW} from 'rollup-plugin-workbox';
-import { VitePWA } from 'vite-plugin-pwa';
+import {VitePWA} from 'vite-plugin-pwa';
 
 const PACKAGE_ROOT = __dirname;
 
@@ -26,6 +26,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '/@/': join(PACKAGE_ROOT, 'src') + '/',
+      '/@shared/': join(PACKAGE_ROOT, '../shared') + '/',
     },
   },
   // base: '/',

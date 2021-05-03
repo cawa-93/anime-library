@@ -1,6 +1,6 @@
 import {node} from '../../electron-vendors.config.json';
 import {join} from 'path';
-import { builtinModules } from 'module';
+import {builtinModules} from 'module';
 
 import {defineConfig} from 'vite';
 import {loadAndSetEnv} from '../../scripts/loadAndSetEnv.mjs';
@@ -21,6 +21,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '/@/': join(PACKAGE_ROOT, 'src') + '/',
+      '/@shared/': join(PACKAGE_ROOT, '../shared') + '/',
     },
   },
   build: {

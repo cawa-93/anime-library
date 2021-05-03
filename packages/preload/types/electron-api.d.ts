@@ -1,10 +1,5 @@
-
 interface ElectronApi {
-  readonly close: () => void
-  readonly minimize: () => void
-  readonly maximize: () => void
-  readonly unmaximize: () => void
-  readonly onMaximizeChange: (callback: (isMaximized: boolean) => void) => void
+  readonly invoke: (channel: string, ...args: unknown[]) => void
 }
 
 declare interface Window {

@@ -11,14 +11,16 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import WinIcon from '/@/components/WinIcon.vue';
-import {useElectron} from '/@/use/electron';
+import type {ipcClient} from '/@/ipc';
+import {createIpcClient} from '/@/ipc';
+import type {WindowControllers} from '/@shared/types/ipc/WindowControllers';
 
 export default defineComponent({
   name: 'MinimizeButton',
   components: {WinIcon},
 
   setup() {
-    const {minimize} = useElectron();
+    const {minimize} = createIpcClient('WindowController') as ipcClient<WindowControllers>;
     return {minimize};
   },
 });

@@ -13,7 +13,9 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import WinIcon from '/@/components/WinIcon.vue';
-import {useElectron} from '/@/use/electron';
+import type {ipcClient} from '/@/ipc';
+import {createIpcClient} from '/@/ipc';
+import type {WindowControllers} from '/@shared/types/ipc/WindowControllers';
 import {isWindowMaximized} from '/@/use/isWindowMaximized';
 
 export default defineComponent({
@@ -21,11 +23,12 @@ export default defineComponent({
   components: {WinIcon},
 
   setup() {
-    const {maximize, unmaximize} = useElectron();
+    const {maximize, unmaximize} = createIpcClient('WindowController') as ipcClient<WindowControllers>;
+
     const {isMaximized} = isWindowMaximized();
 
     const toggleMaximizeState = () => {
-      return isMaximized.value ? unmaximize() : maximize();
+      isMaximized.value ? unmaximize() : maximize();
     };
 
     return {isMaximized, toggleMaximizeState};

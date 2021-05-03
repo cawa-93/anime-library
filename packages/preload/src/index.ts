@@ -1,29 +1,11 @@
-import {contextBridge} from 'electron';
-// TODO: Отказаться от `@electron/remote` в пользу `ipc`
-import {getCurrentWindow} from '@electron/remote';
-
+import {contextBridge, ipcRenderer} from 'electron';
 
 const apiKey = 'electron';
 /**
  * @see https://github.com/electron/electron/issues/21437#issuecomment-573522360
  */
 const api: ElectronApi = {
-  minimize: () => getCurrentWindow().minimize(),
-  maximize: () => getCurrentWindow().maximize(),
-  unmaximize: () => getCurrentWindow().unmaximize(),
-  close: () => window.close(),
-  onMaximizeChange: (cb) => {
-    const win = getCurrentWindow();
-    const sendState = () => cb(win.isMaximized());
-    sendState();
-
-    win.addListener('maximize', sendState);
-    win.addListener('unmaximize', sendState);
-    window.addEventListener('beforeunload', () => {
-      win.removeListener('maximize', sendState);
-      win.removeListener('unmaximize', sendState);
-    });
-  },
+  invoke: (...args) => ipcRenderer.invoke(...args),
 };
 
 if (import.meta.env.MODE !== 'test') {
