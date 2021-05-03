@@ -1,8 +1,8 @@
 import {ipcMain} from 'electron';
+import type {IpcNameHostsMap} from '/@shared/types/ipc';
 
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function registerIpcHost(hostName: string, host: { [k: string]: any }): void {
+export function registerIpcHost<T extends keyof IpcNameHostsMap>(hostName: T, host: IpcNameHostsMap[T]): void {
   ipcMain.handle(hostName, async (event, methodName: string, ...args) => {
     const method = host[methodName];
 
