@@ -3,7 +3,7 @@ import {protocol} from 'electron';
 import {URL} from 'url';
 import {join} from 'path';
 
-export function createProtocol(scheme: string, customProtocol: Protocol = protocol) {
+export function createProtocol(scheme: string, customProtocol: Protocol = protocol): void {
   customProtocol.registerFileProtocol(
     scheme,
     (request, respond) => {

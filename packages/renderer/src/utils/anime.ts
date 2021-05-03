@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const API_BASE = 'https://smotret-anime.online/api';
 
 
