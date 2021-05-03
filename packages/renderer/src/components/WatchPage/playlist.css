@@ -19,6 +19,7 @@ h3:first-of-type {
   align-items: center;
   gap: 8px;
 }
+
 .playlist a:hover, .playlist a:focus-visible {
   background-color: rgba(0, 0, 0, 0.15) !important;
 }

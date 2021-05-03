@@ -13,13 +13,14 @@
         :key="translation.id"
       >
         <router-link
-          replace
-          :to="{params: {translationId: translation.id, episodeNum: selectedEpisodeNum}}"
           :class="{active: selectedTranslation === translation}"
+          :to="{params: {translationId: translation.id, episodeNum: selectedEpisodeNum}}"
+          replace
         >
           <win-icon class="play-icon">
             &#xF5B0;
-          </win-icon>{{ translation.title || 'Неизвестный' }}
+          </win-icon>
+          {{ translation.title || 'Неизвестный' }}
         </router-link>
       </li>
     </ul>

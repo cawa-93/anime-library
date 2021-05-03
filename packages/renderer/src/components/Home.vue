@@ -6,8 +6,8 @@
       <label>
         Для отладки<br>
         <input
-          type="url"
           readonly
+          type="url"
           value="https://shikimori.one/animes/40938-hige-wo-soru-soshite-joshikousei-wo-hirou"
         >
       </label>
@@ -18,8 +18,8 @@
       <input
         autocomplete="on"
         name="searchText"
-        placeholder="https://shikimori.one/animes/..."
         pattern=".*/animes/[a-z]*[0-9]+.*"
+        placeholder="https://shikimori.one/animes/..."
         required
         type="url"
       >

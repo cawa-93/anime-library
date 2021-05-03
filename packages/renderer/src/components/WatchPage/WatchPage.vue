@@ -44,8 +44,8 @@
       :is-opened="state.matches('translationsExpanded')"
     >
       <translations-list
-        :translations="translations"
         :selected-episode-num="selectedEpisode.number"
+        :translations="translations"
       />
     </side-panel>
   </section>

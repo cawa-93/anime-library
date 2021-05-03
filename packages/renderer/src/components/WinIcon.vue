@@ -11,7 +11,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  span {
-    font-family: "Segoe MDL2 Assets";
-  }
+span {
+  font-family: "Segoe MDL2 Assets", sans-serif;
+}
 </style>

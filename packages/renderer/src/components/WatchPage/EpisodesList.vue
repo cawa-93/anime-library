@@ -5,9 +5,9 @@
       :key="episode.id"
     >
       <router-link
-        replace
-        :to="{params: {episodeNum: episode.number, translationId: ''}}"
         :class="{active: selectedEpisode === episode}"
+        :to="{params: {episodeNum: episode.number, translationId: ''}}"
+        replace
       >
         <win-icon class="play-icon">
           &#xF5B0;
@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import type { PropType} from 'vue';
+import type {PropType} from 'vue';
 import {computed, defineComponent} from 'vue';
 import {useRoute} from 'vue-router';
 import type {Episode} from '/@/utils/anime';
