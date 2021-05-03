@@ -1,16 +1,12 @@
 import {useElectron} from '/@/use/electron';
-import type {IpcHost, IpcNameHostsMap} from '/@shared/types/ipc';
-
-
-type Promisified<T extends IpcHost> = {
-  readonly [P in keyof T]: (...a: Parameters<T[P]>) => Promise<ReturnType<T[P]>>;
-}
+import type {IpcNameHostsMap} from '/@shared/types/ipc';
+import type {Promisified} from '/@shared/types/utils';
 
 
 const {invoke} = useElectron();
 
 export function createIpcClient<T extends keyof IpcNameHostsMap>(hostName: T): Promisified<IpcNameHostsMap[T]> {
-  return new Proxy({} as Promisified<IpcNameHostsMap[T]>, {
+  return new Proxy({} as never, {
     get: (obj, methodName: string) => {
 
       // Chrome runtime could try to call those method if the proxy object

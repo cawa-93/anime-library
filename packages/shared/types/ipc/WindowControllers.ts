@@ -1,5 +1,4 @@
-import type {IpcHost} from '/@shared/types/ipc';
-
+import type {IpcHost} from './index';
 
 export interface WindowControllers extends IpcHost {
   minimize: () => void
