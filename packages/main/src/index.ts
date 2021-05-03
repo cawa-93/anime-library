@@ -120,6 +120,10 @@ app.whenReady()
     env.MODE !== 'development' && createProtocol(PROTOCOL);
   })
   .then(() => {
+    registerIpcHost('WindowControllers', WindowControllersHost);
+  })
+  .then(createWindow)
+  .then(() => {
     session.defaultSession.webRequest.onHeadersReceived({
       urls: ['https://smotret-anime.online/api/*'],
     }, (details, callback) => {
@@ -132,10 +136,6 @@ app.whenReady()
       });
     });
   })
-  .then(() => {
-    registerIpcHost('WindowController', WindowControllersHost);
-  })
-  .then(createWindow)
   .catch((e) => console.error('Failed create window:', e));
 
 

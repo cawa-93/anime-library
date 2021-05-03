@@ -6,7 +6,7 @@ import {createIpcClient} from '/@/ipc';
 import type {WindowControllers} from '/@shared/types/ipc/WindowControllers';
 
 export function isWindowMaximized(defaultValue = false): { isMaximized: Ref<boolean> } {
-  const {isMaximized: getMaximizedState} = createIpcClient('WindowController') as ipcClient<WindowControllers>;
+  const {isMaximized: getMaximizedState} = createIpcClient('WindowControllers') as ipcClient<WindowControllers>;
 
   const isMaximized = ref(defaultValue);
   getMaximizedState().then(v => isMaximized.value = v);

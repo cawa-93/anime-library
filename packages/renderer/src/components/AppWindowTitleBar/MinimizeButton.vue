@@ -20,7 +20,7 @@ export default defineComponent({
   components: {WinIcon},
 
   setup() {
-    const {minimize} = createIpcClient('WindowController') as ipcClient<WindowControllers>;
+    const {minimize} = createIpcClient('WindowControllers') as ipcClient<WindowControllers>;
     return {minimize};
   },
 });

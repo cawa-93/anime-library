@@ -23,7 +23,7 @@ export default defineComponent({
   components: {WinIcon},
 
   setup() {
-    const {maximize, unmaximize} = createIpcClient('WindowController') as ipcClient<WindowControllers>;
+    const {maximize, unmaximize} = createIpcClient('WindowControllers') as ipcClient<WindowControllers>;
 
     const {isMaximized} = isWindowMaximized();
 
