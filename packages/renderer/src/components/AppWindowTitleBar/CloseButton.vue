@@ -20,7 +20,7 @@ export default defineComponent({
   components: {WinIcon},
 
   setup() {
-    const {close} = createIpcClient('WindowController') as ipcClient<WindowControllers>;
+    const {close} = createIpcClient('WindowControllers') as ipcClient<WindowControllers>;
     return {close};
   },
 });
