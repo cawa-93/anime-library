@@ -117,12 +117,14 @@ app.on('window-all-closed', () => {
 
 app.whenReady()
   .then(() => {
-    env.MODE !== 'development' && createProtocol(PROTOCOL);
-  })
-  .then(() => {
+    if (env.MODE !== 'development') {
+      createProtocol(PROTOCOL);
+    }
+
     registerIpcHost('WindowControllers', WindowControllersHost);
+
+    return createWindow();
   })
-  .then(createWindow)
   .then(() => {
     session.defaultSession.webRequest.onHeadersReceived({
       urls: ['https://smotret-anime.online/api/*'],
