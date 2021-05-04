@@ -37,8 +37,7 @@
       "matchSourceUrlPrefixes": [
         "https://github.com/vitejs/vite/"
       ],
-      "groupName": "Vite monorepo packages",
-      "automerge": false
+      "groupName": "Vite monorepo packages"
     },
     {
       "matchPackagePatterns": [
