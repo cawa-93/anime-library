@@ -67,7 +67,7 @@ const createWindow = async () => {
     webPreferences: {
       preload: join(__dirname, '../../preload/dist/index.cjs'),
       contextIsolation: env.MODE !== 'test',   // Spectron tests can't work with contextIsolation: true
-      enableRemoteModule: true,//env.MODE === 'test', // Spectron tests can't work with enableRemoteModule: false
+      enableRemoteModule: env.MODE === 'test', // Spectron tests can't work with enableRemoteModule: false
     },
   });
 
