@@ -10,6 +10,7 @@ export function isWindowMaximized(defaultValue = false): { isMaximized: Ref<bool
   getMaximizedState().then(v => isMaximized.value = v);
 
   useEventListener(window, 'resize', useDebounceFn(() => {
+    console.log('resized');
     getMaximizedState().then(v => isMaximized.value = v);
   }, 100));
 

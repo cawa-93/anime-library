@@ -1,16 +1,19 @@
 <template>
-  <app-window-title-bar />
-  <div id="main">
-    <pre v-if="isDebug"><code>{{ route }}</code></pre>
-    <router-view />
+  <div id="app">
+    <app-window-title-bar />
+    <div id="main">
+      <pre v-if="isDebug"><code>{{ route }}</code></pre>
+      <router-view />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {computed, defineComponent} from 'vue';
 import AppWindowTitleBar from '/@/components/AppWindowTitleBar/AppWindowTitleBar.vue';
 import {useRoute} from 'vue-router';
 import {reactivePick} from '@vueuse/core';
+import {isWindowMaximized} from '/@/use/isWindowMaximized';
 
 export default defineComponent({
   name: 'App',
@@ -19,7 +22,14 @@ export default defineComponent({
     const isDebug = import.meta.env.MODE === 'development';
     const route = useRoute();
 
-    return {isDebug, route: reactivePick(route, 'fullPath', 'params', 'meta', 'query', 'name', 'redirectedFrom')};
+    const {isMaximized} = isWindowMaximized();
+    const borderWidth = computed(() => isMaximized.value ? '0px' : '1px');
+
+    return {
+      isDebug,
+      route: reactivePick(route, 'fullPath', 'params', 'meta', 'query', 'name', 'redirectedFrom'),
+      borderWidth,
+    };
   },
 });
 </script>
@@ -41,9 +51,14 @@ html, body, #app {
 
 /**/
 body {
-  border: 1px solid #48545c;
   overflow: hidden;
   font-family: "Segoe UI", sans-serif;
+}
+
+#app {
+  /*noinspection CssInvalidFunction*/
+  --window-border-width: v-bind(borderWidth);
+  border: var(--window-border-width) solid #48545c;
 }
 
 /**/
