@@ -1,4 +1,4 @@
-import type {Episode, Series, Translation} from '/@/utils/ProviderInterfaces';
+import type {Episode, Series, Translation, Video} from '/@/utils/ProviderInterfaces';
 import type * as provided from '/@/utils/providers/anime365-interfaces';
 import type {ApiResponse, ApiResponseFailure, ApiResponseSuccess} from '/@/utils/providers/anime365-interfaces';
 
@@ -6,6 +6,15 @@ import type {ApiResponse, ApiResponseFailure, ApiResponseSuccess} from '/@/utils
 const API_BASE = 'https://smotret-anime.online/api/';
 
 async function request<T>(url: string | URL): Promise<ApiResponse<T>> {
+
+  if (!(url instanceof URL)) {
+    url = new URL(url);
+  }
+
+  if (import.meta.env.VITE_SM_ACCESS_TOKEN) {
+    url.searchParams.set('access_token', import.meta.env.VITE_SM_ACCESS_TOKEN);
+  }
+
   const response = await fetch(String(url));
   if (!response.ok) {
     throw await response.text();
@@ -101,7 +110,7 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
 
 
 export async function getTranslations(episodeId: NumberLike): Promise<Translation[]> {
-  const fields = ['id', 'title', 'episodeId', 'typeKind'] as const;
+  const fields = ['id', 'authorsSummary', 'episodeId', 'typeKind'] as const;
   type RequestedFields = typeof fields[number]
   type ExpectedResponse = Array<Pick<provided.Translation, RequestedFields>>
 
@@ -110,7 +119,7 @@ export async function getTranslations(episodeId: NumberLike): Promise<Translatio
   requestURL.searchParams.set('fields', fields.join(','));
   requestURL.searchParams.set('isActive', '1');
   requestURL.searchParams.set('episodeId', String(episodeId));
-  requestURL.searchParams.append('typeKind', 'voice');
+  requestURL.searchParams.set('typeKind', 'voice,sub');
 
   const apiResponse = await request<ExpectedResponse>(requestURL);
 
@@ -119,14 +128,38 @@ export async function getTranslations(episodeId: NumberLike): Promise<Translatio
   }
 
   const isVoiceOrSub =
-    (t: ExpectedResponse[number]): t is provided.TranslationSub | provided.TranslationVoice =>
+    (t: ExpectedResponse[number]):
+      t is Pick<provided.TranslationSub, RequestedFields> | Pick<provided.TranslationVoice, RequestedFields> =>
       (t as provided.TranslationSub).typeKind === 'sub' || (t as provided.TranslationVoice).typeKind === 'voice';
 
   return apiResponse.data
     .filter(isVoiceOrSub)
     .map(t => ({
       id: t.id,
-      title: t.title,
+      title: t.authorsSummary || 'Неизвестный',
       type: t.typeKind,
     }));
+}
+
+
+export async function getStream(translationId: NumberLike): Promise<Video> {
+  type ExpectedResponse = provided.Video
+
+  const requestURL = new URL(`translations/embed/${translationId}`, API_BASE);
+
+
+  const apiResponse = await request<ExpectedResponse>(requestURL);
+
+  if (isFailureResponse(apiResponse)) {
+    throw apiResponse.error;
+  }
+
+  if (apiResponse.data.stream.length === 0) {
+    throw new Error(`У {translationId: ${translationId}} нет доступных видео`);
+  }
+
+  return {
+    quality: apiResponse.data.stream[0].height,
+    url: apiResponse.data.stream[0].urls[0],
+  };
 }

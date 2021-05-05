@@ -39,7 +39,7 @@ export interface Episode {
   isActive: 1 | 0;
   isFirstUploaded: 1 | 0;
   seriesId: number;
-  translations?: Translation[]
+  translations?: (TranslationVoice | TranslationSub | TranslationRaw)[]
 }
 
 export interface Genre {
@@ -80,8 +80,6 @@ export interface Series {
   genres: Genre[];
 }
 
-export type TranslationKind = 'sub' | 'voice' | 'raw'
-export type TranslationLang = 'rus' | 'ja'
 
 export interface TranslationVoice extends Translation {
   typeKind: 'voice'
@@ -92,10 +90,7 @@ export interface TranslationSub extends Translation {
   typeKind: 'sub'
   typeLang: 'rus'
 }
-export interface TranslationSubes extends Translation {
-  typeKind: 'subes'
-  typeLang: 'rus'
-}
+
 
 export interface TranslationRaw extends Translation {
   typeKind: 'raw'
@@ -120,10 +115,28 @@ export interface Translation {
   episodeId: number;
   url: string;
   embedUrl: string;
-  authorsSummary: string;
+  authorsSummary?: string;
   episode?: Episode;
   series?: Series;
   duration: string;
   width: number;
   height: number;
+}
+
+
+export interface Download {
+  height: number;
+  url: string;
+}
+
+export interface Stream {
+  height: number;
+  urls: string[];
+}
+
+export interface Video {
+  embedUrl: string;
+  download: Download[];
+  stream: Stream[];
+  subtitlesUrl?: string;
 }

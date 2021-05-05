@@ -1,9 +1,10 @@
 import {
   getEpisodes as providerGetEpisodes,
   getSeries as providerGetSeries,
+  getStream,
   getTranslations as providerGetTranslations,
 } from '/@/utils/providers/anime365';
-import type {Episode, Series, Translation} from '/@/utils/ProviderInterfaces';
+import type {Episode, Series, Translation, Video} from '/@/utils/ProviderInterfaces';
 
 export function getSeries(id: NumberLike): Promise<Series | undefined> {
   return providerGetSeries(id);
@@ -19,11 +20,6 @@ export function getTranslations(providerEpisodeId: NumberLike): Promise<Translat
 }
 
 
-// // https://smotret-anime.online/api/translations/embed/2423373
-// export function getVideos(id: NumberLike): Promise<Video[]> {
-//   return fetch(`${API_BASE}/translations/embed/${id}?&access_token=${import.meta.env.VITE_SM_ACCESS_TOKEN}`)
-//     .then(r => r.json())
-//     .then(({data}: { data: any }) => {
-//       return data.stream.map((e: any) => ({height: e.height, url: e.urls[0]}));
-//     });
-// }
+export function getVideos(providerTranslationId: NumberLike): Promise<Video[]> {
+  return getStream(providerTranslationId).then(s => ([s]));
+}
