@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "vite-electron-builder",
+  "name": "anime-library",
   "author": "Alex Kozack (https://kozack.me)",
   "description": "Приложение для просмотра аниме (в работе).",
   "homepage": "https://github.com/cawa-93/anime-library#readme",
