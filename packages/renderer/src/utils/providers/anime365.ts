@@ -1,12 +1,12 @@
-import type {Episode, Series} from '/@/utils/ProviderInterfaces';
+import type {Episode, Series, Translation} from '/@/utils/ProviderInterfaces';
 import type * as provided from '/@/utils/providers/anime365-interfaces';
 import type {ApiResponse, ApiResponseFailure, ApiResponseSuccess} from '/@/utils/providers/anime365-interfaces';
 
 
 const API_BASE = 'https://smotret-anime.online/api/';
 
-async function request<T>(url: string): Promise<ApiResponse<T>> {
-  const response = await fetch(url);
+async function request<T>(url: string | URL): Promise<ApiResponse<T>> {
+  const response = await fetch(String(url));
   if (!response.ok) {
     throw await response.text();
   }
@@ -24,9 +24,8 @@ export async function searchSeries<RequestedFields extends keyof provided.Series
 
   requestURL.searchParams.set('isActive', '1');
 
-  const apiResponse = await request<Pick<provided.Series, RequestedFields>[]>(String(requestURL));
+  const apiResponse = await request<Pick<provided.Series, RequestedFields>[]>(requestURL);
 
-  // const isFailure = ;
   if (isFailureResponse(apiResponse)) {
     throw apiResponse.error;
   }
@@ -97,5 +96,37 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
       id: e.id,
       title: e.episodeTitle || e.episodeFull,
       number: parseFloat(e.episodeInt),
+    }));
+}
+
+
+export async function getTranslations(episodeId: NumberLike): Promise<Translation[]> {
+  const fields = ['id', 'title', 'episodeId', 'typeKind'] as const;
+  type RequestedFields = typeof fields[number]
+  type ExpectedResponse = Array<Pick<provided.Translation, RequestedFields>>
+
+  const requestURL = new URL('translations', API_BASE);
+
+  requestURL.searchParams.set('fields', fields.join(','));
+  requestURL.searchParams.set('isActive', '1');
+  requestURL.searchParams.set('episodeId', String(episodeId));
+  requestURL.searchParams.append('typeKind', 'voice');
+
+  const apiResponse = await request<ExpectedResponse>(requestURL);
+
+  if (isFailureResponse(apiResponse)) {
+    throw apiResponse.error;
+  }
+
+  const isVoiceOrSub =
+    (t: ExpectedResponse[number]): t is provided.TranslationSub | provided.TranslationVoice =>
+      (t as provided.TranslationSub).typeKind === 'sub' || (t as provided.TranslationVoice).typeKind === 'voice';
+
+  return apiResponse.data
+    .filter(isVoiceOrSub)
+    .map(t => ({
+      id: t.id,
+      title: t.title,
+      type: t.typeKind,
     }));
 }

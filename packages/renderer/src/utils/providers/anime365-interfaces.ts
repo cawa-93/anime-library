@@ -83,6 +83,25 @@ export interface Series {
 export type TranslationKind = 'sub' | 'voice' | 'raw'
 export type TranslationLang = 'rus' | 'ja'
 
+export interface TranslationVoice extends Translation {
+  typeKind: 'voice'
+  typeLang: 'rus'
+}
+
+export interface TranslationSub extends Translation {
+  typeKind: 'sub'
+  typeLang: 'rus'
+}
+export interface TranslationSubes extends Translation {
+  typeKind: 'subes'
+  typeLang: 'rus'
+}
+
+export interface TranslationRaw extends Translation {
+  typeKind: 'raw'
+  typeLang: 'ja'
+}
+
 export interface Translation {
   id: number;
   addedDateTime: string;
@@ -93,8 +112,8 @@ export interface Translation {
   priority: number;
   qualityType: string;
   type: string;
-  typeKind: TranslationKind;
-  typeLang: TranslationLang;
+  typeKind: string;
+  // typeLang: TranslationLang;
   updatedDateTime: string;
   title: string;
   seriesId: number;
