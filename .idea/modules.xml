@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/vite-electron-builder.iml" filepath="$PROJECT_DIR$/.idea/vite-electron-builder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/anime-library.iml" filepath="$PROJECT_DIR$/.idea/anime-library.iml" />
     </modules>
   </component>
 </project>

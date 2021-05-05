@@ -11,14 +11,14 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import WinIcon from '/@/components/WinIcon.vue';
-import {createIpcClient} from '/@/ipc';
+import {close} from '/@/utils/window-controllers';
 
 export default defineComponent({
   name: 'CloseButton',
   components: {WinIcon},
 
   setup() {
-    const {close} = createIpcClient('WindowControllers');
+
     return {close};
   },
 });

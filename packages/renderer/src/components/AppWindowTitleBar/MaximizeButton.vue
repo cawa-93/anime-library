@@ -13,15 +13,14 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import WinIcon from '/@/components/WinIcon.vue';
-import {createIpcClient} from '/@/ipc';
 import {isWindowMaximized} from '/@/use/isWindowMaximized';
+import {maximize, unmaximize} from '/@/utils/window-controllers';
 
 export default defineComponent({
   name: 'MaximizeButton',
   components: {WinIcon},
 
   setup() {
-    const {maximize, unmaximize} = createIpcClient('WindowControllers');
 
     const {isMaximized} = isWindowMaximized();
 

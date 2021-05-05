@@ -11,14 +11,13 @@
 <script lang="ts">
 import {defineComponent} from 'vue';
 import WinIcon from '/@/components/WinIcon.vue';
-import {createIpcClient} from '/@/ipc';
+import {minimize} from '/@/utils/window-controllers';
 
 export default defineComponent({
   name: 'MinimizeButton',
   components: {WinIcon},
 
   setup() {
-    const {minimize} = createIpcClient('WindowControllers');
     return {minimize};
   },
 });
