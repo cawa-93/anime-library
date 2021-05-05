@@ -1,5 +1,5 @@
-import {getSeries as providerGetSeries} from '/@/utils/providers/anime365';
-import type {Series} from '/@/utils/ProviderInterfaces';
+import {getSeries as providerGetSeries, getEpisodes as providerGetEpisodes} from '/@/utils/providers/anime365';
+import type {Series, Episode} from '/@/utils/ProviderInterfaces';
 
 // export interface Series {
 //   id: number
@@ -22,13 +22,9 @@ export function getSeries(id: NumberLike): Promise<Series | undefined> {
 //   return {id: data.id, title: data.episodeTitle || data.episodeFull, number: data.episodeInt};
 // }
 //
-// export function getEpisodes(id: NumberLike): Promise<Episode[]> {
-//   return fetch(`${API_BASE}/series/?myAnimeListId=${id}&fields=episodes`)
-//     .then(r => r.json())
-//     .then(({data}: { data: any[] }) => {
-//       return data[0].episodes.map(convertEpisode);
-//     });
-// }
+export function getEpisodes(id: NumberLike): Promise<Episode[]> {
+  return providerGetEpisodes(id);
+}
 //
 //
 // export interface Translation {
