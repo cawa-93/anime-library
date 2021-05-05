@@ -54,8 +54,8 @@
 <script lang="ts">
 import {asyncComputed, useTitle} from '@vueuse/core';
 import {computed, defineComponent, ref, watch} from 'vue';
-import type {Episode, Translation, Video} from '/@/utils/anime';
-import {getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/anime';
+import type {Episode, Translation, Video} from '/@/utils/videoProvider';
+import {getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/WatchPage/SidePanel.vue';
 import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
 import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';

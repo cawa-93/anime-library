@@ -31,7 +31,7 @@
 import type {PropType} from 'vue';
 import {computed, defineComponent} from 'vue';
 import {useRoute} from 'vue-router';
-import type {Translation} from '/@/utils/anime';
+import type {Translation} from '/@/utils/videoProvider';
 import WinIcon from '/@/components/WinIcon.vue';
 
 export default defineComponent({

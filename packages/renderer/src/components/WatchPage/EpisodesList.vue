@@ -22,7 +22,7 @@
 import type {PropType} from 'vue';
 import {computed, defineComponent} from 'vue';
 import {useRoute} from 'vue-router';
-import type {Episode} from '/@/utils/anime';
+import type {Episode} from '/@/utils/videoProvider';
 import WinIcon from '/@/components/WinIcon.vue';
 
 export default defineComponent({
