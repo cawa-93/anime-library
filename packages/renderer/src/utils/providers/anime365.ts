@@ -1,11 +1,10 @@
-import type {Episode, Series, Translation, Video} from '/@/utils/ProviderInterfaces';
-import type * as provided from '/@/utils/providers/anime365-interfaces';
-import type {ApiResponse, ApiResponseFailure, ApiResponseSuccess} from '/@/utils/providers/anime365-interfaces';
+import type * as sm from '/@/utils/providers/anime365-interfaces';
+import type {Episode, Series, Translation, Video} from '/@/utils/videoProvider';
 
 
 const API_BASE = 'https://smotret-anime.online/api/';
 
-async function request<T>(url: string | URL): Promise<ApiResponse<T>> {
+async function request<T>(url: string | URL): Promise<sm.ApiResponse<T>> {
 
   if (!(url instanceof URL)) {
     url = new URL(url);
@@ -23,17 +22,17 @@ async function request<T>(url: string | URL): Promise<ApiResponse<T>> {
   return await response.json();
 }
 
-function isFailureResponse(response: ApiResponseFailure | ApiResponseSuccess<unknown>): response is ApiResponseFailure {
-  return (response as ApiResponseSuccess<unknown>).data === undefined;
+function isFailureResponse(response: sm.ApiResponseFailure | sm.ApiResponseSuccess<unknown>): response is sm.ApiResponseFailure {
+  return (response as sm.ApiResponseSuccess<unknown>).data === undefined;
 }
 
-export async function searchSeries<RequestedFields extends keyof provided.Series>(searchParams: URLSearchParams): Promise<Pick<provided.Series, RequestedFields>[]> {
+export async function searchSeries<RequestedFields extends keyof sm.Series>(searchParams: URLSearchParams): Promise<Pick<sm.Series, RequestedFields>[]> {
   const requestURL = new URL('series', API_BASE);
   searchParams.forEach((v, k) => requestURL.searchParams.set(k, v));
 
   requestURL.searchParams.set('isActive', '1');
 
-  const apiResponse = await request<Pick<provided.Series, RequestedFields>[]>(requestURL);
+  const apiResponse = await request<Pick<sm.Series, RequestedFields>[]>(requestURL);
 
   if (isFailureResponse(apiResponse)) {
     throw apiResponse.error;
@@ -112,7 +111,8 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
 export async function getTranslations(episodeId: NumberLike): Promise<Translation[]> {
   const fields = ['id', 'authorsSummary', 'episodeId', 'typeKind'] as const;
   type RequestedFields = typeof fields[number]
-  type ExpectedResponse = Array<Pick<provided.Translation, RequestedFields>>
+  type ResponseItem = Pick<sm.Translation, RequestedFields>
+  type ExpectedResponse = Array<ResponseItem>
 
   const requestURL = new URL('translations', API_BASE);
 
@@ -128,9 +128,9 @@ export async function getTranslations(episodeId: NumberLike): Promise<Translatio
   }
 
   const isVoiceOrSub =
-    (t: ExpectedResponse[number]):
-      t is Pick<provided.TranslationSub, RequestedFields> | Pick<provided.TranslationVoice, RequestedFields> =>
-      (t as provided.TranslationSub).typeKind === 'sub' || (t as provided.TranslationVoice).typeKind === 'voice';
+    (t: ResponseItem):
+      t is Pick<sm.TranslationSub, RequestedFields> | Pick<sm.TranslationVoice, RequestedFields> =>
+      (t as sm.TranslationSub).typeKind === 'sub' || (t as sm.TranslationVoice).typeKind === 'voice';
 
   return apiResponse.data
     .filter(isVoiceOrSub)
@@ -143,7 +143,7 @@ export async function getTranslations(episodeId: NumberLike): Promise<Translatio
 
 
 export async function getStream(translationId: NumberLike): Promise<Video> {
-  type ExpectedResponse = provided.Video
+  type ExpectedResponse = sm.Video
 
   const requestURL = new URL(`translations/embed/${translationId}`, API_BASE);
 
