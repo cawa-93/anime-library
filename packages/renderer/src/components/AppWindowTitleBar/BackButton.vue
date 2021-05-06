@@ -1,7 +1,7 @@
 <template>
   <button
     :disabled="isDisabled"
-    aria-label="Вернутся назад"
+    title="Вернутся назад"
     class="button"
     @click="goBack"
   >

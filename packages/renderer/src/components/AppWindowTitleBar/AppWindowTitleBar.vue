@@ -5,6 +5,7 @@
   >
     <div id="drag-region">
       <back-button id="back-button" />
+      <home-button />
       <window-title id="window-title" />
       <minimize-button class="window-control" />
       <maximize-button class="window-control" />
@@ -21,10 +22,11 @@ import MinimizeButton from '/@/components/AppWindowTitleBar/MinimizeButton.vue';
 import CloseButton from '/@/components/AppWindowTitleBar/CloseButton.vue';
 import MaximizeButton from '/@/components/AppWindowTitleBar/MaximizeButton.vue';
 import {isWindowMaximized} from '/@/use/isWindowMaximized';
+import HomeButton from '/@/components/AppWindowTitleBar/HomeButton.vue';
 
 export default defineComponent({
   name: 'AppTitleBar',
-  components: {MaximizeButton, CloseButton, MinimizeButton, WindowTitle, BackButton},
+  components: {HomeButton, MaximizeButton, CloseButton, MinimizeButton, WindowTitle, BackButton},
   setup() {
     const {isMaximized} = isWindowMaximized();
     return {isMaximized};
