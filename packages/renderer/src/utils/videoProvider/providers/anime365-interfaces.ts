@@ -17,10 +17,10 @@ export interface Link {
 }
 
 export interface Titles {
-  romaji: string;
-  ru: string;
-  ja: string;
-  en: string;
+  romaji?: string;
+  ru?: string;
+  ja?: string;
+  en?: string;
 }
 
 export interface Description {
@@ -33,7 +33,7 @@ export interface Episode {
   id: number;
   episodeFull: string;
   episodeInt: string;
-  episodeTitle: string;
+  episodeTitle?: string;
   episodeType: string;
   firstUploadedDateTime: string;
   isActive: 1 | 0;
@@ -105,10 +105,10 @@ export interface Translation {
   fansubsTranslationId: number;
   isActive: 1 | 0;
   priority: number;
-  qualityType: string;
+  qualityType: 'bd' | 'uncensored' | 'dvd' | 'tv';
   type: string;
   typeKind: string;
-  // typeLang: TranslationLang;
+  typeLang: string;
   updatedDateTime: string;
   title: string;
   seriesId: number;

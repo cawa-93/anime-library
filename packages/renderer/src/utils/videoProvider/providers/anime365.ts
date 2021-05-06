@@ -1,4 +1,4 @@
-import type * as sm from '/@/utils/providers/anime365-interfaces';
+import type * as sm from '/@/utils/videoProvider/providers/anime365-interfaces';
 import type {Episode, Series, Translation, Video} from '/@/utils/videoProvider';
 
 
@@ -98,7 +98,10 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
 
       // Удалять серии у которых number > Чем заявлено в сезоне
       // Обычно такие серии залиты по ошибке
-      && parseFloat(e.episodeInt) <= targetSeries.numberOfEpisodes,
+      && (
+        parseFloat(e.episodeInt) === 0
+        || targetSeries.numberOfEpisodes >= parseFloat(e.episodeInt)
+      ),
     )
     .map(e => ({
       id: e.id,
@@ -154,12 +157,13 @@ export async function getStream(translationId: NumberLike): Promise<Video> {
     throw apiResponse.error;
   }
 
-  if (apiResponse.data.stream.length === 0) {
+
+  const streams = apiResponse.data.stream.flatMap(s => s.urls.map(u => ({quality: s.height, url: u})));
+
+  if (streams.length === 0) {
     throw new Error(`У {translationId: ${translationId}} нет доступных видео`);
   }
 
-  return {
-    quality: apiResponse.data.stream[0].height,
-    url: apiResponse.data.stream[0].urls[0],
-  };
+  // TODO: Продумать лучший механизм для выбора видео потока
+  return streams.sort((s1, s2) => s2.quality - s1.quality)[0];
 }

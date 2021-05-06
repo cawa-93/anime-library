@@ -1,9 +1,4 @@
-import {
-  getEpisodes as providerGetEpisodes,
-  getSeries as providerGetSeries,
-  getStream as providerGetStream,
-  getTranslations as providerGetTranslations,
-} from '/@/utils/providers/anime365';
+import * as provider from '/@/utils/videoProvider/providers/anime365';
 
 interface HasID {
   id: NumberLike
@@ -12,6 +7,7 @@ interface HasID {
 interface HasTitle {
   title: string
 }
+
 
 export interface Series extends HasID, HasTitle {
 }
@@ -38,19 +34,19 @@ export interface Video {
 }
 
 export function getSeries(id: NumberLike): Promise<Series | undefined> {
-  return providerGetSeries(id);
+  return provider.getSeries(id);
 }
 
 export function getEpisodes(id: NumberLike): Promise<Episode[]> {
-  return providerGetEpisodes(id);
+  return provider.getEpisodes(id);
 }
 
 
 export function getTranslations(providerEpisodeId: NumberLike): Promise<Translation[]> {
-  return providerGetTranslations(providerEpisodeId);
+  return provider.getTranslations(providerEpisodeId);
 }
 
 
 export function getVideos(providerTranslationId: NumberLike): Promise<Video[]> {
-  return providerGetStream(providerTranslationId).then(s => ([s]));
+  return provider.getStream(providerTranslationId).then(s => ([s]));
 }
