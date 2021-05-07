@@ -90,7 +90,7 @@ const createWindow = async () => {
    * {@link PROTOCOL}://./ - in production and test
    */
   const pageUrl = env.MODE === 'development'
-    ? env.VITE_DEV_SERVER_URL
+    ? env.VITE_DEV_SERVER_URL + 'watch/40938/'
     : process.argv?.[1]?.startsWith?.(PROTOCOL)
       ? process.argv?.[1]
       : `${PROTOCOL}://./`;

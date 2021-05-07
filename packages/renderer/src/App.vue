@@ -2,7 +2,6 @@
   <div id="app">
     <app-window-title-bar />
     <div id="main">
-      <pre v-if="isDebug"><code>{{ route }}</code></pre>
       <router-view />
     </div>
   </div>
@@ -59,12 +58,13 @@ body {
   /*noinspection CssInvalidFunction*/
   --window-border-width: v-bind(borderWidth);
   border: var(--window-border-width) solid #48545c;
+  display: flex;
+  flex-direction: column;
 }
 
 /**/
 #main {
-  height: calc(100% - 32px);
-  margin-top: 32px;
+  flex-grow: 1;
   overflow: auto;
 }
 

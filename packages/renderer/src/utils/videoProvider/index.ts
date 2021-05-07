@@ -29,7 +29,9 @@ export interface Translation extends HasID, HasTitle {
 }
 
 export interface Video {
-  quality: number
+  qualities: {
+    [size: number]: string,
+  }
   url: string
 }
 

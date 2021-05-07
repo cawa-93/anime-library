@@ -3,23 +3,35 @@
     v-if="videos.length"
     id="video-container"
   >
-    <video
-      ref="videoElement"
-      controls
-    >
-      <source
-        v-for="video of videos"
-        :key="video.url"
-        :src="video.url"
-      >
-    </video>
+    <video-player :video-source="videos[0]">
+      <!--      <template #controls>-->
+      <!--        <button-->
+      <!--          style="position: absolute; top: 10px; left: 10px;"-->
+      <!--          @click="send('TOGGLE_EPISODES')"-->
+      <!--        >-->
+      <!--          Episodes-->
+      <!--        </button>-->
 
-    <button
-      style="position: absolute; top: 10px; left: 10px;"
-      @click="send('TOGGLE_EPISODES')"
-    >
-      Episodes
-    </button>
+      <!--        <button-->
+      <!--          style="position: absolute; top: 30px; left: 10px;"-->
+      <!--          @click="send('TOGGLE_TRANSLATIONS')"-->
+      <!--        >-->
+      <!--          Translations-->
+      <!--        </button>-->
+      <!--      </template>-->
+    </video-player>
+    <!--    <video-->
+    <!--      ref="videoElement"-->
+    <!--      controls-->
+    <!--    >-->
+    <!--      <source-->
+    <!--        v-for="video of videos"-->
+    <!--        :key="video.url"-->
+    <!--        :src="video.url"-->
+    <!--      >-->
+    <!--    </video>-->
+
+
 
     <side-panel
       v-if="episodes"
@@ -32,12 +44,7 @@
     </side-panel>
 
 
-    <button
-      style="position: absolute; top: 30px; left: 10px;"
-      @click="send('TOGGLE_TRANSLATIONS')"
-    >
-      Translations
-    </button>
+
     <side-panel
       v-if="translations"
       id="translations"
@@ -52,7 +59,7 @@
 </template>
 
 <script lang="ts">
-import {asyncComputed, useTitle} from '@vueuse/core';
+import {asyncComputed, useNow, useTitle} from '@vueuse/core';
 import {computed, defineComponent, ref, watch} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
 import {getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/videoProvider';
@@ -61,6 +68,7 @@ import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
 import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
 import {Machine} from 'xstate';
 import {useMachine} from '@xstate/vue';
+import VideoPlayer from '/@/components/WatchPage/VideoPlayer.vue';
 
 
 const PanelStateMachine = Machine({
@@ -89,7 +97,7 @@ const PanelStateMachine = Machine({
 
 
 export default defineComponent({
-  components: {TranslationsList, EpisodesList, SidePanel},
+  components: {VideoPlayer, TranslationsList, EpisodesList, SidePanel},
   props: {
     seriesId: {
       type: Number,
@@ -126,6 +134,8 @@ export default defineComponent({
 
     const {state, send} = useMachine(PanelStateMachine);
 
+
+    const {now} = useNow();
     return {
       // anime,
       episodes,
@@ -138,6 +148,7 @@ export default defineComponent({
 
       state,
       send,
+      now,
     };
   },
 });
