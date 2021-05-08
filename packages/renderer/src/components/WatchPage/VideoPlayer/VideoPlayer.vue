@@ -21,7 +21,9 @@
       :is-fullscreen="isFullscreen"
       :qualities="qualities"
       :next-url="nextUrl"
+      :is-picture-in-picture="isPictureInPicture"
       @requestFullscreenToggle="toggleFullscreen"
+      @requestPictureInPicture="togglePictureInPicture"
     />
     <slot />
   </div>
@@ -67,7 +69,15 @@ export default defineComponent({
     const muted = ref(false);
 
     const videoElement = ref<HTMLVideoElement>();
-    const {playing, duration, currentTime, buffered, waiting, volume} = useMediaControls(videoElement, {
+    const {
+      playing,
+      duration,
+      currentTime,
+      buffered,
+      waiting,
+      volume,
+      isPictureInPicture,
+    } = useMediaControls(videoElement, {
       muted,
       autoplay: true,
       src: selectedVideoStreamWithTimeStart,
@@ -80,8 +90,16 @@ export default defineComponent({
     const componentRoot = ref<HTMLVideoElement>();
     const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(componentRoot);
 
+    const togglePictureInPicture = () => {
+      if (document.pictureInPictureElement) {
+        document.exitPictureInPicture();
+      } else if (videoElement.value) {
+        videoElement.value.requestPictureInPicture();
+      }
+    };
 
     return {
+      togglePictureInPicture,
       selectedQuality,
       qualities,
       videoElement,
@@ -95,6 +113,7 @@ export default defineComponent({
       componentRoot,
       isFullscreen,
       toggleFullscreen,
+      isPictureInPicture,
     };
   },
 });

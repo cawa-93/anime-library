@@ -27,7 +27,7 @@
       class="next-button"
       :disabled="!nextUrl"
     >
-      <win-icon>&#xE76C;</win-icon>
+      <win-icon>&#xE893;</win-icon>
     </button>
 
     <div class="volume-area">
@@ -71,9 +71,17 @@
       </option>
     </select>
 
+
+    <button
+      class="picture-in-picture"
+      @click="$emit('requestPictureInPicture')"
+    >
+      <win-icon>{{ isPictureInPicture ? '&#xE944;' : '&#xE8A7;' }}</win-icon>
+    </button>
+
     <button
       class="toggle-fullscreen-button"
-      @click="toggleFullscreen"
+      @click="$emit('requestFullscreenToggle')"
     >
       <win-icon>{{ isFullscreen ? '&#xE73F;' : '&#xE740;' }}</win-icon>
     </button>
@@ -130,6 +138,11 @@ export default defineComponent({
       required: false,
       default: null,
     },
+    isPictureInPicture: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     isFullscreen: {
       type: Boolean,
       require: true,
@@ -143,6 +156,7 @@ export default defineComponent({
     'update:muted': null,
     'update:selectedQuality': null,
     requestFullscreenToggle: null,
+    requestPictureInPicture: null,
   },
 
   setup(props, {emit}) {
@@ -215,13 +229,6 @@ export default defineComponent({
      */
     const selectedQualityState = useVModel(props, 'selectedQuality', emit);
 
-
-    /**
-     * Fullscreen
-     */
-    const toggleFullscreen = () => emit('requestFullscreenToggle');
-
-
     return {
       currentTimeState,
       bufferedIndicator,
@@ -230,7 +237,6 @@ export default defineComponent({
       mutedState,
       formattedCurrentTime,
       formattedDuration,
-      toggleFullscreen,
       selectedQualityState,
     };
   },
@@ -244,12 +250,12 @@ export default defineComponent({
   bottom: 0;
   width: 100%;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.8547619731486344) 0%, rgba(0, 0, 0, 0) 100%);
-  grid-template-columns: repeat(4, min-content) 1fr repeat(2, min-content);
+  grid-template-columns: repeat(4, min-content) 1fr repeat(3, min-content);
   grid-template-rows: repeat(2, min-content);
   gap: 5px 10px;
   grid-template-areas:
-    "progress-bar progress-bar  progress-bar progress-bar progress-bar progress-bar progress-bar"
-    "play-button next-button volume-area time space settings fullscreen";
+    "progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar"
+    "play-button next-button volume-area time space settings picture-in-picture fullscreen";
   padding: 5px;
   color: white;
 }
@@ -386,5 +392,9 @@ export default defineComponent({
 
 select.settings option {
   background: rgba(0, 0, 0, 0.8);
+}
+
+.picture-in-picture {
+  grid-area: picture-in-picture;
 }
 </style>
