@@ -196,7 +196,7 @@ export default defineComponent({
      * Volume Control
      */
     const mutedState = useVModel(props, 'muted', emit);
-    const volumeState = computed({
+    const volumeState = computed<number>({
       get() {
         return props.muted ? 0 : props.volume;
       },

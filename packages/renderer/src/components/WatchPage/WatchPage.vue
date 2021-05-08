@@ -116,7 +116,7 @@ export default defineComponent({
 
     const {state, send} = useMachine(PanelStateMachine);
 
-    const errorHandler = (...args: any[]) => console.error('VIDEO ERROR:', ...args);
+    const errorHandler = (...args: unknown[]) => console.error('VIDEO ERROR:', ...args);
 
     const {now} = useNow();
     return {
