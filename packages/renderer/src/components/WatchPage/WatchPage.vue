@@ -10,20 +10,36 @@
       <button
         v-if="episodes"
         class="playlist-button"
-        @click="send('TOGGLE_EPISODES')"
+        @click="send('TOGGLE')"
       >
         <win-icon>&#xE8FD;</win-icon>
       </button>
 
       <side-panel
         v-if="episodes"
-        :is-opened="state.matches('episodesExpanded')"
-        @close-request="send('CLOSE')"
+        :is-opened="state.matches('expanded')"
+        @close-request="send('TOGGLE')"
       >
+        <div class="tabs">
+          <button
+            :class="{active: state.matches('expanded.episodes')}"
+            @click="send('OPEN_EPISODES')"
+          >
+            Эпизоды
+          </button>
+          <button
+            :class="{active: state.matches('expanded.translations')}"
+            @click="send('OPEN_TRANSLATIONS')"
+          >
+            Переводы
+          </button>
+        </div>
         <episodes-list
+          v-if="state.matches('expanded.episodes')"
           :episodes="episodes"
         />
         <translations-list
+          v-if="state.matches('expanded.translations')"
           :selected-episode-num="selectedEpisode.number"
           :translations="translations"
         />
@@ -47,18 +63,32 @@ import WinIcon from '/@/components/WinIcon.vue';
 
 
 const PanelStateMachine = Machine({
-  initial: 'allCollapsed',
+  initial: 'collapsed',
   states: {
-    allCollapsed: {
+    collapsed: {
       on: {
-        TOGGLE_EPISODES: 'episodesExpanded',
+        TOGGLE: 'expanded.memo',
       },
     },
-    episodesExpanded: {
+    expanded: {
       on: {
-        TOGGLE_EPISODES: 'allCollapsed',
-        CLOSE: 'allCollapsed',
-
+        TOGGLE: 'collapsed',
+      },
+      initial: 'episodes',
+      states: {
+        episodes: {
+          on: {
+            OPEN_TRANSLATIONS: 'translations',
+          },
+        },
+        translations: {
+          on: {
+            OPEN_EPISODES: 'episodes',
+          },
+        },
+        memo: {
+          type: 'history',
+        },
       },
     },
   },
@@ -157,4 +187,22 @@ export default defineComponent({
   cursor: pointer;
 }
 
+.tabs {
+  display: flex;
+  height: 2.5rem;
+  margin-bottom: 1rem;
+}
+.tabs button {
+  flex: 1;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.tabs button:hover {
+  background: rgba(255,255,255,0.2);
+}
+.tabs button.active {
+  font-weight: bold;
+  border-bottom: 3px solid;
+}
 </style>

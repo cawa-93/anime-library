@@ -36,10 +36,10 @@ export default defineComponent({
   position: absolute;
   top: 0;
   right: 0;
-  transform: translateX(100%);
-  transition: transform 250ms linear;
   bottom: 0;
-  will-change: transform;
+  transform: translateX(100%);
+  /*transition: transform 250ms linear;*/
+  /*will-change: transform;*/
 }
 
 .slided.open {
@@ -54,7 +54,6 @@ section {
   background-color: rgba(255, 255, 255, 0.75);
   height: 100%;
   overflow-y: auto;
-  padding: 1rem 0;
 }
 
 .backdrop {
