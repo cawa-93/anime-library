@@ -68,7 +68,7 @@ import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
 import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
 import {Machine} from 'xstate';
 import {useMachine} from '@xstate/vue';
-import VideoPlayer from '/@/components/WatchPage/VideoPlayer.vue';
+import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
 
 
 const PanelStateMachine = Machine({
