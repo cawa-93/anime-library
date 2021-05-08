@@ -34,10 +34,10 @@
       <button @click="mutedState = !mutedState">
         <win-icon>
           {{
-            volume === 0 || mutedState ? '&#xE74F;'
-            : volume > 0.75 ? '&#xE995;'
-              : volume > 0.50 ? '&#xE994;'
-                : volume > 0.25 ? '&#xE993;'
+            volumeState === 0 ? '&#xE74F;'
+            : volumeState > 0.75 ? '&#xE995;'
+              : volumeState > 0.50 ? '&#xE994;'
+                : volumeState > 0.25 ? '&#xE993;'
                   : '&#xE992;'
           }}
         </win-icon>
@@ -84,7 +84,7 @@
 import type {PropType} from 'vue';
 import {computed, defineComponent} from 'vue';
 import WinIcon from '/@/components/WinIcon.vue';
-import {useVModels} from '@vueuse/core';
+import {useVModel} from '@vueuse/core';
 
 export default defineComponent({
   name: 'ControlPanel',
@@ -149,7 +149,7 @@ export default defineComponent({
     /**
      * Progress bar
      */
-    const {currentTime: currentTimeState} = useVModels(props, emit);
+    const currentTimeState = useVModel(props, 'currentTime', emit);
 
     const defaultColorIndicator = 'rgba(255,255,255,0)';
     const bufferedColorIndicator = 'rgba(255,255,255,0.2)';
@@ -175,13 +175,22 @@ export default defineComponent({
     /**
      * Play Button
      */
-    const {playing: playingState} = useVModels(props, emit);
+    const playingState = useVModel(props, 'playing', emit);
 
 
     /**
      * Volume Control
      */
-    const {volume: volumeState, muted: mutedState} = useVModels(props, emit);
+    const mutedState = useVModel(props, 'muted', emit);
+    const volumeState = computed({
+      get() {
+        return props.muted ? 0 : props.volume;
+      },
+      set(value) {
+        emit('update:muted', false);
+        emit('update:volume', value);
+      },
+    });
 
     /**
      * Timer
@@ -204,7 +213,7 @@ export default defineComponent({
     /**
      * Qualities Select
      */
-    const {selectedQuality: selectedQualityState} = useVModels(props, emit);
+    const selectedQualityState = useVModel(props, 'selectedQuality', emit);
 
 
     /**
@@ -230,7 +239,7 @@ export default defineComponent({
 
 <style scoped>
 .control-panel {
-  /*position: absolute;*/
+  position: absolute;
   display: grid;
   bottom: 0;
   width: 100%;
