@@ -41,7 +41,7 @@
 <script lang="ts">
 import type {PropType} from 'vue';
 import {computed, defineComponent, ref, watch} from 'vue';
-import {useFullscreen, useIdle, useMediaControls} from '@vueuse/core';
+import {and, useActiveElement, useFullscreen, useIdle, useMagicKeys, useMediaControls, whenever} from '@vueuse/core';
 import type {Video} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
 import LoadingSpinner from '/@/components/WatchPage/VideoPlayer/LoadingSpinner.vue';
@@ -112,6 +112,25 @@ export default defineComponent({
 
 
     const {idle} = useIdle(1000 * 3);
+
+
+    const activeElement = useActiveElement();
+    const notUsingInteractiveElement = computed(() =>
+      activeElement.value?.tagName !== 'INPUT'
+      && activeElement.value?.tagName !== 'TEXTAREA'
+      && activeElement.value?.tagName !== 'SELECT'
+      && activeElement.value?.tagName !== 'BUTTON',
+    );
+
+    const {space, arrowRight, arrowLeft, arrowUp, arrowDown, pause, play} = useMagicKeys();
+    whenever(and(space, notUsingInteractiveElement), () => playing.value = !playing.value);
+    whenever(and(arrowRight, notUsingInteractiveElement), () => currentTime.value += 30);
+    whenever(and(arrowLeft, notUsingInteractiveElement), () => currentTime.value -= 30);
+    whenever(pause, () => playing.value = false);
+    whenever(play, () => playing.value = true);
+    whenever(and(arrowUp, notUsingInteractiveElement), () => volume.value = Math.min(1, volume.value + 0.1));
+    whenever(and(arrowDown, notUsingInteractiveElement), () => volume.value = Math.max(0, volume.value - 0.1));
+
 
 
     return {
