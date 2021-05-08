@@ -20,6 +20,22 @@
       @click="playing = !playing"
     />
     <section class="control-panel">
+      <div class="progress-bar">
+        <progress
+          :style="`--gradient: ${gradient}`"
+          :max="duration"
+          :value="currentTime"
+        />
+
+        <input
+          v-model="currentTime"
+          type="range"
+          min="0"
+          :max="duration"
+        >
+      </div>
+
+
       <button
         class="play-button"
         @click="playing = !playing"
@@ -27,7 +43,10 @@
         <win-icon>{{ playing ? '&#xE769;' : '&#xE768;' }}</win-icon>
       </button>
 
-      <button class="next-button">
+      <button
+        class="next-button"
+        :disabled="!nextUrl"
+      >
         <win-icon>&#xE76C;</win-icon>
       </button>
 
@@ -52,6 +71,21 @@
           step="0.01"
         >
       </div>
+      <span class="time">
+        {{ formattedCurrentTime }} / {{ formattedDuration }}
+      </span>
+      <select
+        v-model="selectedQuality"
+        class="settings"
+      >
+        <option
+          v-for="(_, quality) of videoSource.qualities"
+          :key="quality"
+          :value="quality"
+        >
+          {{ quality }}p
+        </option>
+      </select>
 
       <button
         class="toggle-fullscreen-button"
@@ -59,28 +93,13 @@
       >
         <win-icon>{{ isFullscreen ? '&#xE73F;' : '&#xE740;' }}</win-icon>
       </button>
-
-      <div class="progress-bar">
-        <progress
-          :style="`--gradient: ${gradient}`"
-          :max="duration"
-          :value="currentTime"
-        />
-
-        <input
-          v-model="currentTime"
-          type="range"
-          min="0"
-          :max="duration"
-        >
-      </div>
     </section>
   </div>
 </template>
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {computed, defineComponent, ref} from 'vue';
+import {computed, defineComponent, ref, watch} from 'vue';
 import {useFullscreen, useMediaControls} from '@vueuse/core';
 import type {Video} from '/@/utils/videoProvider';
 import WinIcon from '/@/components/WinIcon.vue';
@@ -93,26 +112,37 @@ export default defineComponent({
       type: Object as PropType<Video>,
       required: true,
     },
+    nextUrl: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   setup(props) {
     const videoElement = ref<HTMLVideoElement>();
     const componentRoot = ref<HTMLVideoElement>();
+
+    const q = Object.keys(props.videoSource.qualities).sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
+    const selectedQuality = ref(q[0]);
+    const selectedVideoStream = computed(() => props.videoSource.qualities[selectedQuality.value]);
+    const selectedVideoStreamWithTimeStart = ref(selectedVideoStream.value);
+
+    watch(selectedVideoStream, () => selectedVideoStreamWithTimeStart.value = selectedVideoStream.value + '#t=' + currentTime.value);
+
     const {playing, duration, currentTime, buffered, waiting, volume} = useMediaControls(videoElement, {
-      // muted: import.meta.env.MODE === 'development',
       autoplay: true,
-      src: props.videoSource.url,
+      src: selectedVideoStreamWithTimeStart,
+      autoPictureInPicture: true,
       preload: 'auto',
     });
 
-    const defaultColor = 'rgba(0,0,0,0)';
+    const defaultColor = 'rgba(255,255,255,0)';
     const bufferedColor = 'rgba(255,255,255,0.2)';
 
     const gradient = computed(() => {
       const regions = buffered.value.flatMap(([start, end]) => {
-        // 200/600*100=
         const startPercent = Math.floor(start) / duration.value * 100;
         const endPercent = Math.round(end) / duration.value * 100;
-
 
         return [
           `${defaultColor} ${startPercent}%`,
@@ -126,13 +156,30 @@ export default defineComponent({
       return `linear-gradient(90deg, ${regions});`;
     });
 
-    const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(componentRoot);
+    const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(componentRoot);
+
+    const getFormattedTime = (sec: number) => {
+      const d = new Date(sec * 1000);
+
+      const options: Intl.DateTimeFormatOptions = {minute: 'numeric', second: 'numeric'};
+      if (sec > 1000 * 60 * 60) {
+        options.hour = 'numeric';
+      }
+
+      return new Intl.DateTimeFormat('ru', options).format(d);
+    };
+
+    const formattedDuration = computed(() => getFormattedTime(duration.value));
+    const formattedCurrentTime = computed(() => getFormattedTime(currentTime.value));
 
     return {
+      selectedQuality,
       videoElement,
       playing,
       duration,
+      formattedDuration,
       currentTime,
+      formattedCurrentTime,
       buffered,
       gradient,
       waiting,
@@ -207,19 +254,20 @@ video {
   bottom: 0;
   width: 100%;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.8547619731486344) 0%, rgba(0, 0, 0, 0) 100%);
-  grid-template-columns: repeat(3, min-content) 1fr repeat(2, min-content);
+  grid-template-columns: repeat(4, min-content) 1fr repeat(2, min-content);
   grid-template-rows: repeat(2, min-content);
-  gap: 0 0;
+  gap: 5px 10px;
   grid-template-areas:
-    "progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar"
-    "play-button next-button volume-area space settings fullscreen";
+    "progress-bar progress-bar  progress-bar progress-bar progress-bar progress-bar progress-bar"
+    "play-button next-button volume-area time space settings fullscreen";
+  padding: 5px;
+  color: white;
 }
 
 .control-panel button {
   border: none;
-  color: white;
   padding: 0;
-  margin: 5px;
+  color: inherit;
   background: transparent;
   border-radius: 3px;
   font-size: 15px;
@@ -228,11 +276,15 @@ video {
   align-items: center;
   justify-content: center;
   height: 30px;
+}
+
+.control-panel button:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.2);
   cursor: pointer;
 }
 
-.control-panel button:hover {
-  background: rgba(255, 255, 255, 0.2);
+.control-panel button:disabled {
+  opacity: 0.3;
 }
 
 .progress-bar {
@@ -248,10 +300,12 @@ video {
   -webkit-appearance: none;
   appearance: none;
   height: 5px;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .progress-bar progress[value]::-webkit-progress-bar {
   width: 100%;
+  /*noinspection CssUnresolvedCustomProperty*/
   background: var(--gradient);
   border-radius: 2px;
 }
@@ -300,7 +354,7 @@ video {
   cursor: e-resize;
 }
 
-.volume-area:hover input[type="range"] {
+.volume-area:hover input[type="range"], .volume-area:focus-within input[type="range"] {
   width: 150px;
 }
 
@@ -325,7 +379,22 @@ video {
   grid-area: fullscreen;
 }
 
-/*.settings {*/
-/*  grid-area: settings;*/
-/*}*/
+.time {
+  grid-area: time;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.settings {
+  grid-area: settings;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+select.settings option {
+  background: rgba(0, 0, 0, 0.8);
+}
 </style>

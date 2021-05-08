@@ -127,13 +127,14 @@ app.whenReady()
   })
   .then(() => {
     session.defaultSession.webRequest.onHeadersReceived({
-      urls: ['https://smotret-anime.online/api/*'],
+      urls: ['https://*/*'],
     }, (details, callback) => {
+
 
       callback({
         responseHeaders: {
           ...details.responseHeaders,
-          'Access-Control-Allow-Origin': '*',
+          'access-control-allow-origin': '*',
         },
       });
     });

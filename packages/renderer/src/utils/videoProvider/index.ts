@@ -30,7 +30,7 @@ export interface Translation extends HasID, HasTitle {
 
 export interface Video {
   qualities: {
-    [size: number]: string,
+    [size: string]: string,
   }
   url: string
 }
