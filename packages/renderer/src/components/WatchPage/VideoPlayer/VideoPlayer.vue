@@ -9,6 +9,7 @@
       ref="videoElement"
       crossorigin="anonymous"
       @click="playing = !playing"
+      @dblclick="toggleFullscreen"
       @error="$emit('video-error')"
     />
     <transition name="fade">
