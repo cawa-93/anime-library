@@ -3,20 +3,24 @@
     v-if="videos.length"
     id="video-container"
   >
-    <video-player :video-source="videos[0]">
+    <video-player
+      :video-source="videos[0]"
+      @video-error="errorHandler"
+    >
       <button
-        style="position: absolute; top: 10px; left: 10px;"
+        v-if="episodes"
+        class="playlist-button"
         @click="send('TOGGLE_EPISODES')"
       >
-        Episodes
+        <win-icon>&#xE8FD;</win-icon>
       </button>
 
-      <button
-        style="position: absolute; top: 30px; left: 10px;"
-        @click="send('TOGGLE_TRANSLATIONS')"
-      >
-        Translations
-      </button>
+      <!--      <button-->
+      <!--        style="position: absolute; top: 30px; right: 10px;"-->
+      <!--        @click="send('TOGGLE_TRANSLATIONS')"-->
+      <!--      >-->
+      <!--        <win-icon>&#xE8C1;</win-icon>-->
+      <!--      </button>-->
 
       <side-panel
         v-if="episodes"
@@ -26,13 +30,6 @@
         <episodes-list
           :episodes="episodes"
         />
-      </side-panel>
-
-      <side-panel
-        v-if="translations"
-        id="translations"
-        :is-opened="state.matches('translationsExpanded')"
-      >
         <translations-list
           :selected-episode-num="selectedEpisode.number"
           :translations="translations"
@@ -53,6 +50,7 @@ import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
 import {Machine} from 'xstate';
 import {useMachine} from '@xstate/vue';
 import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
+import WinIcon from '/@/components/WinIcon.vue';
 
 
 const PanelStateMachine = Machine({
@@ -81,7 +79,7 @@ const PanelStateMachine = Machine({
 
 
 export default defineComponent({
-  components: {VideoPlayer, TranslationsList, EpisodesList, SidePanel},
+  components: {WinIcon, VideoPlayer, TranslationsList, EpisodesList, SidePanel},
   props: {
     seriesId: {
       type: Number,
@@ -118,9 +116,11 @@ export default defineComponent({
 
     const {state, send} = useMachine(PanelStateMachine);
 
+    const errorHandler = (...args: any[]) => console.error('VIDEO ERROR:', ...args);
 
     const {now} = useNow();
     return {
+      errorHandler,
       episodes,
       selectedEpisode,
       translations,
@@ -148,4 +148,26 @@ export default defineComponent({
   width: 100%;
   height: 100%;
 }
+
+.playlist-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 18px;
+  background: transparent;
+  border: none;
+  color: white;
+  display: flex;
+  width: 30px;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+}
+
+.playlist-button:not(:disabled):hover {
+  background: rgb(255 255 255 / 20%);
+  cursor: pointer;
+}
+
 </style>

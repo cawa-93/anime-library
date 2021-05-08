@@ -34,6 +34,7 @@ export default defineComponent({
 </script>
 
 <style>
+@import "animations.css";
 html {
   box-sizing: border-box;
 }

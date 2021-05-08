@@ -9,30 +9,38 @@
       ref="videoElement"
       crossorigin="anonymous"
       @click="playing = !playing"
+      @error="$emit('video-error')"
     />
-    <control-panel
-      v-model:playing="playing"
-      v-model:current-time.number="currentTime"
-      v-model:volume.number="volume"
-      v-model:muted="muted"
-      v-model:selected-quality.number="selectedQuality"
-      :duration="duration"
-      :buffered="buffered"
-      :is-fullscreen="isFullscreen"
-      :qualities="qualities"
-      :next-url="nextUrl"
-      :is-picture-in-picture="isPictureInPicture"
-      @requestFullscreenToggle="toggleFullscreen"
-      @requestPictureInPicture="togglePictureInPicture"
-    />
-    <slot />
+    <transition name="fade">
+      <control-panel
+        v-if="!playing || !idle"
+        v-model:playing="playing"
+        v-model:current-time="currentTime"
+        v-model:volume="volume"
+        v-model:muted="muted"
+        v-model:selected-quality="selectedQuality"
+        :duration="duration"
+        :buffered="buffered"
+        :is-fullscreen="isFullscreen"
+        :qualities="qualities"
+        :next-url="nextUrl"
+        :is-picture-in-picture="isPictureInPicture"
+        @requestFullscreenToggle="toggleFullscreen"
+        @requestPictureInPicture="togglePictureInPicture"
+      />
+    </transition>
+    <transition name="fade">
+      <div v-if="!playing || !idle">
+        <slot />
+      </div>
+    </transition>
   </div>
 </template>
 
 <script lang="ts">
 import type {PropType} from 'vue';
 import {computed, defineComponent, ref, watch} from 'vue';
-import {useFullscreen, useMediaControls} from '@vueuse/core';
+import {useFullscreen, useIdle, useMediaControls} from '@vueuse/core';
 import type {Video} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
 import LoadingSpinner from '/@/components/WatchPage/VideoPlayer/LoadingSpinner.vue';
@@ -51,6 +59,9 @@ export default defineComponent({
       default: null,
     },
   },
+
+  emits: ['video-error'],
+
   setup(props) {
 
     const qualities = computed(() =>
@@ -98,6 +109,10 @@ export default defineComponent({
       }
     };
 
+
+    const {idle} = useIdle(1000 * 3);
+
+
     return {
       togglePictureInPicture,
       selectedQuality,
@@ -114,6 +129,7 @@ export default defineComponent({
       isFullscreen,
       toggleFullscreen,
       isPictureInPicture,
+      idle,
     };
   },
 });
