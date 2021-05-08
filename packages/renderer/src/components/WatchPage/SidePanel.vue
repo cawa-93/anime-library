@@ -1,9 +1,16 @@
 <template>
   <section
+    ref="el"
+    class="slided"
     :class="{open: isOpened}"
   >
     <slot />
   </section>
+  <div
+    class="backdrop slided"
+    :class="{open: isOpened}"
+    @click="$emit('close-request')"
+  />
 </template>
 
 <script lang="ts">
@@ -18,17 +25,28 @@ export default defineComponent({
       default: false,
     },
   },
+
+  emits: ['close-request'],
 });
 </script>
 
 <style scoped>
-section {
+
+.slided {
   position: absolute;
   top: 0;
   right: 0;
-  bottom: 0;
   transform: translateX(100%);
-  transition: transform 150ms;
+  transition: transform 250ms linear;
+  bottom: 0;
+  will-change: transform;
+}
+
+.slided.open {
+  transform: translateX(0);
+}
+
+section {
   z-index: 10;
   min-width: 300px;
   -webkit-backdrop-filter: blur(10px);
@@ -39,7 +57,9 @@ section {
   padding: 1rem 0;
 }
 
-section.open {
-  transform: translateX(0);
+.backdrop {
+  background: transparent;
+  width: 100%;
+  height: 100%;
 }
 </style>

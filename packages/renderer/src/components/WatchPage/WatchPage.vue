@@ -15,17 +15,10 @@
         <win-icon>&#xE8FD;</win-icon>
       </button>
 
-      <!--      <button-->
-      <!--        style="position: absolute; top: 30px; right: 10px;"-->
-      <!--        @click="send('TOGGLE_TRANSLATIONS')"-->
-      <!--      >-->
-      <!--        <win-icon>&#xE8C1;</win-icon>-->
-      <!--      </button>-->
-
       <side-panel
         v-if="episodes"
-        id="episodes"
         :is-opened="state.matches('episodesExpanded')"
+        @close-request="send('CLOSE')"
       >
         <episodes-list
           :episodes="episodes"
@@ -59,19 +52,13 @@ const PanelStateMachine = Machine({
     allCollapsed: {
       on: {
         TOGGLE_EPISODES: 'episodesExpanded',
-        TOGGLE_TRANSLATIONS: 'translationsExpanded',
       },
     },
     episodesExpanded: {
       on: {
         TOGGLE_EPISODES: 'allCollapsed',
-        TOGGLE_TRANSLATIONS: 'translationsExpanded',
-      },
-    },
-    translationsExpanded: {
-      on: {
-        TOGGLE_TRANSLATIONS: 'allCollapsed',
-        TOGGLE_EPISODES: 'episodesExpanded',
+        CLOSE: 'allCollapsed',
+
       },
     },
   },
