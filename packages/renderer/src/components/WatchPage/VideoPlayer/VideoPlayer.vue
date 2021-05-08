@@ -14,6 +14,7 @@
       v-model:playing="playing"
       v-model:current-time.number="currentTime"
       v-model:volume.number="volume"
+      v-model:muted="muted"
       v-model:selected-quality.number="selectedQuality"
       :duration="duration"
       :buffered="buffered"
@@ -62,13 +63,16 @@ export default defineComponent({
 
     watch(selectedVideoStream, () => selectedVideoStreamWithTimeStart.value = selectedVideoStream.value + '#t=' + currentTime.value);
 
+    const muted = ref(false);
 
     const videoElement = ref<HTMLVideoElement>();
     const {playing, duration, currentTime, buffered, waiting, volume} = useMediaControls(videoElement, {
+      muted,
       autoplay: true,
       src: selectedVideoStreamWithTimeStart,
       autoPictureInPicture: true,
       preload: 'auto',
+      // controls: true,
     });
 
 
@@ -86,6 +90,7 @@ export default defineComponent({
       buffered,
       waiting,
       volume,
+      muted,
       componentRoot,
       isFullscreen,
       toggleFullscreen,

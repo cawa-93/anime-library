@@ -31,10 +31,10 @@
     </button>
 
     <div class="volume-area">
-      <button @click="volumeState = volumeState ? 0 : 1">
+      <button @click="mutedState = !mutedState">
         <win-icon>
           {{
-            volume === 0 ? '&#xE74F;'
+            volume === 0 || mutedState ? '&#xE74F;'
             : volume > 0.75 ? '&#xE995;'
               : volume > 0.50 ? '&#xE994;'
                 : volume > 0.25 ? '&#xE993;'
@@ -49,6 +49,7 @@
         min="0"
         max="1"
         step="0.01"
+        @input="mutedState = false"
       >
     </div>
     <span class="time">
@@ -111,6 +112,10 @@ export default defineComponent({
       required: false,
       default: null,
     },
+    muted: {
+      type: Boolean,
+      required: true,
+    },
     volume: {
       type: Number,
       required: true,
@@ -135,6 +140,7 @@ export default defineComponent({
     'update:currentTime': null,
     'update:playing': null,
     'update:volume': null,
+    'update:muted': null,
     'update:selectedQuality': null,
     requestFullscreenToggle: null,
   },
@@ -175,8 +181,7 @@ export default defineComponent({
     /**
      * Volume Control
      */
-    const {volume: volumeState} = useVModels(props, emit);
-
+    const {volume: volumeState, muted: mutedState} = useVModels(props, emit);
 
     /**
      * Timer
@@ -213,6 +218,7 @@ export default defineComponent({
       bufferedIndicator,
       playingState,
       volumeState,
+      mutedState,
       formattedCurrentTime,
       formattedDuration,
       toggleFullscreen,
@@ -224,7 +230,7 @@ export default defineComponent({
 
 <style scoped>
 .control-panel {
-  position: absolute;
+  /*position: absolute;*/
   display: grid;
   bottom: 0;
   width: 100%;
