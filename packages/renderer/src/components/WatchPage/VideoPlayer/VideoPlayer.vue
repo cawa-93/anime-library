@@ -20,8 +20,10 @@
       :buffered="buffered"
       :is-fullscreen="isFullscreen"
       :qualities="qualities"
+      :next-url="nextUrl"
       @requestFullscreenToggle="toggleFullscreen"
     />
+    <slot />
   </div>
 </template>
 
@@ -36,7 +38,6 @@ import LoadingSpinner from '/@/components/WatchPage/VideoPlayer/LoadingSpinner.v
 export default defineComponent({
   name: 'VideoPlayer',
   components: {LoadingSpinner, ControlPanel},
-  provide: {},
   props: {
     videoSource: {
       type: Object as PropType<Video>,

@@ -4,57 +4,41 @@
     id="video-container"
   >
     <video-player :video-source="videos[0]">
-      <!--      <template #controls>-->
-      <!--        <button-->
-      <!--          style="position: absolute; top: 10px; left: 10px;"-->
-      <!--          @click="send('TOGGLE_EPISODES')"-->
-      <!--        >-->
-      <!--          Episodes-->
-      <!--        </button>-->
+      <button
+        style="position: absolute; top: 10px; left: 10px;"
+        @click="send('TOGGLE_EPISODES')"
+      >
+        Episodes
+      </button>
 
-      <!--        <button-->
-      <!--          style="position: absolute; top: 30px; left: 10px;"-->
-      <!--          @click="send('TOGGLE_TRANSLATIONS')"-->
-      <!--        >-->
-      <!--          Translations-->
-      <!--        </button>-->
-      <!--      </template>-->
+      <button
+        style="position: absolute; top: 30px; left: 10px;"
+        @click="send('TOGGLE_TRANSLATIONS')"
+      >
+        Translations
+      </button>
+
+      <side-panel
+        v-if="episodes"
+        id="episodes"
+        :is-opened="state.matches('episodesExpanded')"
+      >
+        <episodes-list
+          :episodes="episodes"
+        />
+      </side-panel>
+
+      <side-panel
+        v-if="translations"
+        id="translations"
+        :is-opened="state.matches('translationsExpanded')"
+      >
+        <translations-list
+          :selected-episode-num="selectedEpisode.number"
+          :translations="translations"
+        />
+      </side-panel>
     </video-player>
-    <!--    <video-->
-    <!--      ref="videoElement"-->
-    <!--      controls-->
-    <!--    >-->
-    <!--      <source-->
-    <!--        v-for="video of videos"-->
-    <!--        :key="video.url"-->
-    <!--        :src="video.url"-->
-    <!--      >-->
-    <!--    </video>-->
-
-
-
-    <side-panel
-      v-if="episodes"
-      id="episodes"
-      :is-opened="state.matches('episodesExpanded')"
-    >
-      <episodes-list
-        :episodes="episodes"
-      />
-    </side-panel>
-
-
-
-    <side-panel
-      v-if="translations"
-      id="translations"
-      :is-opened="state.matches('translationsExpanded')"
-    >
-      <translations-list
-        :selected-episode-num="selectedEpisode.number"
-        :translations="translations"
-      />
-    </side-panel>
   </section>
 </template>
 
@@ -137,15 +121,11 @@ export default defineComponent({
 
     const {now} = useNow();
     return {
-      // anime,
       episodes,
       selectedEpisode,
       translations,
-      // selectedTranslation,
       videos,
       videoElement,
-      // title,
-
       state,
       send,
       now,
