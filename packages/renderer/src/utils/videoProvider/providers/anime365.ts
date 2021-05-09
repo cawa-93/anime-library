@@ -155,7 +155,7 @@ export async function getTranslations(episodeId: NumberLike): Promise<Translatio
 }
 
 
-export async function getStream(translationId: NumberLike): Promise<Video> {
+export async function getStream(translationId: NumberLike): Promise<Video[]> {
   type ExpectedResponse = sm.Video
 
   const requestURL = new URL(`translations/embed/${translationId}`, API_BASE);
@@ -168,24 +168,13 @@ export async function getStream(translationId: NumberLike): Promise<Video> {
   }
 
 
-  const streams = apiResponse.data.stream
-    .flatMap(s => s.urls.map(u => ({size: s.height, url: u})))
-    .sort((s1, s2) => s2.size - s1.size);
+  return apiResponse.data.stream
+    .flatMap(s => s.urls.map(url => ({quality: s.height, url})));
+}
 
-  if (streams.length === 0) {
-    throw new Error(`У {translationId: ${translationId}} нет доступных видео`);
-  }
+export function clearVideosCache(translationId: NumberLike): Promise<boolean> {
+  return caches
+    .open('sm-api-calls')
+    .then(cache => cache.delete(`${API_BASE}translations/embed/${translationId}`, {ignoreSearch: true}));
 
-  // TODO: Продумать лучший механизм для выбора видео потока
-  const url = streams[0].url;
-
-  const qualities: Video['qualities'] = {};
-  for (const stream of streams) {
-    qualities[stream.size] = stream.url;
-  }
-
-  return {
-    url,
-    qualities,
-  };
 }

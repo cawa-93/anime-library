@@ -4,9 +4,9 @@
     id="video-container"
   >
     <video-player
-      :video-source="videos[0]"
+      :video-source="videos"
       :next-url="nextEpisodeURL"
-      @video-error="errorHandler"
+      @source-error="onSourceError"
     >
       <button
         v-if="episodes"
@@ -50,10 +50,10 @@
 </template>
 
 <script lang="ts">
-import {asyncComputed, useNow, useTitle} from '@vueuse/core';
-import {computed, defineComponent, ref, watch} from 'vue';
+import {asyncComputed} from '@vueuse/core';
+import {computed, defineComponent, reactive, watchEffect} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
-import {getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/videoProvider';
+import {clearVideosCache, getEpisodes, getTranslations, getVideos} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/WatchPage/SidePanel.vue';
 import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
 import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
@@ -116,10 +116,8 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const anime = asyncComputed(() => props.seriesId ? getSeries(props.seriesId) : null, null);
-    const title = useTitle();
 
-
+    // Эпизоды
     const episodes = asyncComputed(() => props.seriesId ? getEpisodes(props.seriesId) : [] as Episode[], [] as Episode[]);
     const selectedEpisode = computed(() => episodes.value.find(e => e.number == props.episodeNum) || episodes.value[0]);
 
@@ -139,32 +137,38 @@ export default defineComponent({
       return resolved.href;
     });
 
+
+    // Доступные переводы
     const translations = asyncComputed(() => selectedEpisode.value ? getTranslations(selectedEpisode.value.id) : [] as Translation[], [] as Translation[]);
     const selectedTranslation = computed(() => translations.value.find(e => e.id === props.translationId) || translations.value[0]);
 
-    const videos = asyncComputed(() => selectedTranslation.value ? getVideos(selectedTranslation.value.id) : [] as Video[], [] as Video[]);
-    const videoElement = ref<HTMLVideoElement | null>(null);
-    watch(videos, () => videoElement.value && videoElement.value.load());
 
-    watch([anime, selectedEpisode, selectedTranslation], () => title.value = anime.value?.title + ', ' + selectedEpisode.value?.number + ', ' + selectedTranslation.value?.title);
+    // Загрузка доступных видео для выбранного перевода
+    const videos: Video[] = reactive([]);
+    const loadVideoSources = () => getVideos(selectedTranslation.value.id).then(v => videos.push(...v));
+    watchEffect(() => {
+      videos.length = 0;
+      if (selectedTranslation.value && selectedTranslation.value.id) {
+        return loadVideoSources();
+      }
+    });
+
+    const onSourceError = () =>
+      clearVideosCache(selectedTranslation.value.id)
+        .then(() => loadVideoSources());
 
 
     const {state, send} = useMachine(PanelStateMachine);
 
-    const errorHandler = (...args: unknown[]) => console.error('VIDEO ERROR:', ...args);
-
-    const {now} = useNow();
     return {
+      onSourceError,
       nextEpisodeURL,
-      errorHandler,
       episodes,
       selectedEpisode,
       translations,
       videos,
-      videoElement,
       state,
       send,
-      now,
     };
   },
 });

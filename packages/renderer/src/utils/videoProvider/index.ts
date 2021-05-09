@@ -29,10 +29,9 @@ export interface Translation extends HasID, HasTitle {
 }
 
 export interface Video {
-  qualities: {
-    [size: string]: string,
-  }
+  quality: number,
   url: string
+  type?:string
 }
 
 export function getSeries(id: NumberLike): Promise<Series | undefined> {
@@ -50,5 +49,10 @@ export function getTranslations(providerEpisodeId: NumberLike): Promise<Translat
 
 
 export function getVideos(providerTranslationId: NumberLike): Promise<Video[]> {
-  return provider.getStream(providerTranslationId).then(s => ([s]));
+  return provider.getStream(providerTranslationId);
 }
+
+export function clearVideosCache(providerTranslationId: NumberLike): Promise<boolean> {
+  return provider.clearVideosCache(providerTranslationId);
+}
+

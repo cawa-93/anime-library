@@ -8,15 +8,22 @@
       v-if="waiting"
       class="loading"
     />
-
     <video
       ref="videoElement"
       crossorigin="anonymous"
       @click="playing = !playing"
       @dblclick="toggleFullscreen"
-      @error="$emit('video-error')"
+      @error="errorHandler"
       @progress="updateMediaFragmentHash"
-    />
+    >
+      <source
+        v-for="source of sources"
+        :key="source.url"
+        :src="source.url"
+        :type="source.type || ''"
+        @error="errorHandler"
+      >
+    </video>
     <transition name="fade">
       <control-panel
         v-if="!playing || !idle"
@@ -56,7 +63,7 @@ export default defineComponent({
   components: {LoadingSpinner, ControlPanel},
   props: {
     videoSource: {
-      type: Object as PropType<Video>,
+      type: Array as PropType<Video[]>,
       required: true,
     },
     nextUrl: {
@@ -66,16 +73,18 @@ export default defineComponent({
     },
   },
 
-  emits: ['video-error'],
+  emits: ['source-error'],
 
-  setup(props) {
+  setup(props, {emit}) {
 
+    // Список доступных вариантов качества видео
     const qualities = computed(() =>
-      Object.keys(props.videoSource.qualities)
-        .map(s => Number.parseInt(s, 10))
+      props.videoSource
+        .map(s => s.quality)
         .sort((a, b) => b - a),
     );
 
+    // Выбор качества видео по умолчанию
     const selectedQuality = ref(qualities.value[0]);
     watch(qualities, () => {
       if (!qualities.value.includes(selectedQuality.value)) {
@@ -83,10 +92,20 @@ export default defineComponent({
       }
     });
 
-    const selectedVideoStream = computed(() => {
+    // Ссылки на видео-файлы для выбранного качества
+    const sources = computed(() => {
       const mediaFragment = location.hash.startsWith('#t=') ? location.hash : '';
-      return props.videoSource.qualities[selectedQuality.value] + mediaFragment;
+      return props.videoSource
+        .filter(s => s.quality === selectedQuality.value)
+        .map(s => {
+          s.url += mediaFragment;
+          return s;
+        });
     });
+
+    // Выполнять загрузку видео при изменении ссылок на ресурсы
+    const videoElement = ref<HTMLVideoElement>();
+    watch(sources, () => videoElement.value?.load());
 
     /**
      * Сохраняет `currentTime` в хэш страницы в виде медиа фрагмента `#t=${currentTime}`
@@ -100,7 +119,6 @@ export default defineComponent({
 
     const muted = ref(false);
 
-    const videoElement = ref<HTMLVideoElement>();
     const {
       playing,
       duration,
@@ -112,10 +130,8 @@ export default defineComponent({
     } = useMediaControls(videoElement, {
       muted,
       autoplay: true,
-      src: selectedVideoStream,
       autoPictureInPicture: true,
       preload: 'auto',
-      // controls: true,
     });
 
 
@@ -152,8 +168,15 @@ export default defineComponent({
     whenever(and(arrowDown, notUsingInteractiveElement), () => volume.value = Math.max(0, volume.value - 0.1));
 
 
+    const errorHandler = (event: Event) => {
+      if (videoElement.value?.networkState === videoElement.value?.NETWORK_NO_SOURCE) {
+        emit('source-error', event);
+      }
+    };
 
     return {
+      sources,
+      errorHandler,
       updateMediaFragmentHash,
       togglePictureInPicture,
       selectedQuality,
