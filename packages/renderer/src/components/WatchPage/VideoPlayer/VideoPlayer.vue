@@ -45,7 +45,7 @@
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {computed, defineComponent, ref} from 'vue';
+import {computed, defineComponent, ref, watch} from 'vue';
 import {and, useActiveElement, useFullscreen, useIdle, useMagicKeys, useMediaControls, whenever} from '@vueuse/core';
 import type {Video} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
@@ -77,16 +77,24 @@ export default defineComponent({
     );
 
     const selectedQuality = ref(qualities.value[0]);
+    watch(qualities, () => {
+      if (!qualities.value.includes(selectedQuality.value)) {
+        selectedQuality.value = qualities.value[0];
+      }
+    });
 
     const selectedVideoStream = computed(() => {
       const mediaFragment = location.hash.startsWith('#t=') ? location.hash : '';
       return props.videoSource.qualities[selectedQuality.value] + mediaFragment;
     });
 
+    /**
+     * Сохраняет `currentTime` в хэш страницы в виде медиа фрагмента `#t=${currentTime}`
+     * Нужно для того, чтобы при переключении качества или перевода начать воспроизведение с того же места
+     */
     const updateMediaFragmentHash = () => {
       if (playing.value && currentTime.value > 60) {
         location.hash = 't=' + currentTime.value.toFixed(0);
-        console.log(location.hash);
       }
     };
 
