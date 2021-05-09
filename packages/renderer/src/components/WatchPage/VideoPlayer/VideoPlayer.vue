@@ -2,6 +2,7 @@
   <div
     ref="componentRoot"
     class="component-root"
+    :class="{hideCursor: isFullscreen && idle}"
   >
     <loading-spinner
       v-if="waiting"
@@ -185,5 +186,9 @@ video {
   top:50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.hideCursor {
+  cursor: none;
 }
 </style>
