@@ -112,7 +112,7 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
 
 
 export async function getTranslations(episodeId: NumberLike): Promise<Translation[]> {
-  const fields = ['id', 'authorsSummary', 'episodeId', 'typeKind'] as const;
+  const fields = ['id', 'authorsSummary', 'episodeId', 'typeKind', 'typeLang', 'isActive'] as const;
   type RequestedFields = typeof fields[number]
   type ResponseItem = Pick<sm.Translation, RequestedFields>
   type ExpectedResponse = Array<ResponseItem>
@@ -121,8 +121,12 @@ export async function getTranslations(episodeId: NumberLike): Promise<Translatio
 
   requestURL.searchParams.set('fields', fields.join(','));
   requestURL.searchParams.set('isActive', '1');
+  requestURL.searchParams.set('limit', '0');
   requestURL.searchParams.set('episodeId', String(episodeId));
-  requestURL.searchParams.set('typeKind', 'voice,sub');
+
+  // Отфильтровать не нужные переводы
+  requestURL.searchParams.append('type[]', 'voiceRu');
+  requestURL.searchParams.append('type[]', 'subRu');
 
   const apiResponse = await request<ExpectedResponse>(requestURL);
 
@@ -130,13 +134,17 @@ export async function getTranslations(episodeId: NumberLike): Promise<Translatio
     throw apiResponse.error;
   }
 
-  const isVoiceOrSub =
+  const isRuVoiceOrRuSub =
     (t: ResponseItem):
       t is Pick<sm.TranslationSub, RequestedFields> | Pick<sm.TranslationVoice, RequestedFields> =>
-      (t as sm.TranslationSub).typeKind === 'sub' || (t as sm.TranslationVoice).typeKind === 'voice';
+      t.typeLang === 'ru'
+      && (
+        (t as sm.TranslationSub).typeKind === 'sub' || (t as sm.TranslationVoice).typeKind === 'voice'
+      );
+
 
   return apiResponse.data
-    .filter(isVoiceOrSub)
+    .filter(isRuVoiceOrRuSub)
     .map(t => ({
       id: t.id,
       title: t.authorsSummary || 'Неизвестный',
