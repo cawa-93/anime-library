@@ -312,14 +312,19 @@ export default defineComponent({
 
 .progress-bar input[type="range"] {
   width: 100%;
-  opacity: 0;
   position: absolute;
+  opacity: 0;
   top: 0;
   left: 0;
   cursor: pointer;
-  height: 100%;
+  --oversize: 3px;
+  height: calc(100% + var(--oversize) + var(--oversize));
+  margin: calc(-1 * var(--oversize)) 0;
 }
 
+.progress-bar input[type="range"]:hover {
+  --oversize: 7px;
+}
 
 .progress-bar input[type=range]::-webkit-slider-thumb {
   visibility: hidden;
