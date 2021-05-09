@@ -73,7 +73,7 @@ export async function getSeries(myAnimeListId: NumberLike): Promise<Series | und
 
 
 export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]> {
-  const fields = ['episodes', 'numberOfEpisodes'] as const;
+  const fields = ['episodes', 'numberOfEpisodes', 'type'] as const;
   type RequestedFields = typeof fields[number]
 
   const searchParams = new URLSearchParams({
@@ -95,6 +95,8 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
   return (targetSeries.episodes || [])
     .filter(e =>
       e.isActive === 1
+
+      && e.episodeType === targetSeries.type
 
       // Удалять серии у которых number > Чем заявлено в сезоне
       // Обычно такие серии залиты по ошибке
