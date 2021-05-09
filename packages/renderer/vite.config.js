@@ -57,7 +57,7 @@ export default defineConfig({
       injectRegister: 'script',
       manifest: false,
       workbox: {
-        // globPatterns: [],
+        globPatterns: [],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/smotret-anime\.online\/api\/.*/,
