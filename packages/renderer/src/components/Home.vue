@@ -8,7 +8,7 @@
         <input
           readonly
           type="url"
-          value="https://shikimori.one/animes/40938-hige-wo-soru-soshite-joshikousei-wo-hirou"
+          value="https://shikimori.org/animes/14719-jojo-no-kimyou-na-bouken-tv"
         >
       </label>
     </p>

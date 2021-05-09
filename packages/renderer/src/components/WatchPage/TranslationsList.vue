@@ -14,13 +14,13 @@
       >
         <router-link
           :class="{active: selectedTranslation === translation}"
-          :to="{params: {translationId: translation.id, episodeNum: selectedEpisodeNum}}"
+          :to="{params: {translationId: translation.id, episodeNum: selectedEpisodeNum}, hash: currentLocation.hash}"
           replace
         >
           <win-icon class="play-icon">
             &#xF5B0;
           </win-icon>
-          {{ translation.title || 'Неизвестный' }}
+          <span class="nowrap">{{ translation.title || 'Неизвестный' }}</span>
         </router-link>
       </li>
     </ul>
@@ -33,6 +33,7 @@ import {computed, defineComponent} from 'vue';
 import {useRoute} from 'vue-router';
 import WinIcon from '/@/components/WinIcon.vue';
 import type {Translation} from '/@/utils/videoProvider';
+import {useBrowserLocation} from '@vueuse/core';
 
 export default defineComponent({
   name: 'TranslationsList',
@@ -79,7 +80,12 @@ export default defineComponent({
       return result;
     });
 
-    return {selectedTranslation, groups};
+    // const hash = ref(location.hash);
+    const currentLocation = useBrowserLocation();
+    // useIntervalFn(() => console.log({native: location.hash, wrapped: l.value.hash}));
+    // setTimeout(() => hash.value = location.hash, 1000);
+
+    return {selectedTranslation, groups, currentLocation};
   },
 });
 </script>

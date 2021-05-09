@@ -90,7 +90,7 @@ const createWindow = async () => {
    * {@link PROTOCOL}://./ - in production and test
    */
   const pageUrl = env.MODE === 'development'
-    ? env.VITE_DEV_SERVER_URL + 'watch/40938/'
+    ? env.VITE_DEV_SERVER_URL + 'watch/14719/'
     : process.argv?.[1]?.startsWith?.(PROTOCOL)
       ? process.argv?.[1]
       : `${PROTOCOL}://./`;
@@ -99,7 +99,8 @@ const createWindow = async () => {
 };
 
 
-app.on('second-instance', () => {
+app.on('second-instance', (event) => {
+  console.log('second-instance EVENT:', event);
   // Someone tried to run a second instance, we should focus our window.
   if (mainWindow) {
     if (mainWindow.isMinimized()) mainWindow.restore();

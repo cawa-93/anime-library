@@ -3,7 +3,10 @@
     ref="componentRoot"
     class="component-root"
   >
-    <loading-spinner v-if="waiting" />
+    <loading-spinner
+      v-if="waiting"
+      class="loading"
+    />
 
     <video
       ref="videoElement"
@@ -11,6 +14,7 @@
       @click="playing = !playing"
       @dblclick="toggleFullscreen"
       @error="$emit('video-error')"
+      @progress="updateMediaFragmentHash"
     />
     <transition name="fade">
       <control-panel
@@ -30,8 +34,9 @@
         @requestPictureInPicture="togglePictureInPicture"
       />
     </transition>
+    <!--        v-if="!playing || !idle"-->
     <transition name="fade">
-      <div v-if="!playing || !idle">
+      <div>
         <slot />
       </div>
     </transition>
@@ -40,7 +45,7 @@
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {computed, defineComponent, ref, watch} from 'vue';
+import {computed, defineComponent, ref} from 'vue';
 import {and, useActiveElement, useFullscreen, useIdle, useMagicKeys, useMediaControls, whenever} from '@vueuse/core';
 import type {Video} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
@@ -72,11 +77,18 @@ export default defineComponent({
     );
 
     const selectedQuality = ref(qualities.value[0]);
-    const selectedVideoStream = computed(() => props.videoSource.qualities[selectedQuality.value]);
-    const selectedVideoStreamWithTimeStart = ref(selectedVideoStream.value);
 
+    const selectedVideoStream = computed(() => {
+      const mediaFragment = location.hash.startsWith('#t=') ? location.hash : '';
+      return props.videoSource.qualities[selectedQuality.value] + mediaFragment;
+    });
 
-    watch(selectedVideoStream, () => selectedVideoStreamWithTimeStart.value = selectedVideoStream.value + '#t=' + currentTime.value);
+    const updateMediaFragmentHash = () => {
+      if (playing.value && currentTime.value > 60) {
+        location.hash = 't=' + currentTime.value.toFixed(0);
+        console.log(location.hash);
+      }
+    };
 
     const muted = ref(false);
 
@@ -92,7 +104,7 @@ export default defineComponent({
     } = useMediaControls(videoElement, {
       muted,
       autoplay: true,
-      src: selectedVideoStreamWithTimeStart,
+      src: selectedVideoStream,
       autoPictureInPicture: true,
       preload: 'auto',
       // controls: true,
@@ -134,6 +146,7 @@ export default defineComponent({
 
 
     return {
+      updateMediaFragmentHash,
       togglePictureInPicture,
       selectedQuality,
       qualities,
@@ -162,10 +175,16 @@ export default defineComponent({
   flex-direction: column;
 }
 
-
 video {
   flex-grow: 1;
   min-width: 0;
   min-height: 0;
+}
+
+.loading {
+  position: absolute;
+  top:50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>

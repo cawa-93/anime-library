@@ -18,7 +18,17 @@ h3:first-of-type {
   text-decoration: none;
   align-items: center;
   gap: 8px;
+  width: 100%;
 }
+
+.playlist a span.nowrap {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 
 .playlist a:hover, .playlist a:focus-visible {
   background-color: rgba(0, 0, 0, 0.15) !important;

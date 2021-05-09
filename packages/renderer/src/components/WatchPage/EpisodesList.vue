@@ -6,13 +6,13 @@
     >
       <router-link
         :class="{active: selectedEpisode === episode}"
-        :to="{params: {episodeNum: episode.number, translationId: ''}}"
+        :to="{params: {episodeNum: episode.number, translationId: ''}, hash: ''}"
         replace
       >
         <win-icon class="play-icon">
           &#xF5B0;
         </win-icon>
-        {{ episode.title }}
+        <span class="nowrap">{{ episode.title }}</span>
       </router-link>
     </li>
   </ul>
