@@ -34,9 +34,8 @@
         @requestPictureInPicture="togglePictureInPicture"
       />
     </transition>
-    <!--        v-if="!playing || !idle"-->
     <transition name="fade">
-      <div>
+      <div v-if="!playing || !idle">
         <slot />
       </div>
     </transition>
