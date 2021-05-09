@@ -6,3 +6,4 @@ createApp(App)
   .use(router)
   .mount('#app-root');
 
+console.log(location);

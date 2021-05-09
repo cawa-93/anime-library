@@ -5,6 +5,8 @@ import {createProtocol} from '/@/createCustomProtocol';
 import windowStateKeeper from 'electron-window-state';
 import {registerIpcHost} from '/@/ipc';
 import WindowControllersHost from '/@/ipc/WindowControllersHost';
+import {getSeriesId} from '/@shared/utils/getSeriesId';
+import {URL} from 'url';
 
 initialize();
 
@@ -52,7 +54,48 @@ if (env.MODE === 'development') {
 
 let mainWindow: BrowserWindow | null = null;
 
-const createWindow = async () => {
+const getFullHref = (path: string) => {
+  let host = env.MODE === 'development' ? env.VITE_DEV_SERVER_URL : `${PROTOCOL}://.`;
+  if (host.endsWith('/')) {
+    host = host.substring(0, host.length - 1);
+  }
+
+  if (!path.startsWith('/')) {
+    path = '/' + path;
+  }
+
+  const url = new URL(`${host}${path}`);
+
+
+  if (!url.pathname.endsWith('/')) {
+    url.pathname = url.pathname + '/';
+  }
+
+  return url.toString();
+};
+
+const getInitialArg = (argv: string[]) => {
+  return argv.find(s => s.startsWith(`${PROTOCOL}:`));
+};
+
+const getResolvedInitialPageUrl = (url: string): string | undefined => {
+  try {
+    const urlParsed = new URL(url);
+    if (urlParsed.protocol === PROTOCOL + ':' && urlParsed.hostname === '.') {
+      return getFullHref(urlParsed.pathname + urlParsed.hash);
+    }
+    // eslint-disable-next-line no-empty
+  } catch {
+  }
+
+  const animeId = getSeriesId(url);
+
+  if (animeId !== undefined) {
+    return getFullHref(`watch/${animeId}`);
+  }
+};
+
+const createWindow = async (pageUrl?: string) => {
   const mainWindowState = windowStateKeeper({});
 
   mainWindow = new BrowserWindow({
@@ -89,22 +132,40 @@ const createWindow = async () => {
    * `http://localhost:3000` - in development
    * {@link PROTOCOL}://./ - in production and test
    */
-  const pageUrl = env.MODE === 'development'
-    ? env.VITE_DEV_SERVER_URL + 'watch/14719/'
-    : process.argv?.[1]?.startsWith?.(PROTOCOL)
-      ? process.argv?.[1]
-      : `${PROTOCOL}://./`;
+  if (!pageUrl) {
+    const arg = getInitialArg(process.argv);
+    if (arg) {
+      pageUrl = getResolvedInitialPageUrl(arg);
+    }
+
+    if (!pageUrl) {
+      pageUrl = getFullHref('/');
+    }
+  }
 
   await mainWindow.loadURL(pageUrl);
 };
 
 
-app.on('second-instance', (event) => {
-  console.log('second-instance EVENT:', event);
-  // Someone tried to run a second instance, we should focus our window.
+app.on('second-instance', (event, argv) => {
+  let resolved: string | undefined;
+  const arg = getInitialArg(argv);
+  if (arg) {
+    resolved = getResolvedInitialPageUrl(arg);
+  }
+
   if (mainWindow) {
-    if (mainWindow.isMinimized()) mainWindow.restore();
+    if (resolved) {
+      mainWindow.loadURL(resolved);
+    }
+
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    }
+
     mainWindow.focus();
+  } else {
+    createWindow(resolved);
   }
 });
 

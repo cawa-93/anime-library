@@ -31,6 +31,7 @@
 <script lang="ts">
 import {defineComponent, ref} from 'vue';
 import {useRouter} from 'vue-router';
+import {getSeriesId} from '/@shared/utils/getSeriesId';
 
 
 export default defineComponent({
@@ -51,7 +52,7 @@ export default defineComponent({
       if (typeof searchText !== 'string') {
         throw new Error('Search value must be a string, but got ' + typeof searchText);
       }
-      animeID.value = /\/animes\/[a-z]*(?<animeID>[0-9]+)/.exec(searchText)?.groups?.animeID as `${number}`;
+      animeID.value = getSeriesId(searchText);
 
       if (animeID.value) {
         router.push({name: 'Watch', params: {seriesId: animeID.value}});
