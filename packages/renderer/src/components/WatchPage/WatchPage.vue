@@ -5,6 +5,7 @@
   >
     <video-player
       :video-source="videos[0]"
+      :next-url="nextEpisodeURL"
       @video-error="errorHandler"
     >
       <button
@@ -60,6 +61,7 @@ import {Machine} from 'xstate';
 import {useMachine} from '@xstate/vue';
 import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
 import WinIcon from '/@/components/WinIcon.vue';
+import {useRouter} from 'vue-router';
 
 
 const PanelStateMachine = Machine({
@@ -121,6 +123,22 @@ export default defineComponent({
     const episodes = asyncComputed(() => props.seriesId ? getEpisodes(props.seriesId) : [] as Episode[], [] as Episode[]);
     const selectedEpisode = computed(() => episodes.value.find(e => e.number == props.episodeNum) || episodes.value[0]);
 
+    const router = useRouter();
+    const nextEpisodeURL = computed(() => {
+      const nextEpisode = episodes.value[episodes.value.findIndex(e => e === selectedEpisode.value) + 1];
+      if (nextEpisode === undefined) {
+        return undefined;
+      }
+      const resolved = router.resolve({params: {episodeNum: nextEpisode.number, translationId: ''}, hash: ''});
+
+      if (!resolved) {
+        console.error('Не удалось определить ссылку на следующую серию', {resolved});
+        return undefined;
+      }
+
+      return resolved.href;
+    });
+
     const translations = asyncComputed(() => selectedEpisode.value ? getTranslations(selectedEpisode.value.id) : [] as Translation[], [] as Translation[]);
     const selectedTranslation = computed(() => translations.value.find(e => e.id === props.translationId) || translations.value[0]);
 
@@ -137,6 +155,7 @@ export default defineComponent({
 
     const {now} = useNow();
     return {
+      nextEpisodeURL,
       errorHandler,
       episodes,
       selectedEpisode,
@@ -183,7 +202,7 @@ export default defineComponent({
 }
 
 .playlist-button:not(:disabled):hover {
-  background: rgb(255 255 255 / 20%);
+  background: rgba(255, 255, 255, 0.2);
   cursor: pointer;
 }
 

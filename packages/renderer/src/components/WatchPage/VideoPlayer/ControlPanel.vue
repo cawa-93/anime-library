@@ -23,9 +23,17 @@
       <win-icon>{{ playingState ? '&#xE769;' : '&#xE768;' }}</win-icon>
     </button>
 
-    <button
+    <router-link
+      v-if="nextUrl"
+      :to="nextUrl"
       class="next-button"
-      :disabled="!nextUrl"
+      :class="{disabled: !nextUrl}"
+    >
+      <win-icon>&#xE893;</win-icon>
+    </router-link>
+    <button
+      v-else
+      disabled
     >
       <win-icon>&#xE893;</win-icon>
     </button>
@@ -260,7 +268,7 @@ export default defineComponent({
   color: white;
 }
 
-.control-panel button {
+.control-panel button, .control-panel a {
   border: none;
   padding: 0;
   color: inherit;
@@ -272,9 +280,10 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   height: 30px;
+  text-decoration: none;
 }
 
-.control-panel button:not(:disabled):hover {
+.control-panel button:not(:disabled):hover, .control-panel a:not(.disabled):hover {
   background: rgba(255, 255, 255, 0.2);
   cursor: pointer;
 }
