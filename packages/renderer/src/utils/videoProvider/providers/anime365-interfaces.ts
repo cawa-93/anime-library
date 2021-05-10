@@ -139,4 +139,5 @@ export interface Video {
   download: Download[];
   stream: Stream[];
   subtitlesUrl?: string;
+  subtitlesVttUrl?: string;
 }
