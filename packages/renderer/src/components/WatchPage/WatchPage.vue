@@ -4,7 +4,7 @@
     id="video-container"
   >
     <video-player
-      :video-source="videos"
+      :videos="videos"
       :next-url="nextEpisodeURL"
       @source-error="onSourceError"
     >

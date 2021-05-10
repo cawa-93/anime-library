@@ -1,5 +1,5 @@
 import type * as sm from '/@/utils/videoProvider/providers/anime365-interfaces';
-import type {Episode, Series, Translation, Video} from '/@/utils/videoProvider';
+import type {Episode, Series, Translation, Video, VideoTrack} from '/@/utils/videoProvider';
 
 
 const API_BASE = 'https://smotret-anime.online/api/';
@@ -167,9 +167,27 @@ export async function getStream(translationId: NumberLike): Promise<Video[]> {
     throw apiResponse.error;
   }
 
+  const {stream, subtitlesVttUrl} = apiResponse.data;
 
-  return apiResponse.data.stream
-    .flatMap(s => s.urls.map(url => ({quality: s.height, url})));
+  const tracks: VideoTrack[] = [];
+
+  const resolvedSubtitlesUrl = subtitlesVttUrl; // || subtitlesUrl ; // .ass файлы в данный момент поддерживаются только .vtt файлы
+
+  if (resolvedSubtitlesUrl) {
+    tracks.push({
+      src: resolvedSubtitlesUrl,
+      srcLang: 'ru',
+      label: 'vtt',
+      kind: 'subtitles',
+      default: true,
+    });
+  }
+
+  return stream.map(s => ({
+    quality: s.height,
+    sources: s.urls.map(u => ({src: u})),
+    tracks,
+  }));
 }
 
 export function clearVideosCache(translationId: NumberLike): Promise<boolean> {

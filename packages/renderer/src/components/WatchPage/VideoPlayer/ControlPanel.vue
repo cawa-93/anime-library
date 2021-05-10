@@ -64,6 +64,14 @@
       {{ formattedCurrentTime }} / {{ formattedDuration }}
     </span>
 
+    <button
+      class="subtitles"
+      @click="$emit('update:isSubtitlesEnabled', !isSubtitlesEnabled)"
+    >
+      <win-icon :style="!isSubtitlesEnabled ? 'opacity: 0.5' : ''">
+        &#xE7F0;
+      </win-icon>
+    </button>
 
     <select
       v-if="qualities.length > 0"
@@ -101,6 +109,7 @@ import type {PropType} from 'vue';
 import {computed, defineComponent} from 'vue';
 import WinIcon from '/@/components/WinIcon.vue';
 import {useVModel} from '@vueuse/core';
+import type {VideoTrack} from '/@/utils/videoProvider';
 
 export default defineComponent({
   name: 'ControlPanel',
@@ -146,6 +155,21 @@ export default defineComponent({
       required: false,
       default: null,
     },
+    hasSubtitles: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    isSubtitlesEnabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    tracks: {
+      type: Array as PropType<VideoTrack[]>,
+      required: false,
+      default: () => [],
+    },
     isPictureInPicture: {
       type: Boolean,
       required: false,
@@ -163,8 +187,9 @@ export default defineComponent({
     'update:volume': null,
     'update:muted': null,
     'update:selectedQuality': null,
-    requestFullscreenToggle: null,
-    requestPictureInPicture: null,
+    'requestFullscreenToggle': null,
+    'requestPictureInPicture': null,
+    'update:isSubtitlesEnabled': null,
   },
 
   setup(props, {emit}) {
@@ -258,12 +283,12 @@ export default defineComponent({
   bottom: 0;
   width: 100%;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.8547619731486344) 0%, rgba(0, 0, 0, 0) 100%);
-  grid-template-columns: repeat(4, min-content) 1fr repeat(3, min-content);
+  grid-template-columns: repeat(4, min-content) 1fr repeat(4, min-content);
   grid-template-rows: repeat(2, min-content);
   gap: 5px 10px;
   grid-template-areas:
-    "progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar"
-    "play-button next-button volume-area time space settings picture-in-picture fullscreen";
+    "progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar"
+    "play-button next-button volume-area time space subtitles settings picture-in-picture fullscreen";
   padding: 5px;
   color: white;
 }
@@ -410,5 +435,9 @@ select.settings option {
 
 .picture-in-picture {
   grid-area: picture-in-picture;
+}
+
+.subtitles {
+  grid-area: subtitles;
 }
 </style>

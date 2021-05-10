@@ -10,6 +10,7 @@
     />
     <video
       ref="videoElement"
+      :class="{'controls-visible': controlsVisible}"
       crossorigin="anonymous"
       @click="playing = !playing"
       @dblclick="toggleFullscreen"
@@ -18,20 +19,22 @@
     >
       <source
         v-for="source of sources"
-        :key="source.url"
-        :src="source.url"
+        :key="source.src"
+        :src="source.src"
         :type="source.type || ''"
         @error="errorHandler"
       >
     </video>
     <transition name="fade">
       <control-panel
-        v-if="!playing || !idle"
+        v-if="controlsVisible"
         v-model:playing="playing"
         v-model:current-time="currentTime"
         v-model:volume="volume"
         v-model:muted="muted"
         v-model:selected-quality="selectedQuality"
+        v-model:is-subtitles-enabled="isSubtitlesEnabled"
+        :has-subtitles="wrappedTracks.length > 0"
         :duration="duration"
         :buffered="buffered"
         :is-fullscreen="isFullscreen"
@@ -43,7 +46,7 @@
       />
     </transition>
     <transition name="fade">
-      <div v-if="!playing || !idle">
+      <div v-if="controlsVisible">
         <slot />
       </div>
     </transition>
@@ -54,7 +57,7 @@
 import type {PropType} from 'vue';
 import {computed, defineComponent, ref, watch} from 'vue';
 import {and, useActiveElement, useFullscreen, useIdle, useMagicKeys, useMediaControls, whenever} from '@vueuse/core';
-import type {Video} from '/@/utils/videoProvider';
+import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
 import LoadingSpinner from '/@/components/WatchPage/VideoPlayer/LoadingSpinner.vue';
 
@@ -62,7 +65,7 @@ export default defineComponent({
   name: 'VideoPlayer',
   components: {LoadingSpinner, ControlPanel},
   props: {
-    videoSource: {
+    videos: {
       type: Array as PropType<Video[]>,
       required: true,
     },
@@ -79,7 +82,7 @@ export default defineComponent({
 
     // Список доступных вариантов качества видео
     const qualities = computed(() =>
-      props.videoSource
+      props.videos
         .map(s => s.quality)
         .sort((a, b) => b - a),
     );
@@ -92,16 +95,24 @@ export default defineComponent({
       }
     });
 
-    // Ссылки на видео-файлы для выбранного качества
-    const sources = computed(() => {
+    // Массив видео для выбранного качества
+    const selectedQualityVideos = computed(() => props.videos.filter(s => s.quality === selectedQuality.value));
+
+    // Ссылки на видео-ресурсы для выбранного качества
+    const sources = computed<VideoSource[]>(() => {
       const mediaFragment = location.hash.startsWith('#t=') ? location.hash : '';
-      return props.videoSource
-        .filter(s => s.quality === selectedQuality.value)
-        .map(s => {
-          s.url += mediaFragment;
-          return s;
+
+      return selectedQualityVideos.value
+        .flatMap((v) => {
+          if (mediaFragment !== '') {
+            return v.sources.map(source => ({...source, src: source.src += mediaFragment}));
+          }
+          return v.sources;
         });
     });
+
+    // Ссылки на субтитры для выбранного качества
+    const tracks = computed<VideoTrack[]>(() => selectedQualityVideos.value.flatMap(v => v.tracks || []));
 
     // Выполнять загрузку видео при изменении ссылок на ресурсы
     const videoElement = ref<HTMLVideoElement>();
@@ -117,7 +128,8 @@ export default defineComponent({
       }
     };
 
-    const muted = ref(false);
+    const muted = ref(true);
+
 
     const {
       playing,
@@ -127,11 +139,26 @@ export default defineComponent({
       waiting,
       volume,
       isPictureInPicture,
+      tracks: wrappedTracks,
+      disableTrack,
+      enableTrack,
+      selectedTrack,
     } = useMediaControls(videoElement, {
+      // controls: true,
       muted,
       autoplay: true,
       autoPictureInPicture: true,
       preload: 'auto',
+      tracks: tracks,
+    });
+
+    const isSubtitlesEnabled = computed<boolean>({
+      get() {
+        return selectedTrack.value !== -1;
+      },
+      set(v) {
+        v ? enableTrack(wrappedTracks.value[0]) : disableTrack();
+      },
     });
 
 
@@ -174,8 +201,14 @@ export default defineComponent({
       }
     };
 
+    const controlsVisible = computed(() =>  !idle.value);
+
+
     return {
+      controlsVisible,
       sources,
+      wrappedTracks,
+      isSubtitlesEnabled,
       errorHandler,
       updateMediaFragmentHash,
       togglePictureInPicture,
@@ -210,6 +243,17 @@ video {
   flex-grow: 1;
   min-width: 0;
   min-height: 0;
+}
+
+/*noinspection CssInvalidPseudoSelector*/
+video::-webkit-media-text-track-display {
+  transition: transform 0.5s;
+  will-change: transform;
+}
+
+/*noinspection CssInvalidPseudoSelector*/
+video.controls-visible::-webkit-media-text-track-display {
+  transform: translateY(-50px);
 }
 
 .loading {

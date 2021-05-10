@@ -28,10 +28,23 @@ export interface Translation extends HasID, HasTitle {
   type: TranslationType
 }
 
+export interface VideoSource {
+  src: string,
+  type?: string
+}
+
+export interface VideoTrack {
+  src: string,
+  srcLang: string,
+  kind: 'subtitles' | 'captions' | 'descriptions' | 'chapters' | 'metadata'
+  label: string,
+  default?: boolean
+}
+
 export interface Video {
   quality: number,
-  url: string
-  type?: string
+  sources: VideoSource[]
+  tracks?: VideoTrack[]
 }
 
 
