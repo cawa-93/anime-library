@@ -31,27 +31,63 @@ export interface Translation extends HasID, HasTitle {
 export interface Video {
   quality: number,
   url: string
-  type?:string
-}
-
-export function getSeries(id: NumberLike): Promise<Series | undefined> {
-  return provider.getSeries(id);
-}
-
-export function getEpisodes(id: NumberLike): Promise<Episode[]> {
-  return provider.getEpisodes(id);
+  type?: string
 }
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const requestsCache = new Map<string, Promise<any>>();
+
+/**
+ * Не позволяет выполнять последовательно несколько идентичных запросов
+ */
+function deDuplicatedRequest<T>(requestId: string, request: () => Promise<T>): Promise<T> {
+  let savedRequest = requestsCache.get(requestId);
+  if (savedRequest) {
+    return savedRequest;
+  }
+  savedRequest = request().finally(() => requestsCache.delete(requestId));
+  requestsCache.set(requestId, savedRequest);
+  return savedRequest;
+}
+
+
+/**
+ * Возвращает {@link Series} по его MyAnimeListID
+ */
+export function getSeries(malId: NumberLike): Promise<Series | undefined> {
+  return deDuplicatedRequest(`series-${malId}`, () => provider.getSeries(malId));
+}
+
+
+/**
+ * Возвращает массив {@link Episode} относящихся к аниме
+ */
+export function getEpisodes(malId: NumberLike): Promise<Episode[]> {
+  return deDuplicatedRequest(`episodes-${malId}`, () => provider.getEpisodes(malId));
+}
+
+
+/**
+ * Возвращает массив переводов относящихся к конкретной серии
+ * @param providerEpisodeId ID Серии полученный от конкретного видео-провайдера
+ */
 export function getTranslations(providerEpisodeId: NumberLike): Promise<Translation[]> {
-  return provider.getTranslations(providerEpisodeId);
+  return deDuplicatedRequest(`translations-${providerEpisodeId}`, () => provider.getTranslations(providerEpisodeId));
 }
 
 
+/**
+ * Возвращает массив видео для конкретного перевода
+ */
 export function getVideos(providerTranslationId: NumberLike): Promise<Video[]> {
-  return provider.getStream(providerTranslationId);
+  return deDuplicatedRequest(`videos-${providerTranslationId}`, () => provider.getStream(providerTranslationId));
 }
 
+
+/**
+ * Удаляет кэш видео для конкретного перевода
+ */
 export function clearVideosCache(providerTranslationId: NumberLike): Promise<boolean> {
   return provider.clearVideosCache(providerTranslationId);
 }
