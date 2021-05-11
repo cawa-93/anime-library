@@ -17,7 +17,6 @@ const PACKAGE_ROOT = __dirname;
  */
 loadAndSetEnv(process.env.MODE, process.cwd());
 
-
 /**
  * @see https://vitejs.dev/config/
  */
@@ -37,7 +36,6 @@ export default defineConfig({
   build: {
     sourcemap: true,
     target: `chrome${chrome}`,
-    polyfillDynamicImport: false,
     outDir: 'dist',
     assetsDir: '.',
     terserOptions: {
