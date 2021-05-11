@@ -29,7 +29,11 @@ export default defineConfig({
       '/@shared/': join(PACKAGE_ROOT, '../shared') + '/',
     },
   },
-  // base: '/',
+  server: {
+    fsServe: {
+      root: join(PACKAGE_ROOT, '../../'),
+    },
+  },
   build: {
     sourcemap: true,
     target: `chrome${chrome}`,
