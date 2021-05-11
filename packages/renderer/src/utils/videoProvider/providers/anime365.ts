@@ -101,7 +101,7 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
       // Удалять серии у которых number > Чем заявлено в сезоне
       // Обычно такие серии залиты по ошибке
       && (
-        parseFloat(e.episodeInt) === 0
+        targetSeries.numberOfEpisodes === 0
         || targetSeries.numberOfEpisodes >= parseFloat(e.episodeInt)
       ),
     )
