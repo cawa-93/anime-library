@@ -12,6 +12,7 @@ const config = {
   },
   files: [
     'packages/**/dist/**',
+    '!node_modules/**',
   ],
   extraMetadata: {
     version: buildVersion,
