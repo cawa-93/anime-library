@@ -128,7 +128,7 @@ export default defineComponent({
       }
     };
 
-    const muted = ref(true);
+    const muted = ref(import.meta.env.MODE === 'development');
 
 
     const {
@@ -174,7 +174,6 @@ export default defineComponent({
     };
 
 
-    const {idle} = useIdle(1000 * 3);
 
 
     const activeElement = useActiveElement();
@@ -201,7 +200,8 @@ export default defineComponent({
       }
     };
 
-    const controlsVisible = computed(() =>  !idle.value);
+    const {idle} = useIdle(1000 * 3);
+    const controlsVisible = computed(() => !playing.value || !idle.value);
 
 
     return {

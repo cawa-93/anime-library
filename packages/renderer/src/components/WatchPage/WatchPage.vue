@@ -1,6 +1,5 @@
 <template>
   <section
-    v-if="videos.length"
     id="video-container"
   >
     <video-player
