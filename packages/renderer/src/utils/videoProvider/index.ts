@@ -1,3 +1,5 @@
+import type {DeepReadonly} from 'vue';
+import {readonly} from 'vue';
 import * as provider from '/@/utils/videoProvider/providers/anime365';
 
 interface HasID {
@@ -68,16 +70,22 @@ function deDuplicatedRequest<T>(requestId: string, request: () => Promise<T>): P
 /**
  * Возвращает {@link Series} по его MyAnimeListID
  */
-export function getSeries(malId: NumberLike): Promise<Series | undefined> {
-  return deDuplicatedRequest(`series-${malId}`, () => provider.getSeries(malId));
+export function getSeries(malId: NumberLike): Promise<DeepReadonly<Series> | undefined> {
+  return deDuplicatedRequest(
+    `series-${malId}`,
+    () => provider.getSeries(malId).then(s => s === undefined ? s : readonly(s)),
+  );
 }
 
 
 /**
  * Возвращает массив {@link Episode} относящихся к аниме
  */
-export function getEpisodes(malId: NumberLike): Promise<Episode[]> {
-  return deDuplicatedRequest(`episodes-${malId}`, () => provider.getEpisodes(malId));
+export function getEpisodes(malId: NumberLike): Promise<DeepReadonly<Episode[]>> {
+  return deDuplicatedRequest(
+    `episodes-${malId}`,
+    () => provider.getEpisodes(malId).then(readonly),
+  );
 }
 
 
@@ -85,16 +93,22 @@ export function getEpisodes(malId: NumberLike): Promise<Episode[]> {
  * Возвращает массив переводов относящихся к конкретной серии
  * @param providerEpisodeId ID Серии полученный от конкретного видео-провайдера
  */
-export function getTranslations(providerEpisodeId: NumberLike): Promise<Translation[]> {
-  return deDuplicatedRequest(`translations-${providerEpisodeId}`, () => provider.getTranslations(providerEpisodeId));
+export function getTranslations(providerEpisodeId: NumberLike): Promise<DeepReadonly<Translation[]>> {
+  return deDuplicatedRequest(
+    `translations-${providerEpisodeId}`,
+    () => provider.getTranslations(providerEpisodeId).then(readonly),
+  );
 }
 
 
 /**
  * Возвращает массив видео для конкретного перевода
  */
-export function getVideos(providerTranslationId: NumberLike): Promise<Video[]> {
-  return deDuplicatedRequest(`videos-${providerTranslationId}`, () => provider.getStream(providerTranslationId));
+export function getVideos(providerTranslationId: NumberLike): Promise<DeepReadonly<Video[]>> {
+  return deDuplicatedRequest(
+    `videos-${providerTranslationId}`,
+    () => provider.getStream(providerTranslationId).then(readonly),
+  );
 }
 
 
