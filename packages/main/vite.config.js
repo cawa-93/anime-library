@@ -44,6 +44,7 @@ export default defineConfig({
     rollupOptions: {
       external: [
         'electron',
+        'semver',
         ...builtinModules,
       ],
       output: {
