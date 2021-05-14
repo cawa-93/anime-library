@@ -60,13 +60,13 @@
     "vue-tsc": "^0.1.2"
   },
   "dependencies": {
-    "@vueuse/core": "^4.10.0",
+    "@vueuse/core": "^4.11.0",
     "@xstate/vue": "^0.5.0",
     "electron-updater": "^4.3.9",
     "electron-window-state": "^5.0.3",
     "libass-wasm": "^4.0.0",
     "vue": "^3.0.11",
-    "vue-router": "^4.0.6",
+    "vue-router": "^4.0.8",
     "xstate": "^4.19.1"
   }
 }
