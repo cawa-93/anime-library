@@ -50,7 +50,8 @@
 
 <script lang="ts">
 import {asyncComputed} from '@vueuse/core';
-import {computed, defineComponent, reactive, watchEffect} from 'vue';
+import type {DeepReadonly} from 'vue';
+import {computed, defineComponent, ref, watchEffect} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
 import {clearVideosCache, getEpisodes, getTranslations, getVideos} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/WatchPage/SidePanel.vue';
@@ -143,10 +144,12 @@ export default defineComponent({
 
 
     // Загрузка доступных видео для выбранного перевода
-    const videos: Video[] = reactive([]);
-    const loadVideoSources = () => getVideos(selectedTranslation.value.id).then(v => videos.push(...v));
+    const videos = ref<DeepReadonly<Video[]>>([]);
+    const loadVideoSources = () => getVideos(selectedTranslation.value.id).then(v => {
+      videos.value = v;
+    });
+
     watchEffect(() => {
-      videos.length = 0;
       if (selectedTranslation.value && selectedTranslation.value.id) {
         return loadVideoSources();
       }

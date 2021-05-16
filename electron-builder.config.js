@@ -12,7 +12,7 @@ const config = {
   },
   files: [
     'packages/**/dist/**',
-    '!node_modules/**',
+    // '!node_modules/**', // Не работает из-за semver
   ],
   extraMetadata: {
     version: buildVersion,

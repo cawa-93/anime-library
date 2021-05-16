@@ -6,7 +6,7 @@ import {builtinModules} from 'module';
 import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
 import {loadAndSetEnv} from '../../scripts/loadAndSetEnv.mjs';
-// import {generateSW} from 'rollup-plugin-workbox';
+import copy from 'rollup-plugin-copy';
 import {VitePWA} from 'vite-plugin-pwa';
 
 const PACKAGE_ROOT = __dirname;
@@ -33,6 +33,13 @@ export default defineConfig({
       root: join(PACKAGE_ROOT, '../../'),
     },
   },
+  optimizeDeps: {
+    exclude: [
+      'libass-wasm',
+      'libass-wasm/dist/js/subtitles-octopus-worker.js',
+      'libass-wasm/dist/js/subtitles-octopus-worker.js?url',
+    ],
+  },
   build: {
     sourcemap: true,
     target: `chrome${chrome}`,
@@ -54,6 +61,16 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    copy({
+      hook: 'writeBundle',
+      targets: [{
+        src: [
+          'packages/renderer/src/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus-worker.data',
+          'packages/renderer/src/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus-worker.wasm',
+        ],
+        dest: 'packages/renderer/dist',
+      }],
+    }),
     VitePWA({
       mode: 'development',
       injectRegister: 'script',

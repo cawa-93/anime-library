@@ -167,11 +167,11 @@ export async function getStream(translationId: NumberLike): Promise<Video[]> {
     throw apiResponse.error;
   }
 
-  const {stream, subtitlesVttUrl} = apiResponse.data;
+  const {stream, subtitlesUrl} = apiResponse.data;
 
   const tracks: VideoTrack[] = [];
 
-  const resolvedSubtitlesUrl = subtitlesVttUrl; // || subtitlesUrl ; // .ass файлы в данный момент поддерживаются только .vtt файлы
+  const resolvedSubtitlesUrl = subtitlesUrl; // || subtitlesUrl ; // .ass файлы в данный момент поддерживаются только .vtt файлы
 
   if (resolvedSubtitlesUrl) {
     tracks.push({

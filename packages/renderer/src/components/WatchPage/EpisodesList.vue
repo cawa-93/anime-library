@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import type {PropType} from 'vue';
+import type {DeepReadonly, PropType} from 'vue';
 import {computed, defineComponent} from 'vue';
 import {useRoute} from 'vue-router';
 import WinIcon from '/@/components/WinIcon.vue';
@@ -30,7 +30,7 @@ export default defineComponent({
   components: {WinIcon},
   props: {
     episodes: {
-      type: Array as PropType<Episode[]>,
+      type: Array as PropType<DeepReadonly<Episode[]>>,
       required: true,
     },
   },

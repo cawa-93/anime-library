@@ -25,6 +25,12 @@
         @error="errorHandler"
       >
     </video>
+    <lib-ass-subtitles-renderer
+      v-if="tracks.length > 0"
+      :time="currentTime"
+      :track="tracks[0]"
+      :video-element="videoElement"
+    />
     <transition name="fade">
       <control-panel
         v-if="controlsVisible"
@@ -33,8 +39,8 @@
         v-model:volume="volume"
         v-model:muted="muted"
         v-model:selected-quality="selectedQuality"
-        v-model:is-subtitles-enabled="isSubtitlesEnabled"
-        :has-subtitles="wrappedTracks.length > 0"
+        :is-subtitles-enabled="false"
+        :has-subtitles="tracks.length > 0"
         :duration="duration"
         :buffered="buffered"
         :is-fullscreen="isFullscreen"
@@ -54,19 +60,22 @@
 </template>
 
 <script lang="ts">
-import type {PropType} from 'vue';
-import {computed, defineComponent, ref, watch} from 'vue';
+import type {DeepReadonly, PropType} from 'vue';
+import {computed, defineAsyncComponent, defineComponent, readonly, ref, watch} from 'vue';
 import {and, useActiveElement, useFullscreen, useIdle, useMagicKeys, useMediaControls, whenever} from '@vueuse/core';
 import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
 import LoadingSpinner from '/@/components/WatchPage/VideoPlayer/LoadingSpinner.vue';
 
+const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/WatchPage/VideoPlayer/LibAssSubtitlesRenderer.vue'));
+
+
 export default defineComponent({
   name: 'VideoPlayer',
-  components: {LoadingSpinner, ControlPanel},
+  components: {LibAssSubtitlesRenderer, LoadingSpinner, ControlPanel},
   props: {
     videos: {
-      type: Array as PropType<Video[]>,
+      type: Array as PropType<DeepReadonly<Video[]>>,
       required: true,
     },
     nextUrl: {
@@ -87,6 +96,7 @@ export default defineComponent({
         .sort((a, b) => b - a),
     );
 
+
     // Выбор качества видео по умолчанию
     const selectedQuality = ref(qualities.value[0]);
     watch(qualities, () => {
@@ -95,8 +105,10 @@ export default defineComponent({
       }
     });
 
+
     // Массив видео для выбранного качества
     const selectedQualityVideos = computed(() => props.videos.filter(s => s.quality === selectedQuality.value));
+
 
     // Ссылки на видео-ресурсы для выбранного качества
     const sources = computed<VideoSource[]>(() => {
@@ -105,18 +117,68 @@ export default defineComponent({
       return selectedQualityVideos.value
         .flatMap((v) => {
           if (mediaFragment !== '') {
-            return v.sources.map(source => ({...source, src: source.src += mediaFragment}));
+            return v.sources.map(source => readonly({...source, src: source.src + mediaFragment}));
           }
           return v.sources;
         });
     });
 
-    // Ссылки на субтитры для выбранного качества
-    const tracks = computed<VideoTrack[]>(() => selectedQualityVideos.value.flatMap(v => v.tracks || []));
 
     // Выполнять загрузку видео при изменении ссылок на ресурсы
     const videoElement = ref<HTMLVideoElement>();
-    watch(sources, () => videoElement.value?.load());
+    watch(sources, () => {
+      videoElement.value?.load();
+      playing.value ? videoElement.value?.play() : videoElement.value?.pause();
+    });
+
+    // Передать ошибку родителю если не удалось загрузить видео
+    const errorHandler = (event: Event) => {
+      if (videoElement.value?.networkState === videoElement.value?.NETWORK_NO_SOURCE) {
+        emit('source-error', event);
+      }
+    };
+
+
+    // Ссылки на субтитры для выбранного качества
+    const tracks = computed<VideoTrack[]>(() => {
+      const allTracks = selectedQualityVideos.value.flatMap(v => v.tracks || []);
+      const map = new Map<string, VideoTrack>();
+      allTracks.forEach(item => map.set(item.src, item));
+      return [...map.values()];
+    });
+
+    // const selectedTrack = computed(() => tracks.value[0]);
+    // let SubtitlesOctopusInstance: SubtitlesOctopus | null = null;
+    // watchEffect(() => {
+    //   if (!videoElement.value) {
+    //     return;
+    //   }
+    //
+    //   if (!selectedTrack?.value?.src) {
+    //     if (SubtitlesOctopusInstance) {
+    //       SubtitlesOctopusInstance.freeTrack();
+    //     }
+    //     return;
+    //   }
+    //
+    //   if (!SubtitlesOctopusInstance) {
+    //     SubtitlesOctopusInstance = new SubtitlesOctopus({
+    //       video: videoElement.value, // HTML5 video element
+    //       workerUrl: SubtitlesOctopusWorker,
+    //       legacyWorkerUrl: SubtitlesOctopusWorkerLegacy,
+    //       subUrl: selectedTrack.value.src,
+    //       debug: import.meta.env.MODE === 'development',
+    //     });
+    //   } else {
+    //     SubtitlesOctopusInstance.setTrackByUrl(selectedTrack?.value?.src);
+    //   }
+    // });
+    //
+    // onUnmounted(() => {
+    //   if (SubtitlesOctopusInstance) {
+    //     SubtitlesOctopusInstance.dispose();
+    //   }
+    // });
 
     /**
      * Сохраняет `currentTime` в хэш страницы в виде медиа фрагмента `#t=${currentTime}`
@@ -128,7 +190,8 @@ export default defineComponent({
       }
     };
 
-    const muted = ref(import.meta.env.MODE === 'development');
+
+    const muted = ref(false);
 
 
     const {
@@ -139,32 +202,28 @@ export default defineComponent({
       waiting,
       volume,
       isPictureInPicture,
-      tracks: wrappedTracks,
-      disableTrack,
-      enableTrack,
-      selectedTrack,
+      // tracks: wrappedTracks,
     } = useMediaControls(videoElement, {
-      // controls: true,
       muted,
       autoplay: true,
       autoPictureInPicture: true,
       preload: 'auto',
-      tracks: tracks,
     });
 
-    const isSubtitlesEnabled = computed<boolean>({
-      get() {
-        return selectedTrack.value !== -1;
-      },
-      set(v) {
-        v ? enableTrack(wrappedTracks.value[0]) : disableTrack();
-      },
-    });
+    // const isSubtitlesEnabled = computed<boolean>({
+    //   get() {
+    //     return selectedTrack.value !== -1;
+    //   },
+    //   set(v) {
+    //     v ? enableTrack(wrappedTracks.value[0]) : disableTrack();
+    //   },
+    // });
 
 
+    //
+    // переключение полноэкранного режима
     const componentRoot = ref<HTMLVideoElement>();
     const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(componentRoot);
-
     const togglePictureInPicture = () => {
       if (document.pictureInPictureElement) {
         document.exitPictureInPicture();
@@ -174,8 +233,8 @@ export default defineComponent({
     };
 
 
-
-
+    //
+    // Работа с горячими клавишами
     const activeElement = useActiveElement();
     const notUsingInteractiveElement = computed(() =>
       activeElement.value?.tagName !== 'INPUT'
@@ -194,12 +253,8 @@ export default defineComponent({
     whenever(and(arrowDown, notUsingInteractiveElement), () => volume.value = Math.max(0, volume.value - 0.1));
 
 
-    const errorHandler = (event: Event) => {
-      if (videoElement.value?.networkState === videoElement.value?.NETWORK_NO_SOURCE) {
-        emit('source-error', event);
-      }
-    };
-
+    //
+    // Показывать/скрывать контрол бар в зависимости от активности пользователя
     const {idle} = useIdle(1000 * 3);
     const controlsVisible = computed(() => !playing.value || !idle.value);
 
@@ -207,8 +262,9 @@ export default defineComponent({
     return {
       controlsVisible,
       sources,
-      wrappedTracks,
-      isSubtitlesEnabled,
+      tracks,
+      // wrappedTracks,
+      // isSubtitlesEnabled,
       errorHandler,
       updateMediaFragmentHash,
       togglePictureInPicture,

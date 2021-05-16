@@ -1,14 +1,11 @@
 import {app, BrowserWindow, protocol, session} from 'electron';
 import {join} from 'path';
-import {initialize} from '@electron/remote/dist/src/main';
 import {createProtocol} from '/@/createCustomProtocol';
 import windowStateKeeper from 'electron-window-state';
 import {registerIpcHost} from '/@/ipc';
 import WindowControllersHost from '/@/ipc/WindowControllersHost';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
 import {URL} from 'url';
-
-initialize();
 
 const isSingleInstance = app.requestSingleInstanceLock();
 
@@ -209,7 +206,10 @@ if (env.PROD) {
   app.whenReady()
     .then(() => import('electron-updater'))
     .then(({autoUpdater}) => autoUpdater.checkForUpdatesAndNotify())
-    .catch((e) => console.error('Failed check updates:', e));
+    .catch((e) => {
+      e.name = 'Auto-update error';
+      console.error(e);
+    });
 }
 
 
