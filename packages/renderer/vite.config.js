@@ -21,6 +21,7 @@ loadAndSetEnv(process.env.MODE, process.cwd());
  * @see https://vitejs.dev/config/
  */
 export default defineConfig({
+  mode: process.env.MODE,
   root: PACKAGE_ROOT,
   logLevel: 'warn',
   resolve: {
