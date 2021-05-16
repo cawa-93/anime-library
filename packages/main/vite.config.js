@@ -18,6 +18,7 @@ loadAndSetEnv(process.env.MODE, process.cwd());
  */
 export default defineConfig({
   root: PACKAGE_ROOT,
+  logLevel: 'warn',
   resolve: {
     alias: {
       '/@/': join(PACKAGE_ROOT, 'src') + '/',

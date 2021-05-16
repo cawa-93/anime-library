@@ -17,19 +17,19 @@
   },
   "main": "packages/main/dist/index.cjs",
   "scripts": {
-    "buildEnvTypes": "node scripts/buildEnvTypes.js",
-    "build": "node scripts/build.js",
-    "precompile": "npm run build",
-    "compile": "electron-builder build --config electron-builder.config.js --dir --config.asar=false",
+    "build": "concurrently \"npm:build-assets:*\"",
+    "build-assets:main": "cd ./packages/main && vite build",
+    "build-assets:preload": "cd ./packages/preload && vite build",
+    "build-assets:renderer": "cd ./packages/renderer && vite build",
+    "compile": "npm run build && electron-builder build --config electron-builder.config.js --dir --config.asar=false",
     "pretest": "cross-env MODE=test npm run build",
     "test": "node tests/app.spec.js",
     "watch": "node scripts/watch.js",
     "lint": "eslint . --ext js,ts,vue",
-    "pretypecheck": "npm run buildEnvTypes",
-    "typecheck-main": "tsc --noEmit -p packages/main/tsconfig.json",
-    "typecheck-preload": "tsc --noEmit -p packages/preload/tsconfig.json",
-    "typecheck-renderer": "vue-tsc --noEmit -p packages/renderer/tsconfig.json",
-    "typecheck": "npm run typecheck-main && npm run typecheck-preload && npm run typecheck-renderer"
+    "typecheck": "node scripts/buildEnvTypes.js && concurrently \"npm:typecheck:*\"",
+    "typecheck:main": "tsc --noEmit -p packages/main/tsconfig.json",
+    "typecheck:preload": "tsc --noEmit -p packages/preload/tsconfig.json",
+    "typecheck:renderer": "vue-tsc --noEmit -p packages/renderer/tsconfig.json"
   },
   "browserslist": [
     "Chrome 89"
@@ -45,6 +45,7 @@
     "@types/electron-devtools-installer": "^2.2.0",
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@vitejs/plugin-vue": "^1.2.2",
+    "concurrently": "^6.1.0",
     "cross-env": "^7.0.3",
     "electron": "^12.0.7",
     "electron-builder": "^22.11.3",
