@@ -1,8 +1,9 @@
-import type {RouteLocation} from 'vue-router';
+import type {RouteLocation, RouteRecordRaw} from 'vue-router';
 import {createRouter, createWebHistory} from 'vue-router';
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {path: '/', name: 'Home', component: () => import('/@/components/Home.vue')},
+  {path: '/options/', name: 'Options', component: () => import('/@/components/OptionsPage.vue')},
   {
     path: '/watch/:seriesId(\\d+)/:episodeNum(\\d+)?/:translationId(\\d+)?/',
     name: 'Watch',

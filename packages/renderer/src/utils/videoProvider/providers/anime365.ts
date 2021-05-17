@@ -10,8 +10,9 @@ async function request<T>(url: string | URL): Promise<sm.ApiResponse<T>> {
     url = new URL(url);
   }
 
-  if (import.meta.env.VITE_SM_ACCESS_TOKEN) {
-    url.searchParams.set('access_token', import.meta.env.VITE_SM_ACCESS_TOKEN);
+  const access_token =  getAccessToken();
+  if (access_token) {
+    url.searchParams.set('access_token', access_token);
   }
 
   const response = await fetch(String(url));
@@ -195,4 +196,29 @@ export function clearVideosCache(translationId: NumberLike): Promise<boolean> {
     .open('sm-api-calls')
     .then(cache => cache.delete(`${API_BASE}translations/embed/${translationId}`, {ignoreSearch: true}));
 
+}
+
+const ACCESS_TOKEN_STORAGE_KEY = 'sm-access-token';
+
+export function getAccessToken(): string | null {
+  return localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
+}
+
+
+export function saveAccessToken(token?: string): void {
+  if (!token) {
+    clearAccessToken();
+    return;
+  }
+
+  const clearedToken = token.trim();
+  if (!clearedToken) {
+    clearAccessToken();
+  }
+
+  return localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, clearedToken);
+}
+
+function clearAccessToken() {
+  return localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
 }

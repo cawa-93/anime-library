@@ -7,6 +7,7 @@
       <back-button id="back-button" />
       <home-button />
       <window-title id="window-title" />
+      <options-button />
       <minimize-button class="window-control" />
       <maximize-button class="window-control" />
       <close-button class="window-control" />
@@ -23,10 +24,19 @@ import CloseButton from '/@/components/AppWindowTitleBar/CloseButton.vue';
 import MaximizeButton from '/@/components/AppWindowTitleBar/MaximizeButton.vue';
 import {isWindowMaximized} from '/@/use/isWindowMaximized';
 import HomeButton from '/@/components/AppWindowTitleBar/HomeButton.vue';
+import OptionsButton from '/@/components/AppWindowTitleBar/OptionsButton.vue';
 
 export default defineComponent({
   name: 'AppTitleBar',
-  components: {HomeButton, MaximizeButton, CloseButton, MinimizeButton, WindowTitle, BackButton},
+  components: {
+    OptionsButton,
+    HomeButton,
+    MaximizeButton,
+    CloseButton,
+    MinimizeButton,
+    WindowTitle,
+    BackButton,
+  },
   setup() {
     const {isMaximized} = isWindowMaximized();
     return {isMaximized};
