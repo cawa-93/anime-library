@@ -62,6 +62,7 @@ import {useMachine} from '@xstate/vue';
 import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
 import WinIcon from '/@/components/WinIcon.vue';
 import {useRouter} from 'vue-router';
+import {createIpcClient} from '/@/ipc';
 
 
 const PanelStateMachine = Machine({
@@ -142,11 +143,20 @@ export default defineComponent({
     const translations = asyncComputed(() => selectedEpisode.value ? getTranslations(selectedEpisode.value.id) : [] as Translation[], [] as Translation[]);
     const selectedTranslation = computed(() => translations.value.find(e => e.id === props.translationId) || translations.value[0]);
 
-
     // Загрузка доступных видео для выбранного перевода
     const videos = ref<DeepReadonly<Video[]>>([]);
     const loadVideoSources = () => getVideos(selectedTranslation.value.id).then(v => {
       videos.value = v;
+    }).catch(err => {
+      const dialog = createIpcClient('DialogsControllers');
+      if (err.code !== undefined) {
+        const errorText = err.code === 403 ? 'Перейдите в настройки и обновите ключ доступа' : err.message;
+        dialog.showError('Не удалось загрузить видео с Anime.365', errorText);
+      } else {
+        dialog.showError('Не удалось загрузить видео с Anime.365', typeof err === 'string' ? err : JSON.stringify(err));
+      }
+
+      return [];
     });
 
     watchEffect(() => {

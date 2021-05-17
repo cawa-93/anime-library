@@ -6,6 +6,7 @@ import {registerIpcHost} from '/@/ipc';
 import WindowControllersHost from '/@/ipc/WindowControllersHost';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
 import {URL} from 'url';
+import DialogsHost from '/@/ipc/DialogsHost';
 
 const isSingleInstance = app.requestSingleInstanceLock();
 
@@ -181,6 +182,7 @@ app.whenReady()
     }
 
     registerIpcHost('WindowControllers', WindowControllersHost);
+    registerIpcHost('DialogsControllers', DialogsHost);
 
     return createWindow();
   })

@@ -1,4 +1,4 @@
-import type {IpcHost} from './index';
+import type {IpcHost} from './ipcHost';
 
 export interface WindowControllers extends IpcHost {
   minimize: () => void
@@ -7,4 +7,3 @@ export interface WindowControllers extends IpcHost {
   close: () => void
   isMaximized: () => boolean
 }
-

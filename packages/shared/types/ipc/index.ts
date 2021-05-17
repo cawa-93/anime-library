@@ -1,9 +1,8 @@
 import type {WindowControllers} from './WindowControllers';
+import type {DialogsControllers} from './DialogsControllers';
 
 export interface IpcNameHostsMap {
   'WindowControllers': WindowControllers
+  'DialogsControllers': DialogsControllers
 }
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type IpcHost = Record<string, (...a: any[]) => any>
 

@@ -13,7 +13,7 @@
     <p>
       <a
         class="help-text"
-        @click="helpDialog.open = true"
+        @click.prevent="openDialog"
       >
         Как получить ключ доступа?
       </a>
@@ -51,8 +51,6 @@
           <textarea
             v-model="jsonData"
             autofocus
-            cols="30"
-            rows="10"
           />
         </label>
       </li>
@@ -86,8 +84,25 @@ export default defineComponent({
       }
     });
 
+    const openDialog = () => {
+      if (helpDialog.value) {
+        helpDialog.value.open = true;
+      }
+    };
+
     const {openURL} = useElectron();
-    const openExternal = (event: MouseEvent) => openURL(event.target?.href);
+    const openExternal = (event: MouseEvent) => {
+      if (!event.target) {
+        return;
+      }
+
+      const target = event.target as HTMLAnchorElement;
+      if (!target.href) {
+        return;
+      }
+
+      openURL(target.href);
+    };
 
     const jsonData = ref('');
     const parsedAccessToken = computed(() => {
@@ -101,7 +116,7 @@ export default defineComponent({
     const SmAccessToken = ref(getAccessToken() || '');
     const saveAccessTokenOption = () => saveAccessToken(SmAccessToken.value);
 
-    return {helpDialog, openExternal, jsonData, parsedAccessToken, saveAccessTokenOption, SmAccessToken};
+    return {helpDialog, openExternal, jsonData, parsedAccessToken, saveAccessTokenOption, SmAccessToken, openDialog};
   },
 });
 </script>
