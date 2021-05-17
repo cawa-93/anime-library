@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {defineComponent, onUnmounted, ref, watch, watchEffect} from 'vue';
+import {defineComponent, onUnmounted, ref, toRef, watch, watchEffect} from 'vue';
 import type {VideoTrack} from '/@/utils/videoProvider';
 import SubtitlesOctopus from '/@/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus.js';
 import SubtitlesOctopusWorker from '/@/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus-worker.js?url';
@@ -31,13 +31,23 @@ export default defineComponent({
       required: false,
       default: null,
     },
+
+    playing: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+
+    waiting: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   setup(props) {
     const canvas = ref<HTMLCanvasElement>();
 
     let SubtitlesOctopusInstance: SubtitlesOctopus | null = null;
-    let observer: ResizeObserver | null = null;
-
 
     const getVideoPosition = () => {
       const videoRatio = props.videoElement.videoWidth / props.videoElement.videoHeight;
@@ -78,6 +88,10 @@ export default defineComponent({
 
     };
 
+    useEventListener(toRef(props, 'videoElement'), 'loadedmetadata', resize);
+    useResizeObserver(toRef(props, 'videoElement'), resize);
+
+
     watchEffect(() => {
       if (!canvas.value || !props.videoElement) {
         return;
@@ -95,15 +109,10 @@ export default defineComponent({
         SubtitlesOctopusInstance.setTrackByUrl(props.track.src);
       }
 
-      if (props.videoElement.videoWidth === 0) {
-        useEventListener(props.videoElement, 'loadedmetadata', resize, {once: true});
-      } else {
+      if (props.videoElement.videoWidth !== 0) {
         resize();
       }
     });
-
-
-    useResizeObserver(props.videoElement, resize);
 
     watch(() => props.time, () => {
       if (SubtitlesOctopusInstance) {
@@ -111,15 +120,17 @@ export default defineComponent({
       }
     });
 
+    watch(() => ([props.playing, props.waiting]), () => {
+      if (SubtitlesOctopusInstance) {
+        const isPaused = props.waiting ? true : !props.playing;
+        SubtitlesOctopusInstance.setIsPaused(isPaused);
+      }
+    });
+
     onUnmounted(() => {
       if (SubtitlesOctopusInstance) {
         SubtitlesOctopusInstance.dispose();
         SubtitlesOctopusInstance = null;
-      }
-
-      if (observer) {
-        observer.disconnect();
-        observer = null;
       }
     });
 

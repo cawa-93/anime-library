@@ -123,6 +123,8 @@ declare class SubtitlesOctopus {
    * Resize canvas
    */
   resize(width?: number, height?: number, top?: number, left?: number): void
+
+  setIsPaused(isPaused: boolean): void
 }
 
 export default SubtitlesOctopus;

@@ -30,6 +30,8 @@
       :time="currentTime"
       :track="tracks[0]"
       :video-element="videoElement"
+      :playing="playing"
+      :waiting="waiting"
     />
     <transition name="fade">
       <control-panel
