@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {defineComponent, onUnmounted, ref, toRef, watch, watchEffect} from 'vue';
+import {defineComponent, onMounted, onUnmounted, ref, toRef, watch} from 'vue';
 import type {VideoTrack} from '/@/utils/videoProvider';
 import SubtitlesOctopus from '/@/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus.js';
 import SubtitlesOctopusWorker from '/@/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus-worker.js?url';
@@ -80,37 +80,39 @@ export default defineComponent({
         return;
       }
 
+      if (props.videoElement.videoWidth === 0 || props.videoElement.videoHeight === 0) {
+        return;
+      }
+
       const videoPosition = getVideoPosition();
       position.value.left = `${videoPosition.left}px`;
       position.value.top = `${videoPosition.top}px`;
 
       SubtitlesOctopusInstance.resize(videoPosition.width, videoPosition.height, videoPosition.top, videoPosition.left);
-
     };
 
     useEventListener(toRef(props, 'videoElement'), 'loadedmetadata', resize);
     useResizeObserver(toRef(props, 'videoElement'), resize);
 
-
-    watchEffect(() => {
-      if (!canvas.value || !props.videoElement) {
-        return;
-      }
-
+    onMounted(() => {
       if (!SubtitlesOctopusInstance) {
         SubtitlesOctopusInstance = new SubtitlesOctopus({
           canvas: canvas.value,
           workerUrl: SubtitlesOctopusWorker,
           subUrl: props.track.src,
           lossyRender: true,
-          debug: import.meta.env.MODE === 'development',
+          // debug: import.meta.env.MODE === 'development',
         });
-      } else {
-        SubtitlesOctopusInstance.setTrackByUrl(props.track.src);
       }
 
-      if (props.videoElement.videoWidth !== 0) {
-        resize();
+      resize();
+
+      SubtitlesOctopusInstance.setCurrentTime(props.time);
+    });
+
+    watch(() => props.track, () => {
+      if (SubtitlesOctopusInstance) {
+        SubtitlesOctopusInstance.setTrackByUrl(props.track.src);
       }
     });
 

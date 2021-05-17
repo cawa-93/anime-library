@@ -65,6 +65,7 @@
     </span>
 
     <button
+      v-if="hasSubtitles"
       class="subtitles"
       @click="$emit('update:isSubtitlesEnabled', !isSubtitlesEnabled)"
     >

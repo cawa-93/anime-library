@@ -26,7 +26,7 @@
       >
     </video>
     <lib-ass-subtitles-renderer
-      v-if="tracks.length > 0"
+      v-if="tracks.length > 0 && isSubtitlesEnabled"
       :time="currentTime"
       :track="tracks[0]"
       :video-element="videoElement"
@@ -41,7 +41,7 @@
         v-model:volume="volume"
         v-model:muted="muted"
         v-model:selected-quality="selectedQuality"
-        :is-subtitles-enabled="false"
+        v-model:is-subtitles-enabled="isSubtitlesEnabled"
         :has-subtitles="tracks.length > 0"
         :duration="duration"
         :buffered="buffered"
@@ -128,10 +128,7 @@ export default defineComponent({
 
     // Выполнять загрузку видео при изменении ссылок на ресурсы
     const videoElement = ref<HTMLVideoElement>();
-    watch(sources, () => {
-      videoElement.value?.load();
-      playing.value ? videoElement.value?.play() : videoElement.value?.pause();
-    });
+    watch(sources, () => videoElement.value?.load());
 
     // Передать ошибку родителю если не удалось загрузить видео
     const errorHandler = (event: Event) => {
@@ -149,48 +146,13 @@ export default defineComponent({
       return [...map.values()];
     });
 
-    // const selectedTrack = computed(() => tracks.value[0]);
-    // let SubtitlesOctopusInstance: SubtitlesOctopus | null = null;
-    // watchEffect(() => {
-    //   if (!videoElement.value) {
-    //     return;
-    //   }
-    //
-    //   if (!selectedTrack?.value?.src) {
-    //     if (SubtitlesOctopusInstance) {
-    //       SubtitlesOctopusInstance.freeTrack();
-    //     }
-    //     return;
-    //   }
-    //
-    //   if (!SubtitlesOctopusInstance) {
-    //     SubtitlesOctopusInstance = new SubtitlesOctopus({
-    //       video: videoElement.value, // HTML5 video element
-    //       workerUrl: SubtitlesOctopusWorker,
-    //       legacyWorkerUrl: SubtitlesOctopusWorkerLegacy,
-    //       subUrl: selectedTrack.value.src,
-    //       debug: import.meta.env.MODE === 'development',
-    //     });
-    //   } else {
-    //     SubtitlesOctopusInstance.setTrackByUrl(selectedTrack?.value?.src);
-    //   }
-    // });
-    //
-    // onUnmounted(() => {
-    //   if (SubtitlesOctopusInstance) {
-    //     SubtitlesOctopusInstance.dispose();
-    //   }
-    // });
+    const isSubtitlesEnabled = ref(true);
 
     /**
      * Сохраняет `currentTime` в хэш страницы в виде медиа фрагмента `#t=${currentTime}`
      * Нужно для того, чтобы при переключении качества или перевода начать воспроизведение с того же места
      */
-    const updateMediaFragmentHash = () => {
-      if (playing.value && currentTime.value > 60) {
-        location.hash = 't=' + currentTime.value.toFixed(0);
-      }
-    };
+    const updateMediaFragmentHash = () => location.hash = 't=' + currentTime.value.toFixed(0);
 
 
     const muted = ref(false);
@@ -204,22 +166,12 @@ export default defineComponent({
       waiting,
       volume,
       isPictureInPicture,
-      // tracks: wrappedTracks,
     } = useMediaControls(videoElement, {
       muted,
       autoplay: true,
       autoPictureInPicture: true,
       preload: 'auto',
     });
-
-    // const isSubtitlesEnabled = computed<boolean>({
-    //   get() {
-    //     return selectedTrack.value !== -1;
-    //   },
-    //   set(v) {
-    //     v ? enableTrack(wrappedTracks.value[0]) : disableTrack();
-    //   },
-    // });
 
 
     //
@@ -265,8 +217,7 @@ export default defineComponent({
       controlsVisible,
       sources,
       tracks,
-      // wrappedTracks,
-      // isSubtitlesEnabled,
+      isSubtitlesEnabled,
       errorHandler,
       updateMediaFragmentHash,
       togglePictureInPicture,
