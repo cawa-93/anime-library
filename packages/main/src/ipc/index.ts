@@ -3,7 +3,7 @@ import type {IpcNameHostsMap} from '/@shared/types/ipc';
 
 
 export function registerIpcHost<T extends keyof IpcNameHostsMap>(hostName: T, host: IpcNameHostsMap[T]): void {
-  ipcMain.handle(hostName, async (event, methodName: string, ...args: unknown[]) => {
+  ipcMain.handle(hostName, async (event, methodName: keyof IpcNameHostsMap[T], ...args: unknown[]) => {
     const method = host[methodName];
 
     // If requested method does not exist, reject.

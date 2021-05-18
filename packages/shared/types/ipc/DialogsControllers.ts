@@ -1,5 +1,3 @@
-import type {IpcHost} from './ipcHost';
-
-export interface DialogsControllers extends IpcHost {
+export interface DialogsControllers {
   showError: (title: string, content: string) => void
 }

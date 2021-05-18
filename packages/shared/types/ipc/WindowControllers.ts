@@ -1,6 +1,4 @@
-import type {IpcHost} from './ipcHost';
-
-export interface WindowControllers extends IpcHost {
+export interface WindowControllers {
   minimize: () => void
   maximize: () => void
   unmaximize: () => void

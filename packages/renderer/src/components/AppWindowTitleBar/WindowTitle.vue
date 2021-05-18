@@ -1,10 +1,11 @@
 <template>
-  <span>{{ title }}</span>
+  <span>{{ title }} v{{ appVersion }}-alpha</span>
 </template>
 
 <script lang="ts">
 import {defineComponent, ref} from 'vue';
 import {useMutationObserver} from '@vueuse/core';
+import {useAppVersion} from '/@/use/useAppVersion';
 
 export default defineComponent({
   name: 'WindowTitle',
@@ -21,7 +22,9 @@ export default defineComponent({
       {childList: true},
     );
 
-    return {title};
+    const appVersion = useAppVersion();
+
+    return {title, appVersion};
   },
 });
 </script>
