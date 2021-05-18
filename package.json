@@ -62,6 +62,7 @@
     "vue-tsc": "^0.1.2"
   },
   "dependencies": {
+    "@microsoft/applicationinsights-web": "^2.6.2",
     "@vueuse/core": "^4.11.0",
     "@xstate/vue": "^0.5.0",
     "electron-updater": "^4.3.9",
