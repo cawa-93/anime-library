@@ -94,7 +94,7 @@ const getResolvedInitialPageUrl = (url: string): string | undefined => {
 };
 
 const createWindow = async (pageUrl?: string) => {
-  const mainWindowState = windowStateKeeper({});
+  const mainWindowState = windowStateKeeper({fullScreen: false});
 
   mainWindow = new BrowserWindow({
     show: false,
