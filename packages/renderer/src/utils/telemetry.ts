@@ -17,12 +17,15 @@ function getTracker() {
     },
   });
 
+
   appInsights.loadAppInsights();
+  appInsights.context.application.ver = import.meta.env.VITE_APP_VERSION;
+  appInsights.context.application.build = import.meta.env.VITE_BUILD_VERSION;
 
   return appInsights;
 }
 
-export function trackPageView(options?: IPageViewTelemetry) {
+export function trackPageView(options?: IPageViewTelemetry): void {
   if (TRACKING_ENABLED) {
     getTracker().trackPageView(options);
   }

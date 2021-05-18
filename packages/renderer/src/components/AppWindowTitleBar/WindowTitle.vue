@@ -5,7 +5,6 @@
 <script lang="ts">
 import {defineComponent, ref} from 'vue';
 import {useMutationObserver} from '@vueuse/core';
-import {useAppVersion} from '/@/use/useAppVersion';
 
 export default defineComponent({
   name: 'WindowTitle',
@@ -22,7 +21,7 @@ export default defineComponent({
       {childList: true},
     );
 
-    const appVersion = useAppVersion();
+    const appVersion = import.meta.env.VITE_APP_VERSION;
 
     return {title, appVersion};
   },

@@ -17,4 +17,13 @@ export function loadAndSetEnv(mode, cwd) {
       process.env[envKey] = env[envKey]
     }
   }
+
+  if (process.env.VITE_APP_VERSION === undefined) {
+    const now = new Date;
+    process.env.VITE_APP_VERSION = mode === 'development' ? '0.0.0' : `${now.getFullYear() - 2000}.${now.getMonth() + 1}.${now.getDate()}`;
+  }
+
+  if (process.env.VITE_BUILD_VERSION === undefined) {
+    process.env.VITE_BUILD_VERSION = String(mode === 'development' ? '0' : Math.round((Date.now() / 1000)));
+  }
 }

@@ -183,7 +183,6 @@ app.whenReady()
 
     registerIpcHost('WindowControllers', WindowControllersHost);
     registerIpcHost('DialogsControllers', DialogsHost);
-    registerIpcHost('App', app);
 
     return createWindow();
   })
