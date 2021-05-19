@@ -1,8 +1,9 @@
 import type * as sm from '/@/utils/videoProvider/providers/anime365-interfaces';
-import type {Episode, Series, Translation, Video, VideoTrack} from '/@/utils/videoProvider';
+import type {Episode, Series, Translation, TranslationAuthor, Video, VideoTrack} from '/@/utils/videoProvider';
 
 
 const API_BASE = 'https://smotret-anime.online/api/';
+
 
 async function request<T>(url: string | URL): Promise<sm.ApiResponse<T>> {
 
@@ -10,7 +11,7 @@ async function request<T>(url: string | URL): Promise<sm.ApiResponse<T>> {
     url = new URL(url);
   }
 
-  const access_token =  getAccessToken();
+  const access_token = getAccessToken();
   if (access_token) {
     url.searchParams.set('access_token', access_token);
   }
@@ -23,9 +24,11 @@ async function request<T>(url: string | URL): Promise<sm.ApiResponse<T>> {
   return await response.json();
 }
 
+
 function isFailureResponse(response: sm.ApiResponseFailure | sm.ApiResponseSuccess<unknown>): response is sm.ApiResponseFailure {
   return (response as sm.ApiResponseSuccess<unknown>).data === undefined;
 }
+
 
 export async function searchSeries<RequestedFields extends keyof sm.Series>(searchParams: URLSearchParams): Promise<Pick<sm.Series, RequestedFields>[]> {
   const requestURL = new URL('series', API_BASE);
@@ -41,6 +44,7 @@ export async function searchSeries<RequestedFields extends keyof sm.Series>(sear
 
   return apiResponse.data;
 }
+
 
 export async function getSeries(myAnimeListId: NumberLike): Promise<Series | undefined> {
   const fields = ['title', 'myAnimeListId'] as const;
@@ -114,8 +118,50 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
 }
 
 
+class Author implements TranslationAuthor {
+  readonly team: string;
+  readonly members: string[];
+  readonly id: string | null = null;
+
+
+  constructor({summary, list}: { summary?: string, list?: string[] }) {
+    if (!summary || !summary.trim()) {
+      this.team = 'Неизвестный';
+      this.members = [];
+      this.id = null;
+      return;
+    }
+
+    if (!Array.isArray(list)) {
+      list = summary.split(/[()[\]|&,]/);
+    }
+
+    const [team, ...members] = list.flatMap(s => s.split(/[()[\]|&,]/)).map(s => s.trim()).filter(s => !!s && s.toLocaleLowerCase() !== 'bd');
+
+    this.team = team;
+    this.members = members;
+    this.id = Author.clearString(team);
+  }
+
+
+  static clearString(str: string): string {
+    return str.trim().toLocaleLowerCase();
+  }
+
+
+  isEqual(author: this): boolean {
+    return this.id !== null && this.id === author.id;
+  }
+}
+
+
+function getAuthor(author: { summary?: string, list?: string[] }): TranslationAuthor {
+  return new Author(author);
+}
+
+
 export async function getTranslations(episodeId: NumberLike): Promise<Translation[]> {
-  const fields = ['id', 'authorsSummary', 'episodeId', 'typeKind', 'typeLang', 'isActive'] as const;
+  const fields = ['id', 'authorsSummary', 'authorsList', 'episodeId', 'typeKind', 'typeLang', 'isActive'] as const;
   type RequestedFields = typeof fields[number]
   type ResponseItem = Pick<sm.Translation, RequestedFields>
   type ExpectedResponse = Array<ResponseItem>
@@ -148,11 +194,22 @@ export async function getTranslations(episodeId: NumberLike): Promise<Translatio
 
   return apiResponse.data
     .filter(isRuVoiceOrRuSub)
-    .map(t => ({
-      id: t.id,
-      title: t.authorsSummary || 'Неизвестный',
-      type: t.typeKind,
-    }));
+    .map(t => {
+
+      const author = getAuthor({
+        summary: t.authorsSummary,
+        list: t.authorsList,
+      });
+
+      return ({
+        id: t.id,
+        get title() {
+          return this.author.team;
+        },
+        type: t.typeKind,
+        author,
+      });
+    });
 }
 
 
@@ -172,7 +229,7 @@ export async function getStream(translationId: NumberLike): Promise<Video[]> {
 
   const tracks: VideoTrack[] = [];
 
-  const resolvedSubtitlesUrl = subtitlesUrl; // || subtitlesUrl ; // .ass файлы в данный момент поддерживаются только .vtt файлы
+  const resolvedSubtitlesUrl = subtitlesUrl; // || subtitlesVttUrl ; // .vtt файлы в данный момент НЕ поддерживаются
 
   if (resolvedSubtitlesUrl) {
     tracks.push({
@@ -191,6 +248,7 @@ export async function getStream(translationId: NumberLike): Promise<Video[]> {
   }));
 }
 
+
 export function clearVideosCache(translationId: NumberLike): Promise<boolean> {
   return caches
     .open('sm-api-calls')
@@ -198,7 +256,9 @@ export function clearVideosCache(translationId: NumberLike): Promise<boolean> {
 
 }
 
+
 const ACCESS_TOKEN_STORAGE_KEY = 'sm-access-token';
+
 
 export function getAccessToken(): string | null {
   return localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
@@ -218,6 +278,7 @@ export function saveAccessToken(token?: string): void {
 
   return localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, clearedToken);
 }
+
 
 function clearAccessToken() {
   return localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);

@@ -13,6 +13,7 @@
         :key="translation.id"
       >
         <router-link
+          :title="translation.author.members.join(' & ')"
           :class="{active: selectedTranslation === translation}"
           :to="{params: {translationId: translation.id, episodeNum: selectedEpisodeNum}, hash: currentLocation.hash}"
           replace
@@ -53,7 +54,7 @@ export default defineComponent({
     const selectedTranslation = computed(() => props.translations.find(e => String(e.id) === route.params.translationId) || props.translations[0]);
 
     const groups = computed(() => {
-      const groups = new Map<string, Translation[]>();
+      const groups = new Map<string, DeepReadonly<Translation>[]>();
 
       for (const translation of props.translations) {
         const g = groups.get(translation.type) || [];

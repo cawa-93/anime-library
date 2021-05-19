@@ -2,6 +2,7 @@ export interface ApiResponseSuccess<T> {
   data: T
 }
 
+
 export interface ApiResponseFailure {
   error: {
     code: number
@@ -9,12 +10,15 @@ export interface ApiResponseFailure {
   }
 }
 
+
 export type ApiResponse<T> = ApiResponseSuccess<T> | ApiResponseFailure
+
 
 export interface Link {
   title: string;
   url: string;
 }
+
 
 export interface Titles {
   romaji?: string;
@@ -23,11 +27,13 @@ export interface Titles {
   en?: string;
 }
 
+
 export interface Description {
   source: string;
   value: string;
   updatedDateTime: string;
 }
+
 
 export interface Episode {
   id: number;
@@ -42,11 +48,13 @@ export interface Episode {
   translations?: (TranslationVoice | TranslationSub | TranslationRaw)[]
 }
 
+
 export interface Genre {
   id: number;
   title: string;
   url: string;
 }
+
 
 export interface Series {
   id: number;
@@ -86,6 +94,7 @@ export interface TranslationVoice extends Translation {
   typeLang: 'rus'
 }
 
+
 export interface TranslationSub extends Translation {
   typeKind: 'sub'
   typeLang: 'rus'
@@ -96,6 +105,7 @@ export interface TranslationRaw extends Translation {
   typeKind: 'raw'
   typeLang: 'ja'
 }
+
 
 export interface Translation {
   id: number;
@@ -129,10 +139,12 @@ export interface Download {
   url: string;
 }
 
+
 export interface Stream {
   height: number;
   urls: string[];
 }
+
 
 export interface Video {
   embedUrl: string;

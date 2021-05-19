@@ -28,6 +28,11 @@ export interface Translation extends HasID, HasTitle {
    * Тип перевода: Озвучка или субтитры
    */
   type: TranslationType
+
+  /**
+   * Автор перевода
+   */
+  author: TranslationAuthor
 }
 
 export interface VideoSource {
@@ -47,6 +52,14 @@ export interface Video {
   quality: number,
   sources: VideoSource[]
   tracks?: VideoTrack[]
+}
+
+export interface TranslationAuthor {
+  readonly id: string | null
+  readonly team: string
+  readonly members: string[]
+
+  isEqual: (author: this) => boolean
 }
 
 
