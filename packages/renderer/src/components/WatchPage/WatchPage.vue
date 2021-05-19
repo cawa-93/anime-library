@@ -20,18 +20,26 @@
         v-model:is-opened="isSidePanelOpened"
       >
         <div class="tabs">
-          <button
-            :class="{active: sidePanelActiveTab === 'episodes'}"
-            @click="sidePanelActiveTab = 'episodes'"
-          >
-            Эпизоды
-          </button>
-          <button
-            :class="{active: sidePanelActiveTab === 'translations'}"
-            @click="sidePanelActiveTab = 'translations'"
-          >
-            Переводы
-          </button>
+          <div class="radio-button-container">
+            <input
+              id="active-tab-episodes"
+              v-model="sidePanelActiveTab"
+              type="radio"
+              name="active-tab"
+              value="episodes"
+            >
+            <label for="active-tab-episodes">Эпизоды</label>
+          </div>
+          <div class="radio-button-container">
+            <input
+              id="active-tab-translations"
+              v-model="sidePanelActiveTab"
+              type="radio"
+              name="active-tab"
+              value="translations"
+            >
+            <label for="active-tab-translations">Переводы</label>
+          </div>
         </div>
         <episodes-list
           v-if="episodes.length > 0 && sidePanelActiveTab === 'episodes'"
@@ -60,7 +68,6 @@ import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
 import WinIcon from '/@/components/WinIcon.vue';
 import {useRouter} from 'vue-router';
 import {showErrorMessage} from '/@/utils/dialogs';
-
 
 
 
@@ -195,21 +202,43 @@ export default defineComponent({
 }
 
 .tabs {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   height: 2.5rem;
   margin-bottom: 1rem;
 }
-.tabs button {
-  flex: 1;
+
+.tabs label {
   border: none;
   background: none;
-  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  align-items: center;
+  justify-content: center;
 }
-.tabs button:hover {
-  background: rgba(255,255,255,0.2);
+
+.tabs .radio-button-container:hover label {
+  background: rgba(255, 255, 255, 0.2);
 }
-.tabs button.active {
+
+.tabs input:checked + label {
   font-weight: bold;
   border-bottom: 3px solid;
+}
+
+.tabs .radio-button-container {
+  cursor: pointer;
+  position: relative;
+}
+.tabs .radio-button-container input {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 0;
+  opacity: 0;
 }
 </style>

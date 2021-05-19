@@ -190,11 +190,13 @@ export default defineComponent({
     //
     // Работа с горячими клавишами
     const activeElement = useActiveElement();
-    const notUsingInteractiveElement = computed(() =>
-      activeElement.value?.tagName !== 'INPUT'
-      && activeElement.value?.tagName !== 'TEXTAREA'
-      && activeElement.value?.tagName !== 'SELECT'
-      && activeElement.value?.tagName !== 'BUTTON',
+    const notUsingInteractiveElement = computed(() => {
+      console.log(activeElement.value?.tagName);
+        return activeElement.value?.tagName !== 'INPUT'
+        && activeElement.value?.tagName !== 'TEXTAREA'
+        && activeElement.value?.tagName !== 'SELECT'
+        && activeElement.value?.tagName !== 'BUTTON';
+      },
     );
 
     const {space, arrowRight, arrowLeft, arrowUp, arrowDown, pause, play} = useMagicKeys();
