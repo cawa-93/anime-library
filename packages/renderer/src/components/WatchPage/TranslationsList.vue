@@ -17,6 +17,7 @@
           :class="{active: selectedTranslation === translation}"
           :to="{params: {translationId: translation.id, episodeNum: selectedEpisodeNum}, hash: currentLocation.hash}"
           replace
+          @click="saveToPreferred(translation)"
         >
           <win-icon class="play-icon">
             &#xF5B0;
@@ -30,11 +31,13 @@
 
 <script lang="ts">
 import type {DeepReadonly, PropType} from 'vue';
-import {computed, defineComponent} from 'vue';
+import {computed, defineComponent, toRaw} from 'vue';
 import {useRoute} from 'vue-router';
 import WinIcon from '/@/components/WinIcon.vue';
 import type {Translation} from '/@/utils/videoProvider';
 import {useBrowserLocation} from '@vueuse/core';
+import {savePreferredTranslation} from '/@/utils/translationRecomendations';
+
 
 export default defineComponent({
   name: 'TranslationsList',
@@ -81,12 +84,14 @@ export default defineComponent({
       return result;
     });
 
-    // const hash = ref(location.hash);
     const currentLocation = useBrowserLocation();
-    // useIntervalFn(() => console.log({native: location.hash, wrapped: l.value.hash}));
-    // setTimeout(() => hash.value = location.hash, 1000);
 
-    return {selectedTranslation, groups, currentLocation};
+
+    // Сохранение выбранного перевода в предпочтениях
+    const saveToPreferred = (translation: DeepReadonly<Translation>) => {
+      savePreferredTranslation(route.params.seriesId as NumberLike, toRaw(translation) as Translation);
+    };
+    return {selectedTranslation, groups, currentLocation, saveToPreferred};
   },
 });
 </script>

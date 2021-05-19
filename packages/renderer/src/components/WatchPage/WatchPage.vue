@@ -41,6 +41,7 @@
             <label for="active-tab-translations">Переводы</label>
           </div>
         </div>
+
         <episodes-list
           v-if="episodes.length > 0 && sidePanelActiveTab === 'episodes'"
           :episodes="episodes"
