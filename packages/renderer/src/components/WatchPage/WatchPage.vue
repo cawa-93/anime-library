@@ -10,36 +10,35 @@
       <button
         v-if="episodes"
         class="playlist-button"
-        @click="send('TOGGLE')"
+        @click="isSidePanelOpened = !isSidePanelOpened"
       >
         <win-icon>&#xE8FD;</win-icon>
       </button>
 
       <side-panel
-        v-if="episodes"
-        :is-opened="state.matches('expanded')"
-        @close-request="send('TOGGLE')"
+        v-if="isSidePanelOpened"
+        v-model:is-opened="isSidePanelOpened"
       >
         <div class="tabs">
           <button
-            :class="{active: state.matches('expanded.episodes')}"
-            @click="send('OPEN_EPISODES')"
+            :class="{active: sidePanelActiveTab === 'episodes'}"
+            @click="sidePanelActiveTab = 'episodes'"
           >
             Эпизоды
           </button>
           <button
-            :class="{active: state.matches('expanded.translations')}"
-            @click="send('OPEN_TRANSLATIONS')"
+            :class="{active: sidePanelActiveTab === 'translations'}"
+            @click="sidePanelActiveTab = 'translations'"
           >
             Переводы
           </button>
         </div>
         <episodes-list
-          v-if="state.matches('expanded.episodes')"
+          v-if="episodes.length > 0 && sidePanelActiveTab === 'episodes'"
           :episodes="episodes"
         />
         <translations-list
-          v-if="state.matches('expanded.translations')"
+          v-if="translations.length > 0 && sidePanelActiveTab === 'translations'"
           :selected-episode-num="selectedEpisode.number"
           :translations="translations"
         />
@@ -57,45 +56,12 @@ import {clearVideosCache, getEpisodes, getTranslations, getVideos} from '/@/util
 import SidePanel from '/@/components/WatchPage/SidePanel.vue';
 import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
 import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
-import {Machine} from 'xstate';
-import {useMachine} from '@xstate/vue';
 import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
 import WinIcon from '/@/components/WinIcon.vue';
 import {useRouter} from 'vue-router';
 import {showErrorMessage} from '/@/utils/dialogs';
 
 
-const PanelStateMachine = Machine({
-  initial: 'collapsed',
-  states: {
-    collapsed: {
-      on: {
-        TOGGLE: 'expanded.memo',
-      },
-    },
-    expanded: {
-      on: {
-        TOGGLE: 'collapsed',
-      },
-      initial: 'episodes',
-      states: {
-        episodes: {
-          on: {
-            OPEN_TRANSLATIONS: 'translations',
-          },
-        },
-        translations: {
-          on: {
-            OPEN_EPISODES: 'episodes',
-          },
-        },
-        memo: {
-          type: 'history',
-        },
-      },
-    },
-  },
-});
 
 
 export default defineComponent({
@@ -117,7 +83,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-
     // Эпизоды
     const episodes = asyncComputed(() => props.seriesId ? getEpisodes(props.seriesId) : [] as Episode[], [] as Episode[]);
     const selectedEpisode = computed(() => episodes.value.find(e => e.number == props.episodeNum) || episodes.value[0]);
@@ -176,7 +141,8 @@ export default defineComponent({
         .then(() => loadVideoSources());
 
 
-    const {state, send} = useMachine(PanelStateMachine);
+    const isSidePanelOpened = ref(false);
+    const sidePanelActiveTab = ref<'episodes' | 'translations'>('translations');
 
     return {
       onSourceError,
@@ -185,8 +151,8 @@ export default defineComponent({
       selectedEpisode,
       translations,
       videos,
-      state,
-      send,
+      isSidePanelOpened,
+      sidePanelActiveTab,
     };
   },
 });

@@ -2,19 +2,15 @@
   <section
     ref="el"
     class="slided"
-    :class="{open: isOpened}"
   >
     <slot />
   </section>
-  <div
-    class="backdrop slided"
-    :class="{open: isOpened}"
-    @click="$emit('close-request')"
-  />
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+import {defineComponent, ref} from 'vue';
+import {onClickOutside} from '@vueuse/core';
+
 
 export default defineComponent({
   name: 'SidePanel',
@@ -26,7 +22,15 @@ export default defineComponent({
     },
   },
 
-  emits: ['close-request'],
+  emits: ['update:isOpened'],
+
+  setup(_, {emit}) {
+    const el = ref();
+
+    onClickOutside(el, () => emit('update:isOpened', false));
+
+    return {el};
+  },
 });
 </script>
 
@@ -37,16 +41,16 @@ export default defineComponent({
   top: 0;
   right: 0;
   bottom: 0;
-  display: none;
+  /*display: none;*/
   /*transform: translateX(100%);*/
   /*transition: transform 250ms linear;*/
   /*will-change: transform;*/
 }
 
-.slided.open {
-  display: block;
-  /*transform: translateX(0);*/
-}
+/*.slided.open {*/
+/*  display: block;*/
+/*transform: translateX(0);*/
+/*}*/
 
 section {
   z-index: 10;
@@ -56,11 +60,5 @@ section {
   background-color: rgba(255, 255, 255, 0.75);
   height: 100%;
   overflow-y: auto;
-}
-
-.backdrop {
-  background: transparent;
-  width: 100%;
-  height: 100%;
 }
 </style>
