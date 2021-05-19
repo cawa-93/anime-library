@@ -62,7 +62,7 @@ import {useMachine} from '@xstate/vue';
 import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
 import WinIcon from '/@/components/WinIcon.vue';
 import {useRouter} from 'vue-router';
-import {createIpcClient} from '/@/ipc';
+import {showErrorMessage} from '/@/utils/dialogs';
 
 
 const PanelStateMachine = Machine({
@@ -145,19 +145,25 @@ export default defineComponent({
 
     // Загрузка доступных видео для выбранного перевода
     const videos = ref<DeepReadonly<Video[]>>([]);
-    const loadVideoSources = () => getVideos(selectedTranslation.value.id).then(v => {
-      videos.value = v;
-    }).catch(err => {
-      const dialog = createIpcClient('DialogsControllers');
-      if (err.code !== undefined) {
-        const errorText = err.code === 403 ? 'Перейдите в настройки и обновите ключ доступа' : err.message;
-        dialog.showError('Не удалось загрузить видео с Anime.365', errorText);
-      } else {
-        dialog.showError('Не удалось загрузить видео с Anime.365', typeof err === 'string' ? err : JSON.stringify(err));
-      }
+    const loadVideoSources = () => getVideos(selectedTranslation.value.id)
+      .then(v => videos.value = v)
+      .catch((err) => {
 
-      return [];
-    });
+        console.error(err);
+
+        const title = 'Не удалось загрузить видео с Anime.365';
+        const message: string = err.code === 403
+          ? 'Перейдите в настройки и обновите ключ доступа'
+          : err.message !== undefined
+            ? err.message
+            : typeof err === 'string'
+              ? err
+              : JSON.stringify(err);
+
+        showErrorMessage({title, message});
+
+        return [];
+      });
 
     watchEffect(() => {
       if (selectedTranslation.value && selectedTranslation.value.id) {
