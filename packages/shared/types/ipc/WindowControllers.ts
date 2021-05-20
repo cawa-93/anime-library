@@ -1,13 +1,10 @@
-import type {HostBase, MethodOnlyHost} from './Host';
+import type {IpcHost} from './Host';
 
 
-interface WindowControllersBase extends HostBase {
+export type WindowControllers = IpcHost<{
   minimize: () => void
   maximize: () => void
   unmaximize: () => void
   close: () => void
   isMaximized: () => boolean
-}
-
-
-export type WindowControllers = MethodOnlyHost<WindowControllersBase>
+}>

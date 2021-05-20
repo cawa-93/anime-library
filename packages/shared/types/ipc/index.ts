@@ -1,11 +1,11 @@
 import type {WindowControllers} from './WindowControllers';
 import type {DialogsControllers} from './DialogsControllers';
-import type {HostBase} from './Host';
-import type {ClearIndex} from '../utils';
+import type {IpcHost} from './Host';
+import type {ClearIndex, Fn} from '../utils';
 
 
 
-interface IpcNameHostsMapBase extends Record<string, HostBase> {
+interface IpcNameHostsMapBase extends Record<string, IpcHost<Record<string, Fn>>> {
   'WindowControllers': WindowControllers
   'DialogsControllers': DialogsControllers
 }

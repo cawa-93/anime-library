@@ -7,14 +7,13 @@ const {invoke} = useElectron();
 
 export function createIpcClient<T extends keyof IpcNameHostsMap>(hostName: T): Promisified<IpcNameHostsMap[T]> {
   return new Proxy({} as never, {
-    get: (obj, methodName: string) => {
+    get: (obj, methodName) => {
 
       // Chrome runtime could try to call those method if the proxy object
       // is passed in a resolve or reject Promise function
-      if (methodName === 'then' || methodName === 'catch')
+      if (methodName === 'then' || methodName === 'catch' || methodName === 'finally')
         return undefined;
 
-      // If accessed field effectivly exist on proxied object, act as a noop
       if (Object.prototype.hasOwnProperty.call(obj, methodName)) {
         return obj[methodName];
       }

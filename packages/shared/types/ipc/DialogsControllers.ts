@@ -1,9 +1,6 @@
-import type {HostBase, MethodOnlyHost} from './Host';
+import type {IpcHost} from './Host';
 
 
-interface DialogsControllersBase extends HostBase {
+export type DialogsControllers = IpcHost<{
   showError: (title: string, content: string) => void
-}
-
-
-export type DialogsControllers = MethodOnlyHost<DialogsControllersBase>
+}>
