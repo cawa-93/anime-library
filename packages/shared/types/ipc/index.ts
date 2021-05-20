@@ -1,8 +1,14 @@
 import type {WindowControllers} from './WindowControllers';
 import type {DialogsControllers} from './DialogsControllers';
+import type {HostBase} from './Host';
+import type {ClearIndex} from '../utils';
 
-export interface IpcNameHostsMap {
+
+
+interface IpcNameHostsMapBase extends Record<string, HostBase> {
   'WindowControllers': WindowControllers
   'DialogsControllers': DialogsControllers
 }
 
+
+export type IpcNameHostsMap = ClearIndex<IpcNameHostsMapBase>

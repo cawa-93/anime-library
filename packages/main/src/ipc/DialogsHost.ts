@@ -1,4 +1,4 @@
-import type {DialogsControllers} from '../../../shared/types/ipc/DialogsControllers';
+import type {DialogsControllers} from '/@shared/types/ipc/DialogsControllers';
 import {dialog} from 'electron';
 
 class DialogsHost implements DialogsControllers {
