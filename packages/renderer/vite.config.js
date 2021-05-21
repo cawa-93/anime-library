@@ -11,11 +11,29 @@ import {VitePWA} from 'vite-plugin-pwa';
 
 const PACKAGE_ROOT = __dirname;
 
+
 /**
  * Vite looks for `.env.[mode]` files only in `PACKAGE_ROOT` directory.
  * Therefore, you must manually load and set the environment variables from the root directory above
  */
 loadAndSetEnv(process.env.MODE, process.cwd());
+
+const waitOnlinePlugin = {
+  requestWillFetch: ({request}) => {
+    if (navigator.onLine) {
+      return Promise.resolve(request);
+    }
+
+    return new Promise(r => {
+      const c = setInterval(() => {
+        if (navigator.onLine) {
+          clearInterval(c);
+          r(request);
+        }
+      }, 2000);
+    });
+  },
+};
 
 /**
  * @see https://vitejs.dev/config/
@@ -63,16 +81,7 @@ export default defineConfig({
   },
   plugins: [
     vue(),
-    copy({
-      hook: 'writeBundle',
-      targets: [{
-        src: [
-          'packages/renderer/src/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus-worker.data',
-          'packages/renderer/src/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus-worker.wasm',
-        ],
-        dest: 'packages/renderer/dist',
-      }],
-    }),
+
     VitePWA({
       mode: 'development',
       injectRegister: 'script',
@@ -84,15 +93,39 @@ export default defineConfig({
             urlPattern: /^https:\/\/smotret-anime\.online\/api\/.*/,
             handler: 'CacheFirst',
             options: {
+              plugins: [waitOnlinePlugin],
               cacheName: 'sm-api-calls',
               expiration: {
                 maxAgeSeconds: 60 * 60,
               },
             },
           },
+
+          {
+            urlPattern: /^https:\/\/sub\.smotret-anime\.online\/.*/,
+            handler: 'CacheFirst',
+            options: {
+              plugins: [waitOnlinePlugin],
+              cacheName: 'sm-subtitles',
+              expiration: {
+                maxEntries: 10,
+              },
+            },
+          },
         ],
       },
     }),
+
+    copy({
+      verbose: true,
+      hook: 'writeBundle',
+      targets: [{
+        src: [
+          './src/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus-worker.data',
+          './src/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus-worker.wasm',
+        ],
+        dest: './dist',
+      }],
+    }),
   ],
 });
-

@@ -59,7 +59,7 @@
 <script lang="ts">
 import {asyncComputed} from '@vueuse/core';
 import type {DeepReadonly} from 'vue';
-import {computed, defineComponent, ref, watchEffect} from 'vue';
+import {computed, defineComponent, ref, watch, watchEffect} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
 import {clearVideosCache, getEpisodes, getTranslations, getVideos} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/WatchPage/SidePanel.vue';
@@ -69,6 +69,7 @@ import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
 import WinIcon from '/@/components/WinIcon.vue';
 import {useRouter} from 'vue-router';
 import {showErrorMessage} from '/@/utils/dialogs';
+import {getPreferredTranslationFromList} from '/@/utils/translationRecomendations';
 
 
 
@@ -91,17 +92,33 @@ export default defineComponent({
     },
   },
   setup(props) {
+    const router = useRouter();
+
     // Эпизоды
     const episodes = asyncComputed(() => props.seriesId ? getEpisodes(props.seriesId) : [] as Episode[], [] as Episode[]);
     const selectedEpisode = computed(() => episodes.value.find(e => e.number == props.episodeNum) || episodes.value[0]);
 
-    const router = useRouter();
-    const nextEpisodeURL = computed(() => {
+    const nextEpisodeURL = ref<string | undefined>();
+    const getNextEpisodeUrl = async () => {
       const nextEpisode = episodes.value[episodes.value.findIndex(e => e === selectedEpisode.value) + 1];
       if (nextEpisode === undefined) {
         return undefined;
       }
-      const resolved = router.resolve({params: {episodeNum: nextEpisode.number, translationId: ''}, hash: ''});
+
+      const nextEpisodeTranslations = await getTranslations(nextEpisode.id);
+      const nextEpisodePreferredTranslations = await getPreferredTranslationFromList(props.seriesId, nextEpisodeTranslations as Translation[]);
+
+
+      const translationId = nextEpisodePreferredTranslations?.id || '';
+
+
+      // Если удалось определить перевод для следующей серии -- выполнить загрузку видео, чтобы кэшировать их
+      if (nextEpisodePreferredTranslations?.id) {
+        console.info('Попытка предзагрузки видео');
+        getVideos(nextEpisodePreferredTranslations?.id).catch(e => console.error('предзагрузить видео не удалось', e));
+      }
+
+      const resolved = router.resolve({params: {episodeNum: nextEpisode.number, translationId}, hash: ''});
 
       if (!resolved) {
         console.error('Не удалось определить ссылку на следующую серию', {resolved});
@@ -109,34 +126,63 @@ export default defineComponent({
       }
 
       return resolved.href;
-    });
+    };
+
+    watch(selectedEpisode, async () => nextEpisodeURL.value = await getNextEpisodeUrl());
+
 
 
     // Доступные переводы
-    const translations = asyncComputed(() => selectedEpisode.value ? getTranslations(selectedEpisode.value.id) : [] as Translation[], [] as Translation[]);
-    const selectedTranslation = computed(() => translations.value.find(e => e.id === props.translationId) || translations.value[0]);
+    const translations = ref<DeepReadonly<Translation[]>>([]);
+    watch(selectedEpisode, async () => translations.value = await getTranslations(selectedEpisode.value.id));
+    const selectedTranslation = computed(() => translations.value.find(e => e.id === props.translationId));
+
+    // Автоматический выбор наиболее предпочитаемого перевода
+    watch(translations, () => {
+      if (!props.translationId && translations.value.length) {
+        getPreferredTranslationFromList(props.seriesId, translations.value as Translation[]).then(t => {
+          if (!t?.id) {
+            return;
+          }
+
+          router.replace({
+            params: {
+              episodeNum: selectedEpisode.value.number,
+              translationId: t.id,
+            },
+          });
+        });
+      }
+    });
+
 
     // Загрузка доступных видео для выбранного перевода
     const videos = ref<DeepReadonly<Video[]>>([]);
-    const loadVideoSources = () => getVideos(selectedTranslation.value.id)
-      .then(v => videos.value = v)
-      .catch((err) => {
+    const loadVideoSources = () => {
+      if (!selectedTranslation.value?.id) {
+        return;
+      }
 
-        console.error(err);
+      return getVideos(selectedTranslation.value.id)
+        .then(v => videos.value = v)
+        .catch((err) => {
 
-        const title = 'Не удалось загрузить видео с Anime.365';
-        const message: string = err.code === 403
-          ? 'Перейдите в настройки и обновите ключ доступа'
-          : err.message !== undefined
-            ? err.message
-            : typeof err === 'string'
-              ? err
-              : JSON.stringify(err);
+          console.error(err);
 
-        showErrorMessage({title, message});
+          const title = 'Не удалось загрузить видео с Anime.365';
+          const message: string = err.code === 403
+            ? 'Перейдите в настройки и обновите ключ доступа'
+            : err.message !== undefined
+              ? err.message
+              : typeof err === 'string'
+                ? err
+                : JSON.stringify(err);
 
-        return [];
-      });
+          showErrorMessage({title, message});
+
+          return [];
+        });
+    };
 
     watchEffect(() => {
       if (selectedTranslation.value && selectedTranslation.value.id) {
@@ -144,9 +190,13 @@ export default defineComponent({
       }
     });
 
-    const onSourceError = () =>
-      clearVideosCache(selectedTranslation.value.id)
-        .then(() => loadVideoSources());
+    const onSourceError = () => {
+      if (!selectedTranslation.value) {
+        return;
+      }
+
+      clearVideosCache(selectedTranslation.value.id).then(() => loadVideoSources());
+    };
 
 
     const isSidePanelOpened = ref(false);
