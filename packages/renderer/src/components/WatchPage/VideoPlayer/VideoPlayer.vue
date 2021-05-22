@@ -201,8 +201,8 @@ export default defineComponent({
 
     const {space, arrowRight, arrowLeft, arrowUp, arrowDown, pause, play} = useMagicKeys();
     whenever(and(space, notUsingInteractiveElement), () => playing.value = !playing.value);
-    whenever(and(arrowRight, notUsingInteractiveElement), () => currentTime.value += 30);
-    whenever(and(arrowLeft, notUsingInteractiveElement), () => currentTime.value -= 30);
+    whenever(and(arrowRight, notUsingInteractiveElement), () => currentTime.value += 5);
+    whenever(and(arrowLeft, notUsingInteractiveElement), () => currentTime.value -= 5);
     whenever(pause, () => playing.value = false);
     whenever(play, () => playing.value = true);
     whenever(and(arrowUp, notUsingInteractiveElement), () => volume.value = Math.min(1, volume.value + 0.1));
