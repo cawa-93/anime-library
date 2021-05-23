@@ -66,6 +66,8 @@
       </li>
     </ol>
   </dialog>
+
+  <shiki-oauth />
 </template>
 
 <script lang="ts">
@@ -73,9 +75,11 @@ import {computed, defineComponent, ref} from 'vue';
 import {useElectron} from '/@/use/electron';
 import {onClickOutside} from '@vueuse/core';
 import {getAccessToken, saveAccessToken} from '/@/utils/videoProvider/providers/anime365';
+import ShikiOauth from '/@/components/ShikiOauth.vue';
 
 export default defineComponent({
   name: 'OptionsPage',
+  components: {ShikiOauth},
   setup() {
     const helpDialog = ref<HTMLDialogElement>();
     onClickOutside(helpDialog, () => {

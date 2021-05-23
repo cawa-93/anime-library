@@ -80,7 +80,7 @@ const getResolvedInitialPageUrl = (url: string): string | undefined => {
   try {
     const urlParsed = new URL(url);
     if (urlParsed.protocol === PROTOCOL + ':' && urlParsed.hostname === '.') {
-      return getFullHref(urlParsed.pathname + urlParsed.hash);
+      return getFullHref(urlParsed.pathname + urlParsed.search + urlParsed.hash);
     }
     // eslint-disable-next-line no-empty
   } catch {
