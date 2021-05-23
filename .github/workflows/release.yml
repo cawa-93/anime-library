@@ -120,6 +120,10 @@ jobs:
       # Compile app and upload artifacts
       - name: Compile & release Electron app
         uses: samuelmeuli/action-electron-builder@v1
+        env:
+          VITE_APPLICATION_INSIGHTS: ${{ secrets.VITE_APPLICATION_INSIGHTS }}
+          VITE_SHIKI_CLIENT_ID: ${{ secrets.VITE_SHIKI_CLIENT_ID }}
+          VITE_SHIKI_CLIENT_SECRET: ${{ secrets.VITE_SHIKI_CLIENT_SECRET }}
         with:
           build_script_name: build
           args: --config electron-builder.config.js
