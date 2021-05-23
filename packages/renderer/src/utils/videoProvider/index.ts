@@ -58,8 +58,6 @@ export interface TranslationAuthor {
   readonly id: string | null
   readonly team: string
   readonly members: string[]
-
-  isEqual: (author: this) => boolean
 }
 
 

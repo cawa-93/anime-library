@@ -1,3 +1,6 @@
+import type {DeepReadonly} from 'vue';
+
+
 export type Promisified<T> = {
   readonly [P in keyof T]: T[P] extends Fn ? (...a: Parameters<T[P]>) => Promise<ReturnType<T[P]>> : Promise<T[P]>;
 }
@@ -53,3 +56,7 @@ export type Fn = (...args: any[]) => any
 export type ClearIndex<T> = {
   [P in keyof T as string extends P ? never : number extends P ? never : P]: T[P]
 };
+
+
+
+export type MaybeReadonly<T> = DeepReadonly<T> | T

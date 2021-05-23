@@ -2,7 +2,8 @@ import type {Translation, TranslationAuthor} from '/@/utils/videoProvider';
 import type {DBSchema, IDBPDatabase} from 'idb';
 import {openDB} from 'idb';
 import type {IndexKey} from 'idb/build/esm/entry';
-import type {DeepReadonly} from 'vue';
+import {isAuthorsEqual} from '/@/utils/videoProvider/providers/anime365-authors';
+import type {MaybeReadonly} from '/@shared/types/utils';
 
 
 interface TranslationRecommendations extends DBSchema {
@@ -110,9 +111,6 @@ async function getPreferredTranslationAuthorsByType(preferredType: IndexKey<Tran
 }
 
 
-type MaybeReadonly<T> = DeepReadonly<T> | T
-
-
 export async function getPreferredTranslationFromList<T extends MaybeReadonly<Translation>>(seriesId: number, translations: T[]): Promise<T | undefined> {
 
   if (!translations || translations.length === 0) {
@@ -126,7 +124,7 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
 
   // Попытка быстро вернуть перевод, если сразу найдётся совпадение по автору и типу
   if (reference) {
-    const preferredTranslation = translations.find(t => t.type === reference.type && t.author.isEqual(reference.author));
+    const preferredTranslation = translations.find(t => t.type === reference.type && isAuthorsEqual(t.author, reference.author));
     if (preferredTranslation) {
       return preferredTranslation;
     }
@@ -161,7 +159,7 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
 
   // Попытка найти среди доступных перевод от одного из предпочитаемых авторов по порядку их приоритета
   for (const preferredAuthor of preferredAuthors) {
-    const preferredTranslation = translations.find(t => t.author.isEqual(preferredAuthor));
+    const preferredTranslation = translations.find(t => isAuthorsEqual(t.author, preferredAuthor));
     if (preferredTranslation) {
       return preferredTranslation;
     }

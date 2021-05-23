@@ -1,5 +1,6 @@
 import type * as sm from '/@/utils/videoProvider/providers/anime365-interfaces';
-import type {Episode, Series, Translation, TranslationAuthor, Video, VideoTrack} from '/@/utils/videoProvider';
+import type {Episode, Series, Translation, Video, VideoTrack} from '/@/utils/videoProvider';
+import {getAuthor} from '/@/utils/videoProvider/providers/anime365-authors';
 
 
 const API_BASE = 'https://smotret-anime.online/api/';
@@ -118,47 +119,6 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
 }
 
 
-class Author implements TranslationAuthor {
-  readonly team: string;
-  readonly members: string[];
-  readonly id: string | null = null;
-
-
-  constructor({summary, list}: { summary?: string, list?: string[] }) {
-    if (!summary || !summary.trim()) {
-      this.team = 'Неизвестный';
-      this.members = [];
-      this.id = null;
-      return;
-    }
-
-    if (!Array.isArray(list)) {
-      list = summary.split(/[()[\]|&,]/);
-    }
-
-    const [team, ...members] = list.flatMap(s => s.split(/[()[\]|&,]/)).map(s => s.trim()).filter(s => !!s && s.toLocaleLowerCase() !== 'bd');
-
-    this.team = team;
-    this.members = members;
-    this.id = Author.clearString(team);
-  }
-
-
-  static clearString(str: string): string {
-    return str.trim().toLocaleLowerCase();
-  }
-
-
-  isEqual(author: this): boolean {
-    return this.id !== null && this.id === author.id;
-  }
-}
-
-
-function getAuthor(author: { summary?: string, list?: string[] }): TranslationAuthor {
-  return new Author(author);
-}
-
 
 export async function getTranslations(episodeId: NumberLike): Promise<Translation[]> {
   const fields = ['id', 'authorsSummary', 'authorsList', 'episodeId', 'typeKind', 'typeLang', 'isActive'] as const;
@@ -198,7 +158,6 @@ export async function getTranslations(episodeId: NumberLike): Promise<Translatio
 
       const author = getAuthor({
         summary: t.authorsSummary,
-        list: t.authorsList,
       });
 
       return ({
