@@ -1,5 +1,8 @@
 <template>
-  <ul class="playlist">
+  <ul
+    ref="root"
+    class="playlist"
+  >
     <li
       v-for="episode of episodes"
       :key="episode.id"
@@ -20,7 +23,7 @@
 
 <script lang="ts">
 import type {DeepReadonly, PropType} from 'vue';
-import {computed, defineComponent} from 'vue';
+import {computed, defineComponent, onMounted, ref} from 'vue';
 import {useRoute} from 'vue-router';
 import WinIcon from '/@/components/WinIcon.vue';
 import type {Episode} from '/@/utils/videoProvider';
@@ -36,9 +39,17 @@ export default defineComponent({
   },
   setup(props) {
     const route = useRoute();
+    const root = ref<HTMLElement>();
     const selectedEpisode = computed(() => props.episodes.find(e => String(e.number) === route.params.episodeNum) || props.episodes[0]);
 
-    return {selectedEpisode};
+    onMounted(() => {
+      const activeElement: HTMLElement = root.value?.querySelector('.active');
+      if (activeElement) {
+        activeElement.scrollIntoView();
+      }
+    });
+
+    return {selectedEpisode, root};
   },
 });
 </script>

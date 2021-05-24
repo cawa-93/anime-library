@@ -12,6 +12,10 @@ h3:first-of-type {
   list-style: none;
 }
 
+.playlist li {
+  content-visibility: auto;
+  contain-intrinsic-size: 31px;
+}
 .playlist a {
   padding: 5px 10px;
   display: flex;
