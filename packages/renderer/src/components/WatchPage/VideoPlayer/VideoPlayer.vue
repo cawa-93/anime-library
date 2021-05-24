@@ -5,7 +5,7 @@
     :class="{hideCursor: isFullscreen && idle}"
   >
     <loading-spinner
-      v-if="waiting"
+      v-if="waiting || !videoLoaded"
       class="loading"
     />
     <video
@@ -15,7 +15,9 @@
       @click="playing = !playing"
       @dblclick="toggleFullscreen"
       @error="errorHandler"
-      @progress="updateMediaFragmentHash"
+      @progress="$emit('progress', $event)"
+      @durationchange="$emit('durationchange', $event)"
+      @loadeddata="onLoad"
     >
       <source
         v-for="source of sources"
@@ -87,9 +89,13 @@ export default defineComponent({
     },
   },
 
-  emits: ['source-error'],
+  emits: [
+    'source-error',
+    'progress',
+    'durationchange',
+  ],
 
-  setup(props, {emit}) {
+  setup: function (props, {emit}) {
 
     // Список доступных вариантов качества видео
     const qualities = computed(() =>
@@ -117,18 +123,22 @@ export default defineComponent({
       const mediaFragment = location.hash.startsWith('#t=') ? location.hash : '';
 
       return selectedQualityVideos.value
-        .flatMap((v) => {
-          if (mediaFragment !== '') {
-            return v.sources.map(source => readonly({...source, src: source.src + mediaFragment}));
-          }
-          return v.sources;
-        });
+        .flatMap((v) =>
+          mediaFragment !== ''
+            ? v.sources.map(source => readonly({...source, src: source.src + mediaFragment}))
+            : v.sources);
     });
 
 
+    const videoLoaded = ref(false);
+    const onLoad = () => videoLoaded.value = true;
+
     // Выполнять загрузку видео при изменении ссылок на ресурсы
     const videoElement = ref<HTMLVideoElement>();
-    watch(sources, () => videoElement.value?.load());
+    watch(sources, () => {
+      videoLoaded.value = false;
+      videoElement.value?.load();
+    });
 
     // Передать ошибку родителю если не удалось загрузить видео
     const errorHandler = (event: Event) => {
@@ -147,13 +157,6 @@ export default defineComponent({
     });
 
     const isSubtitlesEnabled = ref(true);
-
-    /**
-     * Сохраняет `currentTime` в хэш страницы в виде медиа фрагмента `#t=${currentTime}`
-     * Нужно для того, чтобы при переключении качества или перевода начать воспроизведение с того же места
-     */
-    const updateMediaFragmentHash = () => location.hash = 't=' + currentTime.value.toFixed(0);
-
 
     const muted = ref(false);
 
@@ -178,6 +181,8 @@ export default defineComponent({
     // переключение полноэкранного режима
     const componentRoot = ref<HTMLVideoElement>();
     const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(componentRoot);
+
+    // Режим Картинка в Картинке
     const togglePictureInPicture = () => {
       if (document.pictureInPictureElement) {
         document.exitPictureInPicture();
@@ -191,11 +196,11 @@ export default defineComponent({
     // Работа с горячими клавишами
     const activeElement = useActiveElement();
     const notUsingInteractiveElement = computed(() => {
-      console.log(activeElement.value?.tagName);
+        console.log(activeElement.value?.tagName);
         return activeElement.value?.tagName !== 'INPUT'
-        && activeElement.value?.tagName !== 'TEXTAREA'
-        && activeElement.value?.tagName !== 'SELECT'
-        && activeElement.value?.tagName !== 'BUTTON';
+          && activeElement.value?.tagName !== 'TEXTAREA'
+          && activeElement.value?.tagName !== 'SELECT'
+          && activeElement.value?.tagName !== 'BUTTON';
       },
     );
 
@@ -216,12 +221,13 @@ export default defineComponent({
 
 
     return {
+      onLoad,
+      videoLoaded,
       controlsVisible,
       sources,
       tracks,
       isSubtitlesEnabled,
       errorHandler,
-      updateMediaFragmentHash,
       togglePictureInPicture,
       selectedQuality,
       qualities,
