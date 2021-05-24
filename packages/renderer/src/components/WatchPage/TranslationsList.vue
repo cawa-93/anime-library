@@ -1,32 +1,34 @@
 <template>
-  <template
-    v-for="group of groups"
-    :key="group.title"
-  >
-    <h3>{{ group.title }}</h3>
-    <ul
-      :aria-label="group.title"
-      class="playlist"
+  <div>
+    <template
+      v-for="group of groups"
+      :key="group.title"
     >
-      <li
-        v-for="translation of group.translations"
-        :key="translation.id"
+      <h3>{{ group.title }}</h3>
+      <ul
+        :aria-label="group.title"
+        class="playlist"
       >
-        <router-link
-          :title="translation.author.members.join(' & ')"
-          :class="{active: selectedTranslation === translation}"
-          :to="{params: {translationId: translation.id, episodeNum: selectedEpisodeNum}, hash: currentLocation.hash}"
-          replace
-          @click="saveToPreferred(translation)"
+        <li
+          v-for="translation of group.translations"
+          :key="translation.id"
         >
-          <win-icon class="play-icon">
-            &#xF5B0;
-          </win-icon>
-          <span class="nowrap">{{ translation.title || 'Неизвестный' }}</span>
-        </router-link>
-      </li>
-    </ul>
-  </template>
+          <router-link
+            :title="translation.author.members.join(' & ')"
+            :class="{active: selectedTranslation === translation}"
+            :to="{params: {translationId: translation.id, episodeNum: selectedEpisodeNum}, hash: currentLocation.hash}"
+            replace
+            @click="saveToPreferred(translation)"
+          >
+            <win-icon class="play-icon">
+              &#xF5B0;
+            </win-icon>
+            <span class="nowrap">{{ translation.title || 'Неизвестный' }}</span>
+          </router-link>
+        </li>
+      </ul>
+    </template>
+  </div>
 </template>
 
 <script lang="ts">

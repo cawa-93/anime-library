@@ -21,11 +21,11 @@
         v-if="isSidePanelOpened && (showEpisodesPanel || showTranslationsPanel)"
         v-model:is-opened="isSidePanelOpened"
       >
-        <div class="tabs">
-          <div
-            v-if="showEpisodesPanel"
-            class="radio-button-container"
-          >
+        <div
+          v-if="showEpisodesPanel && showTranslationsPanel"
+          class="tabs"
+        >
+          <div class="radio-button-container">
             <input
               id="active-tab-episodes"
               v-model="sidePanelActiveTab"
@@ -49,10 +49,12 @@
 
         <episodes-list
           v-if="showEpisodesPanel && sidePanelActiveTab === 'episodes'"
+          class="playlist"
           :episodes="episodes"
         />
         <translations-list
           v-if="showTranslationsPanel && sidePanelActiveTab === 'translations'"
+          class="playlist"
           :selected-episode-num="selectedEpisode.number"
           :translations="translations"
         />
@@ -215,7 +217,7 @@ export default defineComponent({
 
     const isSidePanelOpened = ref(false);
     const sidePanelActiveTab = ref<'episodes' | 'translations'>('translations');
-    const showEpisodesPanel = computed(() => episodes.value.length > 0);
+    const showEpisodesPanel = computed(() => episodes.value.length > 1);
     const showTranslationsPanel = computed(() => selectedEpisode.value !== undefined && translations.value.length > 0);
 
     return {
@@ -275,7 +277,6 @@ export default defineComponent({
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: 2.5rem;
-  margin-bottom: 1rem;
 }
 
 .tabs label {
@@ -301,6 +302,7 @@ export default defineComponent({
   cursor: pointer;
   position: relative;
 }
+
 .tabs .radio-button-container input {
   position: absolute;
   width: 100%;
@@ -310,5 +312,10 @@ export default defineComponent({
   cursor: pointer;
   border-radius: 0;
   opacity: 0;
+}
+
+.playlist {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 </style>

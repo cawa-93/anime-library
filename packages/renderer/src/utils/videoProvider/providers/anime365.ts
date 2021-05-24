@@ -90,6 +90,10 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
   const searchResult = await searchSeries<RequestedFields>(searchParams);
 
   const targetSeries = searchResult[0];
+  if (!targetSeries) {
+    return [];
+  }
+
   if (searchResult.length > 1) {
     // TODO: Доработать алгоритм точного совпадения по myAnimeListId
     console.error(
@@ -101,6 +105,7 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
   return (targetSeries.episodes || [])
     .filter(e =>
       e.isActive === 1
+      && e.episodeInt !== '0'
 
       && e.episodeType === targetSeries.type
 
