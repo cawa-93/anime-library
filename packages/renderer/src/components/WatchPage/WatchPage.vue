@@ -10,7 +10,7 @@
       @progress="saveWatchProgress"
     >
       <button
-        v-if="episodes"
+        v-if="showEpisodesPanel || showTranslationsPanel"
         class="playlist-button"
         @click="isSidePanelOpened = !isSidePanelOpened"
       >
@@ -18,11 +18,14 @@
       </button>
 
       <side-panel
-        v-if="isSidePanelOpened"
+        v-if="isSidePanelOpened && (showEpisodesPanel || showTranslationsPanel)"
         v-model:is-opened="isSidePanelOpened"
       >
         <div class="tabs">
-          <div class="radio-button-container">
+          <div
+            v-if="showEpisodesPanel"
+            class="radio-button-container"
+          >
             <input
               id="active-tab-episodes"
               v-model="sidePanelActiveTab"
@@ -45,11 +48,11 @@
         </div>
 
         <episodes-list
-          v-if="episodes.length > 0 && sidePanelActiveTab === 'episodes'"
+          v-if="showEpisodesPanel && sidePanelActiveTab === 'episodes'"
           :episodes="episodes"
         />
         <translations-list
-          v-if="translations.length > 0 && sidePanelActiveTab === 'translations'"
+          v-if="showTranslationsPanel && sidePanelActiveTab === 'translations'"
           :selected-episode-num="selectedEpisode.number"
           :translations="translations"
         />
@@ -100,17 +103,17 @@ export default defineComponent({
 
     const selectedEpisode = computed(() => episodes.value.find(e => e.number == props.episodeNum));
 
-    const nextEpisodeURL = ref<string | null>(null);
+    const nextEpisodeURL = ref<string>();
     const prepareNextEpisode = async () => {
       const nextEpisode = episodes.value[episodes.value.findIndex(e => e === selectedEpisode.value) + 1];
       if (nextEpisode === undefined) {
-        nextEpisodeURL.value = null;
+        nextEpisodeURL.value = undefined;
         return;
       }
 
       const nextEpisodeTranslations = await getTranslations(nextEpisode.id);
       if (!nextEpisodeTranslations.length) {
-        nextEpisodeURL.value = null;
+        nextEpisodeURL.value = undefined;
         return;
       }
 
@@ -120,7 +123,7 @@ export default defineComponent({
 
 
       const resolvedNextPageUrl = router.resolve({params: {episodeNum: nextEpisode.number, translationId}, hash: ''});
-      nextEpisodeURL.value = resolvedNextPageUrl.href ? resolvedNextPageUrl.href : null;
+      nextEpisodeURL.value = resolvedNextPageUrl.href ? resolvedNextPageUrl.href : undefined;
 
       if (import.meta.env.MODE !== 'development') {
         // Если удалось определить перевод для следующей серии -- выполнить загрузку видео, чтобы кэшировать их
@@ -212,6 +215,8 @@ export default defineComponent({
 
     const isSidePanelOpened = ref(false);
     const sidePanelActiveTab = ref<'episodes' | 'translations'>('translations');
+    const showEpisodesPanel = computed(() => episodes.value.length > 0);
+    const showTranslationsPanel = computed(() => selectedEpisode.value !== undefined && translations.value.length > 0);
 
     return {
       saveWatchProgress,
@@ -223,6 +228,8 @@ export default defineComponent({
       videos,
       isSidePanelOpened,
       sidePanelActiveTab,
+      showEpisodesPanel,
+      showTranslationsPanel,
     };
   },
 });

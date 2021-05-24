@@ -30,16 +30,16 @@ export default defineComponent({
   components: {LoadingSpinner, WatchPage},
   props: {
     seriesId: {
-      type: String as PropType<NumberLike>,
+      type: String as PropType<`${number}`>,
       required: true,
     },
     episodeNum: {
-      type: String,
+      type: String as PropType<`${number}`>,
       required: false,
       default: '',
     },
     translationId: {
-      type: String,
+      type: String as PropType<`${number}`>,
       required: false,
       default: '',
     },
