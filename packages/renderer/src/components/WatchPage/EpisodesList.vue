@@ -43,7 +43,7 @@ export default defineComponent({
     const selectedEpisode = computed(() => props.episodes.find(e => String(e.number) === route.params.episodeNum) || props.episodes[0]);
 
     onMounted(() => {
-      const activeElement: HTMLElement = root.value?.querySelector('.active');
+      const activeElement = root.value?.querySelector<HTMLElement>('.active');
       if (activeElement) {
         activeElement.scrollIntoView();
       }

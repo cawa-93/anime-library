@@ -65,11 +65,13 @@
 
 <script lang="ts">
 import type {DeepReadonly, PropType} from 'vue';
-import {computed, defineAsyncComponent, defineComponent, readonly, ref, watch} from 'vue';
+import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, readonly, ref, watch} from 'vue';
 import {and, useActiveElement, useFullscreen, useIdle, useMagicKeys, useMediaControls, whenever} from '@vueuse/core';
 import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
 import LoadingSpinner from '/@/components/WatchPage/VideoPlayer/LoadingSpinner.vue';
+import router from '/@/router';
+
 
 const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/WatchPage/VideoPlayer/LibAssSubtitlesRenderer.vue'));
 
@@ -193,6 +195,11 @@ export default defineComponent({
 
 
     //
+    // Быстрая перемотка
+    const seekBackward = (skipTime = 5) => Math.max(currentTime.value - skipTime, 0);
+    const seekForward = (skipTime = 5) => Math.min(currentTime.value + skipTime, duration.value);
+
+    //
     // Работа с горячими клавишами
     const activeElement = useActiveElement();
     const notUsingInteractiveElement = computed(() => {
@@ -206,8 +213,8 @@ export default defineComponent({
 
     const {space, arrowRight, arrowLeft, arrowUp, arrowDown, pause, play} = useMagicKeys();
     whenever(and(space, notUsingInteractiveElement), () => playing.value = !playing.value);
-    whenever(and(arrowRight, notUsingInteractiveElement), () => currentTime.value += 5);
-    whenever(and(arrowLeft, notUsingInteractiveElement), () => currentTime.value -= 5);
+    whenever(and(arrowRight, notUsingInteractiveElement), seekForward);
+    whenever(and(arrowLeft, notUsingInteractiveElement), seekBackward);
     whenever(pause, () => playing.value = false);
     whenever(play, () => playing.value = true);
     whenever(and(arrowUp, notUsingInteractiveElement), () => volume.value = Math.min(1, volume.value + 0.1));
@@ -219,6 +226,28 @@ export default defineComponent({
     const {idle} = useIdle(1000 * 3);
     const controlsVisible = computed(() => !playing.value || !idle.value);
 
+    watch(
+      () => props.nextUrl,
+      () => navigator.mediaSession && navigator.mediaSession.setActionHandler('nexttrack', props.nextUrl ? () => router.replace(props.nextUrl) : null),
+    );
+
+    onMounted(() => {
+      if (navigator.mediaSession !== undefined) {
+        navigator.mediaSession.setActionHandler('play', () => playing.value = true);
+        navigator.mediaSession.setActionHandler('pause', () => playing.value = false);
+        navigator.mediaSession.setActionHandler('seekbackward', () => seekBackward);
+        navigator.mediaSession.setActionHandler('seekforward', () => seekForward);
+      }
+    });
+
+    onUnmounted(() => {
+      if (navigator.mediaSession !== undefined) {
+        navigator.mediaSession.setActionHandler('play', null);
+        navigator.mediaSession.setActionHandler('pause', null);
+        navigator.mediaSession.setActionHandler('seekbackward', null);
+        navigator.mediaSession.setActionHandler('seekforward', null);
+      }
+    });
 
     return {
       onLoad,

@@ -68,7 +68,7 @@ import {asyncComputed} from '@vueuse/core';
 import type {DeepReadonly} from 'vue';
 import {computed, defineComponent, ref, watch} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
-import {clearVideosCache, getEpisodes, getTranslations, getVideos} from '/@/utils/videoProvider';
+import {clearVideosCache, getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/WatchPage/SidePanel.vue';
 import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
 import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
@@ -99,6 +99,7 @@ export default defineComponent({
   },
   setup(props) {
     const router = useRouter();
+
 
     // Эпизоды
     const episodes = asyncComputed(() => getEpisodes(props.seriesId), [] as Episode[]);
@@ -219,6 +220,30 @@ export default defineComponent({
     const sidePanelActiveTab = ref<'episodes' | 'translations'>('translations');
     const showEpisodesPanel = computed(() => episodes.value.length > 1);
     const showTranslationsPanel = computed(() => selectedEpisode.value !== undefined && translations.value.length > 0);
+
+
+
+    // Информация про само аниме
+    const series = asyncComputed(() => getSeries(props.seriesId), undefined);
+    watch([series, selectedEpisode, selectedTranslation], () => {
+      if (!series.value) {
+        if (navigator.mediaSession !== undefined) {
+          navigator.mediaSession.metadata = null;
+        }
+
+        return;
+      }
+
+      if (navigator.mediaSession !== undefined) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: selectedEpisode.value?.title || '',
+          artist: series.value.title,
+          artwork: [
+            {src: series.value.poster || ''},
+          ],
+        });
+      }
+    });
 
     return {
       saveWatchProgress,

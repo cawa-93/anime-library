@@ -12,6 +12,7 @@ interface HasTitle {
 
 
 export interface Series extends HasID, HasTitle {
+  poster?: string
 }
 
 export interface Episode extends HasID, HasTitle {

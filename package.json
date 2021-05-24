@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@types/electron-devtools-installer": "2.2.0",
+    "@types/wicg-mediasession": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "4.24.0",
     "@vitejs/plugin-vue": "1.2.2",
     "concurrently": "6.1.0",
