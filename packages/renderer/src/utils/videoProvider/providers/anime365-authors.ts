@@ -43,7 +43,23 @@ function parseAuthor(summary: string): TranslationAuthor {
 
   const [team, ...members] = list
     .flatMap(s => s.split(/[()[\]|&,]/))
-    .filter(s => !!s && qualitiesRegexps.every(r => !r.test(s.toLocaleLowerCase())))
+    .filter(s => {
+
+      let tempStr = s.trim().toLocaleLowerCase();
+
+      if (!tempStr) {
+        return false;
+      }
+
+      for (const qualitiesRegexp of qualitiesRegexps) {
+        tempStr = tempStr.replace(qualitiesRegexp, '').trim();
+        if (!tempStr) {
+          return false;
+        }
+      }
+
+      return true;
+    })
     .map(s => s.trim());
 
   if (team) {
