@@ -14,7 +14,7 @@
           :key="translation.id"
         >
           <router-link
-            :title="translation.author.members.join(' & ')"
+            :title="formatList(translation.author.members)"
             :class="{active: selectedTranslation === translation}"
             :to="{params: {translationId: translation.id, episodeNum: selectedEpisodeNum}, hash: currentLocation.hash}"
             replace
@@ -39,6 +39,7 @@ import WinIcon from '/@/components/WinIcon.vue';
 import type {Translation} from '/@/utils/videoProvider';
 import {useBrowserLocation} from '@vueuse/core';
 import {savePreferredTranslation} from '/@/utils/translationRecomendations';
+import {formatList} from '/@/utils/formatList';
 
 
 export default defineComponent({
@@ -93,7 +94,9 @@ export default defineComponent({
     const saveToPreferred = (translation: DeepReadonly<Translation>) => {
       savePreferredTranslation(route.params.seriesId as NumberLike, toRaw(translation) as Translation);
     };
-    return {selectedTranslation, groups, currentLocation, saveToPreferred};
+
+
+    return {selectedTranslation, groups, currentLocation, saveToPreferred, formatList: formatList};
   },
 });
 </script>

@@ -53,7 +53,7 @@
           :episodes="episodes"
         />
         <translations-list
-          v-if="showTranslationsPanel && sidePanelActiveTab === 'translations'"
+          v-if="showTranslationsPanel && sidePanelActiveTab === 'translations' && selectedEpisode"
           class="playlist"
           :selected-episode-num="selectedEpisode.number"
           :translations="translations"
