@@ -1,6 +1,7 @@
-import type {RouteLocation, RouteRecordRaw} from 'vue-router';
+import type {RouteRecordRaw} from 'vue-router';
 import {createRouter, createWebHistory} from 'vue-router';
 import {trackPageView} from '/@/utils/telemetry';
+
 
 const routes: RouteRecordRaw[] = [
   {path: '/', name: 'Home', component: () => import('/@/components/Home.vue')},
@@ -8,20 +9,8 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/watch/:seriesId(\\d+)/:episodeNum(\\d+)?/:translationId(\\d+)?/',
     name: 'Watch',
-    component: () => import('/@/components/WatchPage/WatchPage.vue'),
-    props: ({params}: RouteLocation) => Object.fromEntries(Object.entries(params).map(([k, v]) => {
-      if (typeof v !== 'string' || !v) {
-        return [k, 0];
-      }
-
-      const numValue = Number.parseInt(v);
-
-      if (Number.isNaN(numValue)) {
-        return [k, 0];
-      }
-
-      return [k, numValue];
-    })),
+    component: () => import('/@/components/WatchPage/WatchPageWrapper.vue'),
+    props: true,
   },
 ];
 

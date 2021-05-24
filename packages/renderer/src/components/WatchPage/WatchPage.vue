@@ -6,6 +6,8 @@
       :videos="videos"
       :next-url="nextEpisodeURL"
       @source-error="onSourceError"
+      @durationchange="saveWatchProgress"
+      @progress="saveWatchProgress"
     >
       <button
         v-if="episodes"
@@ -59,7 +61,7 @@
 <script lang="ts">
 import {asyncComputed} from '@vueuse/core';
 import type {DeepReadonly} from 'vue';
-import {computed, defineComponent, ref, watch, watchEffect} from 'vue';
+import {computed, defineComponent, ref, watch} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
 import {clearVideosCache, getEpisodes, getTranslations, getVideos} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/WatchPage/SidePanel.vue';
@@ -70,6 +72,7 @@ import WinIcon from '/@/components/WinIcon.vue';
 import {useRouter} from 'vue-router';
 import {showErrorMessage} from '/@/utils/dialogs';
 import {getPreferredTranslationFromList} from '/@/utils/translationRecomendations';
+import {save} from '/@/utils/history-views';
 
 
 
@@ -82,78 +85,87 @@ export default defineComponent({
     },
     episodeNum: {
       type: Number,
-      required: false,
-      default: null,
+      required: true,
     },
     translationId: {
       type: Number,
-      required: false,
-      default: null,
+      required: true,
     },
   },
   setup(props) {
     const router = useRouter();
 
     // Эпизоды
-    const episodes = asyncComputed(() => props.seriesId ? getEpisodes(props.seriesId) : [] as Episode[], [] as Episode[]);
-    const selectedEpisode = computed(() => episodes.value.find(e => e.number == props.episodeNum) || episodes.value[0]);
+    const episodes = asyncComputed(() => getEpisodes(props.seriesId), [] as Episode[]);
 
-    const nextEpisodeURL = ref<string | undefined>();
-    const getNextEpisodeUrl = async () => {
+    const selectedEpisode = computed(() => episodes.value.find(e => e.number == props.episodeNum));
+
+    const nextEpisodeURL = ref<string | null>(null);
+    const prepareNextEpisode = async () => {
       const nextEpisode = episodes.value[episodes.value.findIndex(e => e === selectedEpisode.value) + 1];
       if (nextEpisode === undefined) {
-        return undefined;
+        nextEpisodeURL.value = null;
+        return;
       }
 
       const nextEpisodeTranslations = await getTranslations(nextEpisode.id);
+      if (!nextEpisodeTranslations.length) {
+        nextEpisodeURL.value = null;
+        return;
+      }
+
       const nextEpisodePreferredTranslations = await getPreferredTranslationFromList(props.seriesId, nextEpisodeTranslations as Translation[]);
 
+      const translationId = nextEpisodePreferredTranslations?.id || nextEpisodeTranslations[0].id;
 
-      const translationId = nextEpisodePreferredTranslations?.id || '';
 
+      const resolvedNextPageUrl = router.resolve({params: {episodeNum: nextEpisode.number, translationId}, hash: ''});
+      nextEpisodeURL.value = resolvedNextPageUrl.href ? resolvedNextPageUrl.href : null;
 
-      // Если удалось определить перевод для следующей серии -- выполнить загрузку видео, чтобы кэшировать их
-      if (nextEpisodePreferredTranslations?.id) {
-        console.info('Попытка предзагрузки видео');
-        getVideos(nextEpisodePreferredTranslations?.id).catch(e => console.error('предзагрузить видео не удалось', e));
+      if (import.meta.env.MODE !== 'development') {
+        // Если удалось определить перевод для следующей серии -- выполнить загрузку видео, чтобы кэшировать их
+        await getVideos(translationId);
+        // TODO: Начать загрузку непосредственно целевого видео-файла для следующего эпизода
       }
-
-      const resolved = router.resolve({params: {episodeNum: nextEpisode.number, translationId}, hash: ''});
-
-      if (!resolved) {
-        console.error('Не удалось определить ссылку на следующую серию', {resolved});
-        return undefined;
-      }
-
-      return resolved.href;
     };
 
-    watch(selectedEpisode, async () => nextEpisodeURL.value = await getNextEpisodeUrl());
+    watch(selectedEpisode, prepareNextEpisode);
+
+
+    const saveWatchProgress = (event: Event) => {
+      if (!event.target || !(event.target instanceof HTMLVideoElement) || !selectedEpisode.value || event.target.paused) {
+        return;
+      }
+
+      const currentTime = Math.floor(event.target.currentTime);
+
+      location.hash = `t=${currentTime}`;
+
+      save({
+        state: 'watching',
+        seriesId: props.seriesId,
+        episode: {
+          number: selectedEpisode.value.number,
+          time: currentTime,
+          duration: event.target.duration,
+        },
+      });
+
+    };
 
 
 
     // Доступные переводы
     const translations = ref<DeepReadonly<Translation[]>>([]);
-    watch(selectedEpisode, async () => translations.value = await getTranslations(selectedEpisode.value.id));
-    const selectedTranslation = computed(() => translations.value.find(e => e.id === props.translationId));
-
-    // Автоматический выбор наиболее предпочитаемого перевода
-    watch(translations, () => {
-      if (!props.translationId && translations.value.length) {
-        getPreferredTranslationFromList(props.seriesId, translations.value as Translation[]).then(t => {
-          if (!t?.id) {
-            return;
-          }
-
-          router.replace({
-            params: {
-              episodeNum: selectedEpisode.value.number,
-              translationId: t.id,
-            },
-          });
-        });
+    watch(selectedEpisode, async () => {
+      if (!selectedEpisode.value?.id) {
+        return;
       }
+
+      translations.value = await getTranslations(selectedEpisode.value.id);
     });
+
+    const selectedTranslation = computed(() => translations.value.find(e => e.id === props.translationId));
 
 
     // Загрузка доступных видео для выбранного перевода
@@ -180,22 +192,21 @@ export default defineComponent({
 
           showErrorMessage({title, message});
 
-          return [];
+          return [] as Video[];
         });
     };
 
-    watchEffect(() => {
-      if (selectedTranslation.value && selectedTranslation.value.id) {
-        return loadVideoSources();
-      }
-    });
+    loadVideoSources();
+
+
+    watch(selectedTranslation, loadVideoSources);
 
     const onSourceError = () => {
       if (!selectedTranslation.value) {
         return;
       }
 
-      clearVideosCache(selectedTranslation.value.id).then(() => loadVideoSources());
+      return clearVideosCache(selectedTranslation.value.id).then(loadVideoSources);
     };
 
 
@@ -203,6 +214,7 @@ export default defineComponent({
     const sidePanelActiveTab = ref<'episodes' | 'translations'>('translations');
 
     return {
+      saveWatchProgress,
       onSourceError,
       nextEpisodeURL,
       episodes,
