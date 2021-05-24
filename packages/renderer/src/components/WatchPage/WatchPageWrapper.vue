@@ -9,13 +9,31 @@
     v-else
     class="preloader"
   >
-    <loading-spinner />
+    <p v-if="error">
+      {{ error }}
+      <br>
+      <router-link
+        v-if="normalizedSeriesId"
+        :to="{
+          name: 'Watch',
+          params: {
+            seriesId: normalizedSeriesId,
+            episodeNum: '',
+            translationId: '',
+          },
+          hash: ''
+        }"
+      >
+        Повторить попытку
+      </router-link>
+    </p>
+    <loading-spinner v-else />
   </div>
 </template>
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {computed, defineComponent, watchEffect} from 'vue';
+import {computed, defineComponent, ref, watchEffect} from 'vue';
 import WatchPage from '/@/components/WatchPage/WatchPage.vue';
 import type {Translation} from '/@/utils/videoProvider';
 import {getEpisodes, getTranslations} from '/@/utils/videoProvider';
@@ -64,23 +82,32 @@ export default defineComponent({
 
 
     const router = useRouter();
-
+    const error = ref('');
 
     watchEffect(async () => {
       if (props.episodeNum) {
         return;
       }
 
-      if (!normalizedSeriesId.value) {
+      if (normalizedSeriesId.value === null) {
+        error.value = 'Выбранное аниме не найдено';
         return;
       }
 
-      const [episodes, historyItem] = await Promise.all([
-        getEpisodes(normalizedSeriesId.value),
-        getViewHistoryItem(normalizedSeriesId.value),
-      ]);
+        const [episodes, historyItem] = await Promise.all([
+          getEpisodes(normalizedSeriesId.value).catch(e => {
+            console.error(e);
+            return [];
+          }),
+          getViewHistoryItem(normalizedSeriesId.value),
+        ]);
 
-      if (!historyItem) {
+      if (episodes.length === 0) {
+        error.value = 'Не было найдено ни одной серии для выбранного аниме';
+        return;
+      }
+
+      if (historyItem === undefined) {
         console.log('[REDIRECT]: EPISODE (default): ' + episodes[0].number);
         return router.replace({params: {episodeNum: episodes[0].number}});
       }
@@ -98,7 +125,7 @@ export default defineComponent({
 
 
     watchEffect(async () => {
-      if (props.translationId || !normalizedEpisodeNum.value || !normalizedSeriesId.value) {
+      if (props.translationId || normalizedEpisodeNum.value === null || normalizedSeriesId.value === null) {
         return;
       }
 
@@ -107,10 +134,16 @@ export default defineComponent({
       const selectedEpisode = episodes.find(e => e.number === normalizedEpisodeNum.value);
 
       if (!selectedEpisode) {
+        error.value = 'Выбранная серия не доступна';
         return;
       }
 
       const translations = await getTranslations(selectedEpisode.id);
+      if (!translations.length) {
+        error.value = 'Не было найдено ни одного перевода для выбранной серии';
+        return;
+      }
+
       const preferredTranslation = await getPreferredTranslationFromList(normalizedSeriesId.value, translations as Translation[]);
       const translationId = preferredTranslation ? preferredTranslation.id : translations[0].id;
 
@@ -122,7 +155,7 @@ export default defineComponent({
 
 
 
-    return {normalizedSeriesId, normalizedEpisodeNum, normalizedTranslationId};
+    return {normalizedSeriesId, normalizedEpisodeNum, normalizedTranslationId, error};
   },
 });
 </script>
@@ -134,5 +167,7 @@ export default defineComponent({
   display: grid;
   align-items: center;
   justify-content: center;
+  color: #F1707A;
+  text-align: center;
 }
 </style>
