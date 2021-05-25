@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "@microsoft/applicationinsights-web": "2.6.2",
-    "@vueuse/core": "4.11.0",
+    "@vueuse/core": "4.11.1",
     "electron-updater": "4.3.9",
     "electron-window-state": "5.0.3",
     "idb": "6.1.1",
