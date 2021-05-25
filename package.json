@@ -44,23 +44,23 @@
   "devDependencies": {
     "@types/electron-devtools-installer": "2.2.0",
     "@types/wicg-mediasession": "^1.1.0",
-    "@typescript-eslint/eslint-plugin": "4.24.0",
+    "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@vitejs/plugin-vue": "1.2.2",
-    "concurrently": "6.1.0",
+    "concurrently": "^6.2.0",
     "cross-env": "7.0.3",
     "electron": "12.0.9",
     "electron-builder": "22.11.3",
     "electron-devtools-installer": "3.2.0",
-    "eslint": "7.26.0",
+    "eslint": "^7.27.0",
     "eslint-plugin-vue": "7.9.0",
     "lint-staged": "11.0.0",
     "rollup-plugin-copy": "3.4.0",
     "simple-git-hooks": "2.4.1",
     "spectron": "14.0.0",
     "typescript": "4.2.4",
-    "vite": "2.3.3",
+    "vite": "^2.3.4",
     "vite-plugin-pwa": "0.7.3",
-    "vue-tsc": "0.1.4"
+    "vue-tsc": "^0.1.6"
   },
   "dependencies": {
     "@microsoft/applicationinsights-web": "2.6.2",
