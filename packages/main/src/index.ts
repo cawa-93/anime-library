@@ -8,7 +8,9 @@ import {getSeriesId} from '/@shared/utils/getSeriesId';
 import {URL} from 'url';
 import DialogsHost from '/@/ipc/DialogsHost';
 
+
 const isSingleInstance = app.requestSingleInstanceLock();
+
 
 if (!isSingleInstance) {
   app.quit();
@@ -50,7 +52,10 @@ if (env.MODE === 'development') {
     .catch(e => console.error('Failed install extension:', e));
 }
 
-let mainWindow: BrowserWindow | null = null;
+
+
+
+
 
 const getFullHref = (path: string) => {
   let host = env.MODE === 'development' ? env.VITE_DEV_SERVER_URL : `${PROTOCOL}://.`;
@@ -93,6 +98,11 @@ const getResolvedInitialPageUrl = (url: string): string | undefined => {
   }
 };
 
+
+
+let mainWindow: BrowserWindow | null = null;
+
+
 const createWindow = async (pageUrl?: string) => {
   const mainWindowState = windowStateKeeper({fullScreen: false});
 
@@ -113,14 +123,15 @@ const createWindow = async (pageUrl?: string) => {
   });
 
 
-  mainWindow.addListener('ready-to-show', () => {
+
+  mainWindow.addListener('ready-to-show', function onReady() {
     if (mainWindow) {
       mainWindowState.manage(mainWindow);
       mainWindow.show();
-
       if (env.MODE === 'development') {
         mainWindow.webContents.openDevTools();
       }
+      mainWindow.removeListener('ready-to-show', onReady);
     }
   });
 
