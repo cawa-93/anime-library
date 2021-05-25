@@ -10,6 +10,9 @@
     />
     <video
       ref="videoElement"
+      preload="auto"
+      autoplay
+      autopictureinpicture
       :class="{'controls-visible': controlsVisible}"
       crossorigin="anonymous"
       @click="playing = !playing"
@@ -160,9 +163,6 @@ export default defineComponent({
 
     const isSubtitlesEnabled = ref(true);
 
-    const muted = ref(false);
-
-
     const {
       playing,
       duration,
@@ -171,12 +171,8 @@ export default defineComponent({
       waiting,
       volume,
       isPictureInPicture,
-    } = useMediaControls(videoElement, {
       muted,
-      autoplay: true,
-      autoPictureInPicture: true,
-      preload: 'auto',
-    });
+    } = useMediaControls(videoElement);
 
 
     //
@@ -184,6 +180,8 @@ export default defineComponent({
     const componentRoot = ref<HTMLVideoElement>();
     const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(componentRoot);
 
+
+    //
     // Режим Картинка в Картинке
     const togglePictureInPicture = () => {
       if (document.pictureInPictureElement) {

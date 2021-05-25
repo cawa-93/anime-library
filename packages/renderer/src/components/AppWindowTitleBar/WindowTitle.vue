@@ -1,25 +1,17 @@
 <template>
-  <span>{{ title }} v{{ appVersion }}-alpha</span>
+  <span>{{ title }} — Anime Library v{{ appVersion }}-alpha</span>
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue';
-import {useMutationObserver} from '@vueuse/core';
+import {defineComponent} from 'vue';
+import {useTitle} from '@vueuse/core';
+
 
 export default defineComponent({
   name: 'WindowTitle',
   setup() {
 
-    const title = ref(document.title);
-
-    useMutationObserver(
-      document.head.querySelector('title'),
-      () => {
-        if (document.title !== title.value)
-          title.value = document.title;
-      },
-      {childList: true},
-    );
+    const title = useTitle(undefined, {observe: true});
 
     const appVersion = import.meta.env.VITE_APP_VERSION;
 

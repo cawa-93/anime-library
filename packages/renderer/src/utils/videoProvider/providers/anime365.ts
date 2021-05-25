@@ -48,7 +48,7 @@ export async function searchSeries<RequestedFields extends keyof sm.Series>(sear
 
 
 export async function getSeries(myAnimeListId: NumberLike): Promise<Series | undefined> {
-  const fields = ['title', 'myAnimeListId', 'posterUrl'] as const;
+  const fields = ['titleLines', 'myAnimeListId', 'posterUrl'] as const;
   type RequestedFields = typeof fields[number]
 
   const searchParams = new URLSearchParams({
@@ -73,7 +73,7 @@ export async function getSeries(myAnimeListId: NumberLike): Promise<Series | und
 
   return {
     id: targetSeries.myAnimeListId,
-    title: targetSeries.title,
+    title: targetSeries.titleLines[0],
     poster: targetSeries.posterUrl,
   };
 }

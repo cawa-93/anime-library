@@ -73,7 +73,7 @@
 <script lang="ts">
 import {computed, defineComponent, ref} from 'vue';
 import {useElectron} from '/@/use/electron';
-import {onClickOutside} from '@vueuse/core';
+import {onClickOutside, useTitle} from '@vueuse/core';
 import {getAccessToken, saveAccessToken} from '/@/utils/videoProvider/providers/anime365';
 import ShikiOauth from '/@/components/ShikiOauth.vue';
 
@@ -81,6 +81,12 @@ export default defineComponent({
   name: 'OptionsPage',
   components: {ShikiOauth},
   setup() {
+    //
+    // Заголовок страницы
+    const t = useTitle();
+    t.value = 'Параметры';
+
+
     const helpDialog = ref<HTMLDialogElement>();
     onClickOutside(helpDialog, () => {
       if (helpDialog.value) {

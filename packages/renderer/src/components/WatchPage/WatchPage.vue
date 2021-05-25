@@ -64,7 +64,7 @@
 </template>
 
 <script lang="ts">
-import {asyncComputed} from '@vueuse/core';
+import {asyncComputed, useTitle} from '@vueuse/core';
 import type {DeepReadonly} from 'vue';
 import {computed, defineComponent, ref, watch} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
@@ -243,6 +243,19 @@ export default defineComponent({
           ],
         });
       }
+    });
+
+
+    //
+    // Заголовок страницы
+    const t = useTitle();
+    watch([series, selectedEpisode, selectedTranslation], () => {
+      const titleChunks = [
+        series.value?.title,
+        episodes.value.length > 1 ? selectedEpisode.value?.title : null,
+        translations.value.length > 1 ? selectedTranslation.value?.title : null,
+      ];
+      t.value = titleChunks.filter(s => !!s).join(', ');
     });
 
     return {

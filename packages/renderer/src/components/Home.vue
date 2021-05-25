@@ -23,13 +23,18 @@
 import {computed, defineComponent, ref, watch} from 'vue';
 import {useRouter} from 'vue-router';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
-import {asyncComputed} from '@vueuse/core';
+import {asyncComputed, useTitle} from '@vueuse/core';
 import {getEpisodes, getSeries} from '/@/utils/videoProvider';
 
 
 export default defineComponent({
   name: 'Home',
   setup() {
+
+    //
+    // Заголовок страницы
+    const t = useTitle();
+    t.value = 'Галерея аниме';
 
     const router = useRouter();
     const defaultSearchText = import.meta.env.MODE === 'development' ? 'https://shikimori.org/animes/14719-jojo-no-kimyou-na-bouken-tv' : '';
