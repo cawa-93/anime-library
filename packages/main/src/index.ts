@@ -21,14 +21,7 @@ if (!isSingleInstance) {
 const PROTOCOL = 'anime-lib';
 
 
-/**
- * Workaround for TypeScript bug
- * @see https://github.com/microsoft/TypeScript/issues/41468#issuecomment-727543400
- */
-const env = import.meta.env;
-
-
-if (env.MODE !== 'development') {
+if (import.meta.env.MODE !== 'development') {
   protocol.registerSchemesAsPrivileged([{
     scheme: PROTOCOL,
     privileges: {secure: true, standard: true, allowServiceWorkers: true, supportFetchAPI: true, stream: true},
@@ -41,7 +34,7 @@ if (env.MODE !== 'development') {
 app.disableHardwareAcceleration();
 
 // Install "Vue.js devtools"
-if (env.MODE === 'development') {
+if (import.meta.env.MODE === 'development') {
   app.whenReady()
     .then(() => import('electron-devtools-installer'))
     .then(({default: installExtension, VUEJS3_DEVTOOLS}) => installExtension(VUEJS3_DEVTOOLS, {
@@ -58,7 +51,7 @@ if (env.MODE === 'development') {
 
 
 const getFullHref = (path: string) => {
-  let host = env.MODE === 'development' ? env.VITE_DEV_SERVER_URL : `${PROTOCOL}://.`;
+  let host = import.meta.env.MODE === 'development' ? import.meta.env.VITE_DEV_SERVER_URL : `${PROTOCOL}://.`;
   if (host.endsWith('/')) {
     host = host.substring(0, host.length - 1);
   }
@@ -117,8 +110,8 @@ const createWindow = async (pageUrl?: string) => {
     backgroundColor: '#fff',
     webPreferences: {
       preload: join(__dirname, '../../preload/dist/index.cjs'),
-      contextIsolation: env.MODE !== 'test',   // Spectron tests can't work with contextIsolation: true
-      enableRemoteModule: env.MODE === 'test', // Spectron tests can't work with enableRemoteModule: false
+      contextIsolation: import.meta.env.MODE !== 'test',   // Spectron tests can't work with contextIsolation: true
+      enableRemoteModule: import.meta.env.MODE === 'test', // Spectron tests can't work with enableRemoteModule: false
     },
   });
 
@@ -128,7 +121,7 @@ const createWindow = async (pageUrl?: string) => {
     if (mainWindow) {
       mainWindowState.manage(mainWindow);
       mainWindow.show();
-      if (env.MODE === 'development') {
+      if (import.meta.env.MODE === 'development') {
         mainWindow.webContents.openDevTools();
       }
       mainWindow.removeListener('ready-to-show', onReady);
@@ -188,7 +181,7 @@ app.on('window-all-closed', () => {
 
 app.whenReady()
   .then(() => {
-    if (env.MODE !== 'development') {
+    if (import.meta.env.MODE !== 'development') {
       createProtocol(PROTOCOL);
     }
 
@@ -215,7 +208,7 @@ app.whenReady()
 
 
 // Auto-updates
-if (env.PROD) {
+if (import.meta.env.PROD) {
   app.whenReady()
     .then(() => import('electron-updater'))
     .then(({autoUpdater}) => autoUpdater.checkForUpdatesAndNotify())
