@@ -1,6 +1,8 @@
 import type {DeepReadonly} from 'vue';
 import {readonly} from 'vue';
 import * as provider from '/@/utils/videoProvider/providers/anime365';
+import {deDuplicatedRequest} from '/@/utils/deDuplicatedRequest';
+
 
 interface HasID {
   id: NumberLike
@@ -59,23 +61,6 @@ export interface TranslationAuthor {
   readonly id: string | null
   readonly team: string
   readonly members: string[]
-}
-
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const requestsCache = new Map<string, Promise<any>>();
-
-/**
- * Не позволяет выполнять последовательно несколько идентичных запросов
- */
-function deDuplicatedRequest<T>(requestId: string, request: () => Promise<T>): Promise<T> {
-  let savedRequest = requestsCache.get(requestId);
-  if (savedRequest) {
-    return savedRequest;
-  }
-  savedRequest = request().finally(() => requestsCache.delete(requestId));
-  requestsCache.set(requestId, savedRequest);
-  return savedRequest;
 }
 
 

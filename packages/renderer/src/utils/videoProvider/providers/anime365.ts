@@ -106,7 +106,7 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
   return (targetSeries.episodes || [])
     .filter(e =>
       e.isActive === 1
-      && e.episodeInt !== '0'
+      && parseFloat(e.episodeInt) >= 1
 
       && e.episodeType === targetSeries.type
 

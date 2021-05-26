@@ -108,18 +108,27 @@ export default defineComponent({
       }
 
       if (historyItem === undefined) {
-        console.log('[REDIRECT]: EPISODE (default): ' + episodes[0].number);
+        console.debug('[REDIRECT]: EPISODE (default): ' + episodes[0].number);
         return router.replace({params: {episodeNum: episodes[0].number}});
+      }
+
+
+      let time = historyItem.episode.time || 0;
+      let selectedEpisodeNum = historyItem.episode.number;
+
+      if (!episodes.find(e => e.number === selectedEpisodeNum)) {
+        time = 0;
+        selectedEpisodeNum = episodes[episodes.length - 1].number;
       }
 
 
       // TODO: Проверять что последняя сохранённая серия была досмотрена и открывать следующую
       // const targetEpisodeNum = ...
 
-      console.log('[REDIRECT]: EPISODE (history): ' + historyItem.episode.number + ', HASH: ' + `#t=${historyItem.episode.time}`);
+      console.debug('[REDIRECT]: EPISODE (history): ' + selectedEpisodeNum + ', HASH: ' + `#t=${time}`);
       return router.replace({
-        params: {episodeNum: historyItem.episode.number},
-        hash: `#t=${historyItem.episode.time}`,
+        params: {episodeNum: selectedEpisodeNum},
+        hash: `#t=${time}`,
       });
     });
 
@@ -129,9 +138,13 @@ export default defineComponent({
         return;
       }
 
-      console.log('[REDIRECT] translationId');
+      console.debug('[REDIRECT] translationId');
       const episodes = await getEpisodes(normalizedSeriesId.value);
-      const selectedEpisode = episodes.find(e => e.number === normalizedEpisodeNum.value);
+      let selectedEpisode = episodes.find(e => e.number === normalizedEpisodeNum.value);
+
+      if (!selectedEpisode && normalizedEpisodeNum.value) {
+        selectedEpisode = episodes[episodes.length - 1];
+      }
 
       if (!selectedEpisode) {
         error.value = 'Выбранная серия не доступна';

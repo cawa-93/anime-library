@@ -105,13 +105,13 @@ function parseAuthor(summary: string): TranslationAuthor {
 
     if (baseAuthor) {
       baseAuthor.members = authorChunks.filter(c => c !== authorChunk);
-      console.log('[FOUND]: ', summary, authorChunks);
+      console.debug('[FOUND]: ', summary, authorChunks);
       break;
     }
   }
 
   if (!baseAuthor) {
-    console.log('[NOT FOUND]: ', summary, authorChunks);
+    console.debug('[NOT FOUND]: ', summary, authorChunks);
 
     baseAuthor = {
       team: authorChunks[0],

@@ -77,7 +77,7 @@ import WinIcon from '/@/components/WinIcon.vue';
 import {useRouter} from 'vue-router';
 import {showErrorMessage} from '/@/utils/dialogs';
 import {getPreferredTranslationFromList} from '/@/utils/translationRecomendations';
-import {save} from '/@/utils/history-views';
+import {putHistoryItem} from '/@/utils/history-views';
 
 
 
@@ -147,8 +147,8 @@ export default defineComponent({
 
       location.hash = `t=${currentTime}`;
 
-      save({
-        state: 'watching',
+      putHistoryItem({
+        // state: 'watching',
         seriesId: props.seriesId,
         episode: {
           number: selectedEpisode.value.number,

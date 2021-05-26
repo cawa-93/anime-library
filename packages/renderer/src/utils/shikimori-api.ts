@@ -1,3 +1,6 @@
+import {deDuplicatedRequest} from '/@/utils/deDuplicatedRequest';
+
+
 interface Credentials {
   access_token: string,
   token_type: 'Bearer',
@@ -82,6 +85,11 @@ function getCredentials(): Credentials | undefined {
 }
 
 
+export function isLoggedIn(): boolean {
+  return localStorage.getItem('shiki-token') !== null;
+}
+
+
 function getFreshCredentials(): Promise<Credentials | undefined> {
   const credentials = getCredentials();
 
@@ -95,7 +103,11 @@ function getFreshCredentials(): Promise<Credentials | undefined> {
     return Promise.resolve(credentials);
   }
 
-  return refreshCredentials({type: 'refresh_token', refresh_token: credentials.refresh_token});
+  return deDuplicatedRequest('getFreshCredentials', () => refreshCredentials({
+    type: 'refresh_token',
+    refresh_token: credentials.refresh_token,
+  }));
+
 }
 
 
@@ -110,9 +122,90 @@ export async function apiFetch<T>(input: RequestInfo, init: RequestInit = {}): P
     }
 
     (init.headers as Record<string, string>).Authorization = `${credentials.token_type} ${credentials.access_token}`;
+    (init.headers as Record<string, string>).Accept = 'application/json';
+    (init.headers as Record<string, string>)['Content-Type'] = 'application/json';
   }
 
 
   return fetch(`https://shikimori.one/api/${input}`, init)
     .then(r => r.json());
+}
+
+
+
+interface ShikiUserRate {
+  created_at: string
+  episodes: number
+  id: number
+  rewatches: number
+  score?: number
+  status: 'planned' | 'watching' | 'rewatching' | 'completed' | 'on_hold' | 'dropped'
+  updated_at: string
+}
+
+
+export function getUserRate(seriesId: number): Promise<ShikiUserRate | null> {
+  return apiFetch<{ user_rate: ShikiUserRate | null }>(`animes/${seriesId}`).then(r => r.user_rate);
+}
+
+
+interface ShikiUser {
+  id: number
+  nickname: string,
+  avatar: string
+  url: string
+}
+
+
+export function getUser(): Promise<ShikiUser> {
+  return apiFetch<ShikiUser>('users/whoami');
+}
+
+
+export async function saveUserRate(seriesId: number, episodes: number): Promise<void> {
+
+  if (!isLoggedIn()) {
+    return;
+  }
+
+  const [user, user_rate] = await Promise.all([
+    getUser(),
+    getUserRate(seriesId),
+  ]);
+
+  if (!user || !user.id) {
+    return;
+  }
+
+  if (!user_rate) {
+    return apiFetch<void>('v2/user_rates/', {
+      method: 'POST',
+      body: JSON.stringify({
+        user_rate: {
+          user_id: user.id,
+          episodes: String(episodes),
+          status: 'watching',
+          target_id: seriesId,
+          target_type: 'Anime',
+        },
+      }),
+    });
+  } else {
+
+    if (user_rate.episodes === episodes && (user_rate.status === 'watching' || user_rate.status === 'rewatching')) {
+      return;
+    }
+
+    return apiFetch<void>(`v2/user_rates/${user_rate.id}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        user_rate: {
+          episodes: String(episodes),
+          status: (user_rate.status === 'watching' || user_rate.status === 'rewatching')
+            ? undefined
+            : user_rate.status === 'completed' ? 'rewatching' : 'watching',
+        },
+      }),
+    });
+  }
 }

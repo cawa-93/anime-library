@@ -24,7 +24,7 @@ export default defineComponent({
     const userName = ref('');
 
     const updateName = async () => {
-      const data = await shiki.apiFetch<{ nickname: string } | null>('users/whoami');
+      const data = await shiki.getUser();
       if (data) {
         userName.value = data.nickname;
       }
