@@ -1,9 +1,12 @@
 <template>
-  <div id="app">
+  <div
+    id="app"
+    :style="`--window-border-width: ${borderWidth}`"
+  >
     <app-window-title-bar />
-    <div id="main">
+    <main>
       <router-view />
-    </div>
+    </main>
   </div>
 </template>
 
@@ -56,15 +59,14 @@ body {
 }
 
 #app {
-  /*noinspection CssInvalidFunction*/
-  --window-border-width: v-bind(borderWidth);
+  /*noinspection CssUnresolvedCustomProperty*/
   border: var(--window-border-width) solid #48545c;
   display: flex;
   flex-direction: column;
 }
 
 /**/
-#main {
+main {
   flex-grow: 1;
   overflow: auto;
 }
