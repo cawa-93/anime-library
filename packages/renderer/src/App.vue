@@ -38,6 +38,7 @@ export default defineComponent({
 
 <style>
 @import "animations.css";
+@import "../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 html {
   box-sizing: border-box;
 }
