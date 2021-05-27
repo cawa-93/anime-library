@@ -69,6 +69,9 @@ function isValidCredentials(data: unknown): data is Credentials {
     && 'created_at' in data;
 }
 
+export function clearCredentials(): void {
+  return localStorage.removeItem('shiki-token');
+}
 
 function saveCredentials(credentials: unknown): void {
   if (!isValidCredentials(credentials)) {
@@ -149,7 +152,7 @@ export function getUserRate(seriesId: number): Promise<ShikiUserRate | null> {
 }
 
 
-interface ShikiUser {
+export interface ShikiUser {
   id: number
   nickname: string,
   avatar: string

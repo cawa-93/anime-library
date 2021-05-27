@@ -71,8 +71,4 @@ main {
   flex-grow: 1;
   overflow: auto;
 }
-
-a {
-  color: inherit;
-}
 </style>

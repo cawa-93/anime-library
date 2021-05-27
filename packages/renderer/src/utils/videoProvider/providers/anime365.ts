@@ -245,6 +245,6 @@ export function saveAccessToken(token?: string): void {
 }
 
 
-function clearAccessToken() {
+export function clearAccessToken() {
   return localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
 }

@@ -1,32 +1,71 @@
 <template>
-  <p>
-    <button @click="login">
-      Авторизоваться
-    </button>
-    Вы вошли как {{ userName }}
-  </p>
+  <section class="card p-3">
+    <p>
+      Если вы подключите ваш аккаунт Шикимори, то прогресс просмотра В этом приложении будет автоматически
+      синхронизироваться с вашими списками на Шикимори
+    </p>
+    <p class="d-flex flex-row-reverse gap-2 align-items-center">
+      <template v-if="isLoading">
+        <span
+          v-if="isLoading"
+          class="spinner-border spinner-border-sm"
+          role="status"
+          aria-hidden="true"
+        />
+      </template>
+      <template v-else>
+        <template v-if="profile">
+          <button
+            class="btn btn-danger"
+            @click="logOut"
+          >
+            Отключить
+          </button>
+          <span>
+            Подключенный аккаунт Шикимори:
+            <strong><a
+              :href="profile.url"
+              @click.prevent="openExternalElement"
+            >{{ profile.nickname }}</a></strong>
+          </span>
+        </template>
+        <button
+          v-else
+          class="btn btn-dark"
+          @click="login"
+        >
+          Подключить аккаунт Шикимори
+        </button>
+      </template>
+    </p>
+  </section>
 </template>
 
 <script lang="ts">
 import {defineComponent, ref} from 'vue';
 import {useElectron} from '/@/use/electron';
-import * as shiki from '/@/utils/shikimori-api';
+import type {ShikiUser} from '/@/utils/shikimori-api';
+import {clearCredentials, getAuthUrl, getUser, refreshCredentials} from '/@/utils/shikimori-api';
 import {showErrorMessage} from '/@/utils/dialogs';
 import {useRouter} from 'vue-router';
+import {openExternalElement} from '/@/use/openExternal';
 
 
 export default defineComponent({
   name: 'ShikiOauth',
   setup() {
     const {openURL} = useElectron();
-    const login = () => openURL(shiki.getAuthUrl());
+    const login = () => openURL(getAuthUrl());
 
-    const userName = ref('');
+    const isLoading = ref(true);
+    const profile = ref<ShikiUser | null>(null);
 
     const updateName = async () => {
-      const data = await shiki.getUser();
-      if (data) {
-        userName.value = data.nickname;
+      isLoading.value = true;
+      try {
+        profile.value = await getUser();
+      } finally {
+        isLoading.value = false;
       }
     };
 
@@ -34,7 +73,7 @@ export default defineComponent({
     if (code) {
       const router = useRouter();
       router.replace({query: {}});
-      shiki.refreshCredentials({type: 'authorization_code', code})
+      refreshCredentials({type: 'authorization_code', code})
         .then(() => {
           updateName();
         })
@@ -53,8 +92,13 @@ export default defineComponent({
       updateName();
     }
 
+    const logOut = () => {
+      clearCredentials();
+      profile.value = null;
+    };
 
-    return {login, userName};
+
+    return {login, profile, isLoading, openExternalElement, logOut};
   },
 });
 </script>

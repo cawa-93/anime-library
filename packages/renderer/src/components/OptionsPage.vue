@@ -1,73 +1,8 @@
 <template>
-  <form
-    @submit.prevent="saveAccessTokenOption"
-  >
-    <label>
-      Ключ доступа к Anime.365<br>
-      <input
-        v-model="SmAccessToken"
-        required
-        type="text"
-      >
-    </label>
-    <p>
-      <a
-        class="help-text"
-        @click.prevent="openDialog"
-      >
-        Как получить ключ доступа?
-      </a>
-    </p>
-    <button type="submit">
-      Сохранить
-    </button>
-  </form>
-
-
-  <dialog ref="helpDialog">
-    <ol>
-      <li>
-        Авторизуйтесь в браузере на сайте:
-        <a
-          href="https://smotret-anime.online/users/login"
-          @click.prevent="openExternal"
-        >
-          Anime.365
-        </a>
-      </li>
-      <li>
-        Скопируйте в поле ниже код полученный по
-        <a
-          href="https://smotret-anime.online/api/accessToken?app=play-shikimori-online"
-          @click.prevent="openExternal"
-        >
-          этой ссылке
-        </a>
-      </li>
-
-      <li>
-        <label>
-          Введите текст от Anime.365:<br>
-          <textarea
-            v-model="jsonData"
-            autofocus
-          />
-        </label>
-      </li>
-      <li>
-        <label>
-          Ваш ключ доступа:<br>
-          <input
-            :value="parsedAccessToken"
-            type="text"
-            readonly
-          >
-        </label>
-      </li>
-    </ol>
-  </dialog>
-
-  <shiki-oauth />
+  <div class="container p-3">
+    <option-anime365 class="mb-3" />
+    <shiki-oauth />
+  </div>
 </template>
 
 <script lang="ts">
@@ -76,10 +11,11 @@ import {useElectron} from '/@/use/electron';
 import {onClickOutside, useTitle} from '@vueuse/core';
 import {getAccessToken, saveAccessToken} from '/@/utils/videoProvider/providers/anime365';
 import ShikiOauth from '/@/components/ShikiOauth.vue';
+import OptionAnime365 from '/@/components/OptionAnime365.vue';
 
 export default defineComponent({
   name: 'OptionsPage',
-  components: {ShikiOauth},
+  components: {OptionAnime365, ShikiOauth},
   setup() {
     //
     // Заголовок страницы
