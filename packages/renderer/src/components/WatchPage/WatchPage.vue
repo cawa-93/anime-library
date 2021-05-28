@@ -339,6 +339,7 @@ export default defineComponent({
 .tabs .radio-button-container {
   cursor: pointer;
   position: relative;
+  -webkit-app-region: no-drag;
 }
 
 .tabs .radio-button-container input {
