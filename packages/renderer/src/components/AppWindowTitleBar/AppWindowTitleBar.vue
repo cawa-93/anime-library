@@ -6,6 +6,11 @@
     <div id="drag-region">
       <back-button id="back-button" />
       <home-button />
+      <a
+        class="button text-danger"
+        href="https://github.com/cawa-93/anime-library/issues/new/choose"
+        @click.prevent="openURL($event.target.href)"
+      >🐞 Обратная связь</a>
       <window-title id="window-title" />
       <options-button />
       <minimize-button class="window-control" />
@@ -25,6 +30,8 @@ import MaximizeButton from '/@/components/AppWindowTitleBar/MaximizeButton.vue';
 import {isWindowMaximized} from '/@/use/isWindowMaximized';
 import HomeButton from '/@/components/AppWindowTitleBar/HomeButton.vue';
 import OptionsButton from '/@/components/AppWindowTitleBar/OptionsButton.vue';
+import {useElectron} from '/@/use/electron';
+
 
 export default defineComponent({
   name: 'AppTitleBar',
@@ -39,12 +46,14 @@ export default defineComponent({
   },
   setup() {
     const {isMaximized} = isWindowMaximized();
-    return {isMaximized};
+    const {openURL} = useElectron();
+    return {isMaximized, openURL};
   },
 });
 </script>
 
 <style scoped>
+@import "button.css";
 #title-bar {
   --padding: 5px;
   padding: var(--padding);
