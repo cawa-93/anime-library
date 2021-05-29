@@ -1,6 +1,6 @@
 <template>
   <section class="control-panel">
-    <div class="progress-bar">
+    <div class="progress-bar-container">
       <progress
         :style="`--gradient: ${bufferedIndicator}`"
         :max="duration"
@@ -318,7 +318,7 @@ export default defineComponent({
   opacity: 0.3;
 }
 
-.progress-bar {
+.progress-bar-container {
   grid-area: progress-bar;
   flex: 1;
   position: relative;
@@ -326,7 +326,7 @@ export default defineComponent({
   align-items: center;
 }
 
-.progress-bar progress {
+.progress-bar-container progress {
   width: 100%;
   -webkit-appearance: none;
   appearance: none;
@@ -334,18 +334,18 @@ export default defineComponent({
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-.progress-bar progress[value]::-webkit-progress-bar {
+.progress-bar-container progress[value]::-webkit-progress-bar {
   width: 100%;
   /*noinspection CssUnresolvedCustomProperty*/
   background: var(--gradient);
   border-radius: 2px;
 }
 
-.progress-bar progress[value]::-webkit-progress-value {
+.progress-bar-container progress[value]::-webkit-progress-value {
   background-color: cornflowerblue;
 }
 
-.progress-bar input[type="range"] {
+.progress-bar-container input[type="range"] {
   width: 100%;
   position: absolute;
   opacity: 0;
@@ -357,15 +357,15 @@ export default defineComponent({
   margin: calc(-1 * var(--oversize)) 0;
 }
 
-.progress-bar input[type="range"]:hover {
+.progress-bar-container input[type="range"]:hover {
   --oversize: 7px;
 }
 
-.progress-bar input[type=range]::-webkit-slider-thumb {
+.progress-bar-container input[type=range]::-webkit-slider-thumb {
   visibility: hidden;
 }
 
-.progress-bar input[type=range]::-webkit-slider-runnable-track {
+.progress-bar-container input[type=range]::-webkit-slider-runnable-track {
   visibility: hidden;
 }
 
