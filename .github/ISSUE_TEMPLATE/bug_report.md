@@ -1,5 +1,7 @@
 ---
-name: Отчет об ошибке about: Создайте новый отчет об ошибке title: ''
+name: Отчет об ошибке 
+about: Создайте новый отчет об ошибке 
+title: ''
 labels: bug assignees: cawa-93
 ---
 
