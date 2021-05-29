@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Questions & Discussions
-    url: https://github.com/cawa-93/vite-electron-builder/discussions/categories/q-a
-    about: Use GitHub discussions for message-board style questions and discussions.
+  - name: Задать вопрос
+    url: https://github.com/cawa-93/anime-library/discussions/categories/%D0%B2%D0%BE%D0%BF%D1%80%D0%BE%D1%81%D1%8B-%D0%B8-%D0%BE%D1%82%D0%B2%D0%B5%D1%82%D1%8B
+    about: Найтите ответ или задайте свой вопрос в разделе Discussions
+  - name: Предложить идею
+    url: https://github.com/cawa-93/anime-library/discussions/categories/%D0%BD%D0%BE%D0%B2%D1%8B%D0%B5-%D0%B8%D0%B4%D0%B5%D0%B8
+    about: Голосуйте за чужие идеи и предлагайте свои в разделе Discussions
