@@ -21,30 +21,75 @@
         v-if="isSidePanelOpened && (showEpisodesPanel || showTranslationsPanel)"
         v-model:is-opened="isSidePanelOpened"
       >
+        <!--        <div-->
+        <!--          v-if="showEpisodesPanel && showTranslationsPanel"-->
+        <!--          class="tabs"-->
+        <!--        >-->
+        <!--          <div class="radio-button-container">-->
+        <!--            <input-->
+        <!--              id="active-tab-episodes"-->
+        <!--              v-model="sidePanelActiveTab"-->
+        <!--              type="radio"-->
+        <!--              name="active-tab"-->
+        <!--              value="episodes"-->
+        <!--            >-->
+        <!--            <label for="active-tab-episodes">Эпизоды</label>-->
+        <!--          </div>-->
+        <!--          <div class="radio-button-container">-->
+        <!--            <input-->
+        <!--              id="active-tab-translations"-->
+        <!--              v-model="sidePanelActiveTab"-->
+        <!--              type="radio"-->
+        <!--              name="active-tab"-->
+        <!--              value="translations"-->
+        <!--            >-->
+        <!--            <label for="active-tab-translations">Переводы</label>-->
+        <!--          </div>-->
+        <!--        </div>-->
+
         <div
-          v-if="showEpisodesPanel && showTranslationsPanel"
-          class="tabs"
+          class="btn-group d-flex"
+          role="group"
+          aria-label="Basic radio toggle button group"
         >
-          <div class="radio-button-container">
-            <input
-              id="active-tab-episodes"
-              v-model="sidePanelActiveTab"
-              type="radio"
-              name="active-tab"
-              value="episodes"
-            >
-            <label for="active-tab-episodes">Эпизоды</label>
-          </div>
-          <div class="radio-button-container">
-            <input
-              id="active-tab-translations"
-              v-model="sidePanelActiveTab"
-              type="radio"
-              name="active-tab"
-              value="translations"
-            >
-            <label for="active-tab-translations">Переводы</label>
-          </div>
+          <input
+            id="episodes-tab"
+            v-model="sidePanelActiveTab"
+            value="episodes"
+            type="radio"
+            class="btn-check"
+            name="active-tab"
+            autocomplete="off"
+            checked
+          >
+          <label
+            class="btn rounded-0"
+            for="episodes-tab"
+          >
+            <span
+              class="border-dark px-2 pb-2"
+              :class="{'border-bottom': sidePanelActiveTab ==='episodes'}"
+            >Эпизоды</span>
+          </label>
+
+          <input
+            id="translations-tab"
+            v-model="sidePanelActiveTab"
+            value="translations"
+            type="radio"
+            class="btn-check"
+            name="active-tab"
+            autocomplete="off"
+          >
+          <label
+            class="btn rounded-0"
+            for="translations-tab"
+          >
+            <span
+              class="border-dark px-2 pb-2"
+              :class="{'border-bottom': sidePanelActiveTab ==='translations'}"
+            >Переводы</span>
+          </label>
         </div>
 
         <episodes-list
@@ -307,47 +352,5 @@ export default defineComponent({
 .playlist-button:not(:disabled):hover {
   background: rgba(255, 255, 255, 0.2);
   cursor: pointer;
-}
-
-.tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: 2.5rem;
-}
-
-.tabs label {
-  border: none;
-  background: none;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  align-items: center;
-  justify-content: center;
-}
-
-.tabs .radio-button-container:hover label {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.tabs input:checked + label {
-  font-weight: bold;
-  border-bottom: 3px solid;
-}
-
-.tabs .radio-button-container {
-  cursor: pointer;
-  position: relative;
-  -webkit-app-region: no-drag;
-}
-
-.tabs .radio-button-container input {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  cursor: pointer;
-  border-radius: 0;
-  opacity: 0;
 }
 </style>
