@@ -1,0 +1,3 @@
+interface HTMLElement {
+  scrollIntoViewIfNeeded(): void
+}

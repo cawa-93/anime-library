@@ -25,7 +25,7 @@ h3:first-of-type {
   width: 100%;
 }
 
-.playlist a span.nowrap {
+.playlist a span.item-text {
   display: block;
   width: 100%;
   overflow: hidden;

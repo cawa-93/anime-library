@@ -1,36 +1,23 @@
 <template>
-  <ul
-    ref="root"
-    class="playlist"
-  >
-    <li
-      v-for="episode of episodes"
-      :key="episode.id"
-    >
-      <router-link
-        :class="{active: selectedEpisode === episode}"
-        :to="{params: {episodeNum: episode.number, translationId: ''}, hash: ''}"
-        replace
-      >
-        <win-icon class="play-icon">
-          &#xF5B0;
-        </win-icon>
-        <span class="nowrap">{{ episode.title }}</span>
-      </router-link>
-    </li>
-  </ul>
+  <play-list
+    class="my-3"
+    :items="playListItems"
+    :selected-item="selectedEpisode"
+  />
 </template>
 
 <script lang="ts">
 import type {DeepReadonly, PropType} from 'vue';
-import {computed, defineComponent, onMounted, ref} from 'vue';
+import {computed, defineComponent} from 'vue';
 import {useRoute} from 'vue-router';
-import WinIcon from '/@/components/WinIcon.vue';
 import type {Episode} from '/@/utils/videoProvider';
+import type {PlayListItem} from '/@/components/WatchPage/PlayList.vue';
+import PlayList from '/@/components/WatchPage/PlayList.vue';
+
 
 export default defineComponent({
   name: 'EpisodesList',
-  components: {WinIcon},
+  components: {PlayList},
   props: {
     episodes: {
       type: Array as PropType<DeepReadonly<Episode[]>>,
@@ -39,21 +26,17 @@ export default defineComponent({
   },
   setup(props) {
     const route = useRoute();
-    const root = ref<HTMLElement>();
-    const selectedEpisode = computed(() => props.episodes.find(e => String(e.number) === route.params.episodeNum) || props.episodes[0]);
+    const selectedEpisode = computed(() => props.episodes.find(e => String(e.number) === route.params.episodeNum) || null);
 
-    onMounted(() => {
-      const activeElement = root.value?.querySelector<HTMLElement>('.active');
-      if (activeElement) {
-        activeElement.scrollIntoView();
-      }
-    });
+    const playListItems = computed<PlayListItem[]>(
+      () => props.episodes.map(e => ({
+        id: typeof e.id === 'number' ? e.id : Number.parseInt(e.id, 10),
+        label: e.title,
+        url: {params: {episodeNum: e.number, translationId: ''}, hash: ''},
+      })),
+    );
 
-    return {selectedEpisode, root};
+    return {selectedEpisode, playListItems};
   },
 });
 </script>
-
-<style scoped>
-@import "playlist.css";
-</style>

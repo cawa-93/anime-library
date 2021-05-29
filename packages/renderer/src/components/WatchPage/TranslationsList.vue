@@ -4,29 +4,15 @@
       v-for="group of groups"
       :key="group.title"
     >
-      <h3>{{ group.title }}</h3>
-      <ul
+      <h4 class="mt-3 px-3">
+        {{ group.title }}
+      </h4>
+      <play-list
+        class="my-3"
         :aria-label="group.title"
-        class="playlist"
-      >
-        <li
-          v-for="translation of group.translations"
-          :key="translation.id"
-        >
-          <router-link
-            :title="formatList(translation.author.members)"
-            :class="{active: selectedTranslation === translation}"
-            :to="{params: {translationId: translation.id, episodeNum: selectedEpisodeNum}, hash: currentLocation.hash}"
-            replace
-            @click="saveToPreferred(translation)"
-          >
-            <win-icon class="play-icon">
-              &#xF5B0;
-            </win-icon>
-            <span class="nowrap">{{ translation.title || 'Неизвестный' }}</span>
-          </router-link>
-        </li>
-      </ul>
+        :items="group.playListItems"
+        :selected-item="selectedTranslation"
+      />
     </template>
   </div>
 </template>
@@ -35,16 +21,17 @@
 import type {DeepReadonly, PropType} from 'vue';
 import {computed, defineComponent, toRaw} from 'vue';
 import {useRoute} from 'vue-router';
-import WinIcon from '/@/components/WinIcon.vue';
 import type {Translation} from '/@/utils/videoProvider';
 import {useBrowserLocation} from '@vueuse/core';
 import {savePreferredTranslation} from '/@/utils/translationRecomendations';
 import {formatList} from '/@/utils/formatList';
+import type {PlayListItem} from '/@/components/WatchPage/PlayList.vue';
+import PlayList from '/@/components/WatchPage/PlayList.vue';
 
 
 export default defineComponent({
   name: 'TranslationsList',
-  components: {WinIcon},
+  components: {PlayList},
   props: {
     translations: {
       type: Array as PropType<DeepReadonly<Translation[]>>,
@@ -59,7 +46,10 @@ export default defineComponent({
     const route = useRoute();
     const selectedTranslation = computed(() => props.translations.find(e => String(e.id) === route.params.translationId) || props.translations[0]);
 
-    const groups = computed(() => {
+    const currentLocation = useBrowserLocation();
+
+
+    const groups = computed<{title: string, playListItems: PlayListItem[]}[]>(() => {
       const groups = new Map<string, DeepReadonly<Translation>[]>();
 
       for (const translation of props.translations) {
@@ -69,25 +59,31 @@ export default defineComponent({
         groups.set(translation.type, g);
       }
 
+      const translationToPlayListItem = (t: DeepReadonly<Translation>): PlayListItem  => ({
+        id: typeof t.id === 'number' ? t.id : Number.parseInt(t.id, 10),
+        label: t.title,
+        title: formatList(t.author.members),
+        url: {params: {translationId: t.id, episodeNum: props.selectedEpisodeNum}, hash: currentLocation.value.hash},
+      });
+
       const result = [];
       {
         let translations = groups.get('voice');
         if (translations) {
-          result.push({title: 'Озвучка', translations});
+          result.push({title: 'Озвучка', playListItems: translations.map(translationToPlayListItem)});
         }
       }
 
       {
         let translations = groups.get('sub');
         if (translations) {
-          result.push({title: 'Субтитры', translations});
+          result.push({title: 'Субтитры', playListItems: translations.map(translationToPlayListItem)});
         }
       }
 
       return result;
     });
 
-    const currentLocation = useBrowserLocation();
 
 
     // Сохранение выбранного перевода в предпочтениях
@@ -100,7 +96,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-@import "playlist.css";
-</style>

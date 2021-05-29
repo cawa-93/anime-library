@@ -49,12 +49,10 @@
 
         <episodes-list
           v-if="showEpisodesPanel && sidePanelActiveTab === 'episodes'"
-          class="playlist"
           :episodes="episodes"
         />
         <translations-list
           v-if="showTranslationsPanel && sidePanelActiveTab === 'translations' && selectedEpisode"
-          class="playlist"
           :selected-episode-num="selectedEpisode.number"
           :translations="translations"
         />
@@ -351,10 +349,5 @@ export default defineComponent({
   cursor: pointer;
   border-radius: 0;
   opacity: 0;
-}
-
-.playlist {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
 }
 </style>
