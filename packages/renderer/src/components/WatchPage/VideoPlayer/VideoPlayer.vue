@@ -21,6 +21,7 @@
       @progress="$emit('progress', $event)"
       @durationchange="$emit('durationchange', $event)"
       @loadeddata="onLoad"
+      @ended="onEpisodeEnded"
     >
       <source
         v-for="source of sources"
@@ -247,7 +248,15 @@ export default defineComponent({
       }
     });
 
+
+    const onEpisodeEnded = () => {
+      if (props.nextUrl) {
+        router.replace(props.nextUrl);
+      }
+    };
+
     return {
+      onEpisodeEnded,
       onLoad,
       videoLoaded,
       controlsVisible,
