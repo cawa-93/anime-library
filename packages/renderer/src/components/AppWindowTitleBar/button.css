@@ -6,6 +6,7 @@
   transition-property: background-color, color;
   transition-duration: 100ms;
   transition-timing-function: linear;
+  color: inherit;
 }
 
 .button:focus {
@@ -24,7 +25,7 @@
   user-select: none;
   background: transparent;
   border: none;
-  padding: 1px 6px;
+  padding: 1px 0.8rem;
   min-width: 34px;
   text-decoration: none;
 }

@@ -22,8 +22,4 @@ export default defineComponent({
 
 <style scoped>
 @import "button.css";
-
-.button {
-  cursor: default;
-}
 </style>
