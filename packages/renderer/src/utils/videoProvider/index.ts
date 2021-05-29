@@ -5,7 +5,7 @@ import {deDuplicatedRequest} from '/@/utils/deDuplicatedRequest';
 
 
 interface HasID {
-  id: NumberLike
+  id: number
 }
 
 interface HasTitle {
@@ -67,7 +67,7 @@ export interface TranslationAuthor {
 /**
  * Возвращает {@link Series} по его MyAnimeListID
  */
-export function getSeries(malId: NumberLike): Promise<DeepReadonly<Series> | undefined> {
+export function getSeries(malId: number): Promise<DeepReadonly<Series> | undefined> {
   return deDuplicatedRequest(
     `series-${malId}`,
     () => provider.getSeries(malId).then(s => s === undefined ? s : readonly(s)),
@@ -78,7 +78,7 @@ export function getSeries(malId: NumberLike): Promise<DeepReadonly<Series> | und
 /**
  * Возвращает массив {@link Episode} относящихся к аниме
  */
-export function getEpisodes(malId: NumberLike): Promise<DeepReadonly<Episode[]>> {
+export function getEpisodes(malId: number): Promise<DeepReadonly<Episode[]>> {
   return deDuplicatedRequest(
     `episodes-${malId}`,
     () => provider.getEpisodes(malId).then(readonly),
@@ -90,7 +90,7 @@ export function getEpisodes(malId: NumberLike): Promise<DeepReadonly<Episode[]>>
  * Возвращает массив переводов относящихся к конкретной серии
  * @param providerEpisodeId ID Серии полученный от конкретного видео-провайдера
  */
-export function getTranslations(providerEpisodeId: NumberLike): Promise<DeepReadonly<Translation[]>> {
+export function getTranslations(providerEpisodeId: number): Promise<DeepReadonly<Translation[]>> {
   return deDuplicatedRequest(
     `translations-${providerEpisodeId}`,
     () => provider.getTranslations(providerEpisodeId).then(readonly),
@@ -101,7 +101,7 @@ export function getTranslations(providerEpisodeId: NumberLike): Promise<DeepRead
 /**
  * Возвращает массив видео для конкретного перевода
  */
-export function getVideos(providerTranslationId: NumberLike): Promise<DeepReadonly<Video[]>> {
+export function getVideos(providerTranslationId: number): Promise<DeepReadonly<Video[]>> {
   return deDuplicatedRequest(
     `videos-${providerTranslationId}`,
     () => provider.getStream(providerTranslationId).then(readonly),
@@ -112,7 +112,7 @@ export function getVideos(providerTranslationId: NumberLike): Promise<DeepReadon
 /**
  * Удаляет кэш видео для конкретного перевода
  */
-export function clearVideosCache(providerTranslationId: NumberLike): Promise<boolean> {
+export function clearVideosCache(providerTranslationId: number): Promise<boolean> {
   return provider.clearVideosCache(providerTranslationId);
 }
 

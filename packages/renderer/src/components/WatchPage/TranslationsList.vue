@@ -11,7 +11,7 @@
         class="my-3"
         :aria-label="group.title"
         :items="group.playListItems"
-        :selected-item="selectedTranslation"
+        :selected-item-id="selectedTranslation.id"
       />
     </template>
   </div>
@@ -39,7 +39,7 @@ export default defineComponent({
     },
     selectedEpisodeNum: {
       required: true,
-      type: [String, Number] as PropType<NumberLike>,
+      type: Number,
     },
   },
   setup(props) {
@@ -88,7 +88,7 @@ export default defineComponent({
 
     // Сохранение выбранного перевода в предпочтениях
     const saveToPreferred = (translation: DeepReadonly<Translation>) => {
-      savePreferredTranslation(route.params.seriesId as NumberLike, toRaw(translation) as Translation);
+      savePreferredTranslation(Number(route.params.seriesId), toRaw(translation) as Translation);
     };
 
 

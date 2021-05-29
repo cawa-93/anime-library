@@ -6,14 +6,14 @@
     <router-link
       v-for="item of items"
       :key="item.id"
-      :class="{active: item.id === selectedItem.id}"
+      :class="{active: item.id === selectedItemId}"
       class="list-group-item"
       :to="item.url"
       replace
       :title="item.title || ''"
     >
       <win-icon
-        v-if="item.id === selectedItem.id"
+        v-if="item.id === selectedItemId"
         class="play-icon"
       >
         &#xF5B0;
@@ -48,8 +48,8 @@ export default defineComponent({
       type: Array as PropType<PlayListItem[]>,
       required: true,
     },
-    selectedItem: {
-      type: Object as PropType<PlayListItem>,
+    selectedItemId: {
+      type: Number,
       required: false,
       default: null,
     },

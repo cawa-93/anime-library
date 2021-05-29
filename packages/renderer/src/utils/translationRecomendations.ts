@@ -37,7 +37,7 @@ function getDB() {
 }
 
 
-export async function savePreferredTranslation(seriesId: NumberLike, translation: Translation): Promise<number> {
+export async function savePreferredTranslation(seriesId: number, translation: Translation): Promise<number> {
   if (typeof seriesId !== 'number') {
     seriesId = Number(seriesId);
   }

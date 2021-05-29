@@ -1,1 +1,0 @@
-type NumberLike = number | `${number}`

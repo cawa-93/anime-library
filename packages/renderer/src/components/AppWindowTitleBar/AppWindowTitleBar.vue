@@ -8,8 +8,8 @@
       <home-button />
       <a
         class="button text-danger"
-        href="https://github.com/cawa-93/anime-library/issues/new/choose"
-        @click.prevent="openURL($event.target.href)"
+        href="#"
+        @click.prevent="openURL('https://github.com/cawa-93/anime-library/issues/new/choose')"
       >🐞 Обратная связь</a>
       <window-title id="window-title" />
       <options-button />

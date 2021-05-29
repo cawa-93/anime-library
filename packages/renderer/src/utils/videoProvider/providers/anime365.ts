@@ -47,7 +47,7 @@ export async function searchSeries<RequestedFields extends keyof sm.Series>(sear
 }
 
 
-export async function getSeries(myAnimeListId: NumberLike): Promise<Series | undefined> {
+export async function getSeries(myAnimeListId: number): Promise<Series | undefined> {
   const fields = ['titleLines', 'myAnimeListId', 'posterUrl'] as const;
   type RequestedFields = typeof fields[number]
 
@@ -79,7 +79,7 @@ export async function getSeries(myAnimeListId: NumberLike): Promise<Series | und
 }
 
 
-export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]> {
+export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
   const fields = ['episodes', 'numberOfEpisodes', 'type'] as const;
   type RequestedFields = typeof fields[number]
 
@@ -126,7 +126,7 @@ export async function getEpisodes(myAnimeListId: NumberLike): Promise<Episode[]>
 
 
 
-export async function getTranslations(episodeId: NumberLike): Promise<Translation[]> {
+export async function getTranslations(episodeId: number): Promise<Translation[]> {
   const fields = ['id', 'authorsSummary', 'authorsList', 'episodeId', 'typeKind', 'typeLang', 'isActive'] as const;
   type RequestedFields = typeof fields[number]
   type ResponseItem = Pick<sm.Translation, RequestedFields>
@@ -178,7 +178,7 @@ export async function getTranslations(episodeId: NumberLike): Promise<Translatio
 }
 
 
-export async function getStream(translationId: NumberLike): Promise<Video[]> {
+export async function getStream(translationId: number): Promise<Video[]> {
   type ExpectedResponse = sm.Video
 
   const requestURL = new URL(`translations/embed/${translationId}`, API_BASE);
@@ -214,7 +214,7 @@ export async function getStream(translationId: NumberLike): Promise<Video[]> {
 }
 
 
-export function clearVideosCache(translationId: NumberLike): Promise<boolean> {
+export function clearVideosCache(translationId: number): Promise<boolean> {
   return caches
     .open('sm-api-calls')
     .then(cache => cache.delete(`${API_BASE}translations/embed/${translationId}`, {ignoreSearch: true}));
@@ -245,6 +245,6 @@ export function saveAccessToken(token?: string): void {
 }
 
 
-export function clearAccessToken() {
+export function clearAccessToken(): void {
   return localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
 }

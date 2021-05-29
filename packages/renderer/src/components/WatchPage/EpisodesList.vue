@@ -2,7 +2,7 @@
   <play-list
     class="my-3"
     :items="playListItems"
-    :selected-item="selectedEpisode"
+    :selected-item-id="selectedEpisode?.id"
   />
 </template>
 
