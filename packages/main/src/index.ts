@@ -145,8 +145,23 @@ const createWindow = async (pageUrl?: string) => {
     }
   }
 
-  await mainWindow.loadURL(pageUrl);
+  await loadUrl(pageUrl);
 };
+
+
+function loadUrl(url: string) {
+  if (!mainWindow) {
+    return Promise.reject(`mainWindow is ${typeof mainWindow}`);
+  }
+
+  const ref = (getInitialArg(process.argv) || '').replace(`${PROTOCOL}`, 'https').replace('//./', '//localhost/');
+  return mainWindow.loadURL(url, {
+    httpReferrer: {
+      url: ref,
+      policy: 'unsafe-url',
+    },
+  });
+}
 
 
 app.on('second-instance', (event, argv) => {
@@ -158,7 +173,7 @@ app.on('second-instance', (event, argv) => {
 
   if (mainWindow) {
     if (resolved) {
-      mainWindow.loadURL(resolved);
+      loadUrl(resolved);
     }
 
     if (mainWindow.isMinimized()) {

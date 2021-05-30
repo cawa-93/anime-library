@@ -6,13 +6,16 @@ const TRACKING_ENABLED = !!import.meta.env.VITE_UA_TRACK_ID;
 interface TrackParams {
   v?: '1'
   ds?: 'web' | 'app'
+  dr?: string
   tid?: string
   z?: string
   cid?: string
   uid?: string
   sc?: 'start' | 'end'
-  sr?: `${number}x${number}`
-  vp?: `${number}x${number}`
+  /** Строка в формате `${number}x${number}` */
+  sr?: string
+  /** Строка в формате `${number}x${number}` */
+  vp?: string
   ul?: string
   t?: 'pageview' | 'screenview' | 'event' | 'transaction' | 'item' | 'social' | 'exception' | 'timing'
   ni?: 1 | 0
@@ -26,7 +29,6 @@ interface TrackParams {
   ea?: string
   el?: string
   ev?: number
-
   utc?: string
   utv?: string
   utt?: number
@@ -44,6 +46,7 @@ function getBaseParams(): TrackParams {
   return {
     v: '1',
     ds: 'app',
+    dr: document.referrer,
     sr: `${window.screen.width}x${window.screen.height}`,
     vp: `${window.innerWidth}x${window.innerHeight}`,
     ul: navigator.language,
