@@ -21,32 +21,6 @@
         v-if="isSidePanelOpened && (showEpisodesPanel || showTranslationsPanel)"
         v-model:is-opened="isSidePanelOpened"
       >
-        <!--        <div-->
-        <!--          v-if="showEpisodesPanel && showTranslationsPanel"-->
-        <!--          class="tabs"-->
-        <!--        >-->
-        <!--          <div class="radio-button-container">-->
-        <!--            <input-->
-        <!--              id="active-tab-episodes"-->
-        <!--              v-model="sidePanelActiveTab"-->
-        <!--              type="radio"-->
-        <!--              name="active-tab"-->
-        <!--              value="episodes"-->
-        <!--            >-->
-        <!--            <label for="active-tab-episodes">Эпизоды</label>-->
-        <!--          </div>-->
-        <!--          <div class="radio-button-container">-->
-        <!--            <input-->
-        <!--              id="active-tab-translations"-->
-        <!--              v-model="sidePanelActiveTab"-->
-        <!--              type="radio"-->
-        <!--              name="active-tab"-->
-        <!--              value="translations"-->
-        <!--            >-->
-        <!--            <label for="active-tab-translations">Переводы</label>-->
-        <!--          </div>-->
-        <!--        </div>-->
-
         <div
           class="btn-group d-flex"
           role="group"
@@ -352,5 +326,9 @@ export default defineComponent({
 .playlist-button:not(:disabled):hover {
   background: rgba(255, 255, 255, 0.2);
   cursor: pointer;
+}
+
+.btn-group input:not(:checked) + label:hover {
+  background-color: rgba(255, 255, 255, 0.3);
 }
 </style>
