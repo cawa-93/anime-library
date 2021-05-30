@@ -1,5 +1,6 @@
 import {useElectron} from '/@/use/electron';
 
+
 const TRACKING_ENABLED = !!import.meta.env.VITE_UA_TRACK_ID;
 
 interface TrackParams {
@@ -25,6 +26,11 @@ interface TrackParams {
   ea?: string
   el?: string
   ev?: number
+
+  utc?: string
+  utv?: string
+  utt?: number
+  utl?: string
 }
 
 function getBaseParams(): TrackParams {
@@ -69,8 +75,6 @@ export async function trackPageView(options: { uri?: string, name?: string } = {
       ...additionParams,
     };
 
-
-
     await send(new URLSearchParams(payload as Record<string, string>).toString());
   }
 }
@@ -83,7 +87,23 @@ export async function trackEvent(event: TrackParams): Promise<void> {
       ...event,
     };
 
+    await send(new URLSearchParams(payload as Record<string, string>).toString());
+  }
+}
 
+
+export async function trackTime(category: string, variable: string, time: number, label?: string, additionParams: TrackParams = {}): Promise<void> {
+  if (TRACKING_ENABLED) {
+    console.log({time, label});
+    const payload: TrackParams = {
+      ...getBaseParams(),
+      t: 'timing',
+      utc: category,
+      utv: variable,
+      utt: Math.round(time),
+      utl: label,
+      ...additionParams,
+    };
 
     await send(new URLSearchParams(payload as Record<string, string>).toString());
   }

@@ -4,6 +4,7 @@ import {openDB} from 'idb';
 import type {IndexKey} from 'idb/build/esm/entry';
 import {isAuthorsEqual} from '/@/utils/videoProvider/providers/anime365-authors';
 import type {MaybeReadonly} from '/@shared/types/utils';
+import {trackTime} from '/@/utils/telemetry';
 
 
 interface TranslationRecommendations extends DBSchema {
@@ -38,11 +39,7 @@ function getDB() {
 
 
 export async function savePreferredTranslation(seriesId: number, translation: Translation): Promise<number> {
-  if (typeof seriesId !== 'number') {
-    seriesId = Number(seriesId);
-  }
-
-  return (await getDB()).put('preferences', {...translation, seriesId});
+  return getDB().then(db => db.put('preferences', {...translation, seriesId}));
 }
 
 
@@ -117,6 +114,8 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
     return undefined;
   }
 
+  const start = performance.now();
+
   /**
    * Сохранённый перевод для выбранного аниме
    */
@@ -126,6 +125,7 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
   if (reference) {
     const preferredTranslation = translations.find(t => t.type === reference.type && isAuthorsEqual(t.author, reference.author));
     if (preferredTranslation) {
+      track(performance.now() - start, 'by-reference');
       return preferredTranslation;
     }
   }
@@ -142,11 +142,13 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
 
   // Если нет ни одного перевода предпочитаемого типа -- просто вернуть первый (любого типа) из всего списка
   if (typedTranslations.length === 0) {
+    track(performance.now() - start, 'first-any-type');
     return translations[0];
   }
 
   // Быстро вернуть перевод предпочитаемого типа если он всего один
   if (typedTranslations.length === 1) {
+    track(performance.now() - start, 'first-preferred-type');
     return typedTranslations[0];
   }
 
@@ -154,6 +156,7 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
 
   // Если нет предпочитаемых авторов -- вернуть первый подходящий перевод
   if (preferredAuthors.length === 0) {
+    track(performance.now() - start, 'has-no-preferred-authors');
     return typedTranslations[0];
   }
 
@@ -161,10 +164,16 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
   for (const preferredAuthor of preferredAuthors) {
     const preferredTranslation = translations.find(t => isAuthorsEqual(t.author, preferredAuthor));
     if (preferredTranslation) {
+      track(performance.now() - start, 'by-preferred-authors');
       return preferredTranslation;
     }
   }
 
   // Если ни один из вариантов поиска не дал результат -- вернуть первый доступный перевод
+  track(performance.now() - start, 'fallback');
   return typedTranslations[0];
+}
+
+function track(time: number, label?: string) {
+  return trackTime('Translation Recomendations', 'Search Preffered Translation', time, label);
 }
