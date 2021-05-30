@@ -71,4 +71,8 @@ main {
   flex-grow: 1;
   overflow: auto;
 }
+
+main * {
+  -webkit-app-region: no-drag !important;
+}
 </style>
