@@ -11,6 +11,7 @@
       :to="item.url"
       replace
       :title="item.title || ''"
+      @click="$emit('item-click', item)"
     >
       <win-icon
         v-if="item.id === selectedItemId"
@@ -40,6 +41,7 @@ export interface PlayListItem {
 
 export default defineComponent({
   name: 'PlayList',
+
   components: {
     WinIcon,
   },
@@ -54,6 +56,9 @@ export default defineComponent({
       default: null,
     },
   },
+
+  emits: ['item-click'],
+
   setup() {
     const root = ref<HTMLElement>();
 

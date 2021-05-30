@@ -12,6 +12,7 @@
         :aria-label="group.title"
         :items="group.playListItems"
         :selected-item-id="selectedTranslation.id"
+        @item-click="track"
       />
     </template>
   </div>
@@ -27,6 +28,7 @@ import {savePreferredTranslation} from '/@/utils/translationRecomendations';
 import {formatList} from '/@/utils/formatList';
 import type {PlayListItem} from '/@/components/WatchPage/PlayList.vue';
 import PlayList from '/@/components/WatchPage/PlayList.vue';
+import {trackEvent} from '/@/utils/telemetry';
 
 
 export default defineComponent({
@@ -60,7 +62,7 @@ export default defineComponent({
       }
 
       const translationToPlayListItem = (t: DeepReadonly<Translation>): PlayListItem  => ({
-        id: typeof t.id === 'number' ? t.id : Number.parseInt(t.id, 10),
+        id: t.id,
         label: t.title,
         title: formatList(t.author.members),
         url: {params: {translationId: t.id, episodeNum: props.selectedEpisodeNum}, hash: currentLocation.value.hash},
@@ -92,7 +94,9 @@ export default defineComponent({
     };
 
 
-    return {selectedTranslation, groups, currentLocation, saveToPreferred, formatList: formatList};
+    const track = () => trackEvent({ec: 'PlayList Manual Select', ea: 'Translation Select'});
+
+    return {selectedTranslation, groups, currentLocation, saveToPreferred, track};
   },
 });
 </script>

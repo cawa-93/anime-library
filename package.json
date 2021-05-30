@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@types/electron-devtools-installer": "2.2.0",
+    "@types/uuid": "^8.3.0",
     "@types/wicg-mediasession": "^1.1.0",
     "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@vitejs/plugin-vue": "1.2.2",
@@ -63,13 +64,13 @@
     "vue-tsc": "^0.1.6"
   },
   "dependencies": {
-    "@microsoft/applicationinsights-web": "2.6.2",
     "@vueuse/core": "4.11.1",
     "bootstrap": "5.0.1",
     "electron-updater": "4.3.9",
     "electron-window-state": "5.0.3",
     "idb": "6.1.2",
     "libass-wasm": "4.0.0",
+    "uuid": "8.3.2",
     "vue": "3.0.11",
     "vue-router": "4.0.8"
   }

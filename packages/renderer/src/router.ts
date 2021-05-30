@@ -1,6 +1,7 @@
 import type {RouteRecordRaw} from 'vue-router';
 import {createRouter, createWebHistory} from 'vue-router';
 import {trackPageView} from '/@/utils/telemetry';
+import {nextTick} from 'vue';
 
 
 const routes: RouteRecordRaw[] = [
@@ -21,11 +22,8 @@ const router = createRouter({
 });
 
 router.afterEach((to, from) => {
-  if (from.path !== to.path) {
-    trackPageView({
-      name: typeof to.name === 'string' ? to.name : undefined,
-      uri: to.path,
-    });
+  if (from.matched.length === 0 || from.path !== to.path) {
+    nextTick(() => trackPageView());
   }
 });
 
