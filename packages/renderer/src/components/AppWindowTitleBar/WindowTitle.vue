@@ -1,5 +1,5 @@
 <template>
-  <span>{{ title }} — Anime Library v{{ appVersion }}-alpha</span>
+  <span>{{ title }} — Anime Library v{{ appVersion }}</span>
 </template>
 
 <script lang="ts">
