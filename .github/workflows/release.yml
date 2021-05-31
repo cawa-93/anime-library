@@ -121,7 +121,8 @@ jobs:
       - name: Compile & release Electron app
         uses: samuelmeuli/action-electron-builder@v1
         env:
-          VITE_APPLICATION_INSIGHTS: ${{ secrets.VITE_APPLICATION_INSIGHTS }}
+          VITE_UA_TRACK_ID: ${{ secrets.VITE_UA_TRACK_ID }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           VITE_SHIKI_CLIENT_ID: ${{ secrets.VITE_SHIKI_CLIENT_ID }}
           VITE_SHIKI_CLIENT_SECRET: ${{ secrets.VITE_SHIKI_CLIENT_SECRET }}
         with:

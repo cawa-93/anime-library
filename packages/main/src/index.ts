@@ -7,7 +7,12 @@ import WindowControllersHost from '/@/ipc/WindowControllersHost';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
 import {URL} from 'url';
 import DialogsHost from '/@/ipc/DialogsHost';
+import {init} from '@sentry/electron';
 
+
+if (import.meta.env.VITE_SENTRY_DSN) {
+  init({dsn: import.meta.env.VITE_SENTRY_DSN});
+}
 
 const isSingleInstance = app.requestSingleInstanceLock();
 

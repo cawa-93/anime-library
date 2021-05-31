@@ -47,6 +47,7 @@ export default defineConfig({
       external: [
         'electron',
         'semver',
+        '@sentry/electron',
         ...builtinModules,
       ],
       output: {
