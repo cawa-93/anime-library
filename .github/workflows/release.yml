@@ -28,6 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       release-note: ${{ steps.release-note.outputs.release-note }}
+      version: ${{ steps.version.outputs.build-version }}
 
     steps:
       - uses: actions/checkout@v2
@@ -53,7 +54,7 @@ jobs:
 
       - name: Get version from current date
         id: version
-        run: echo "::set-output name=current-version::$(node -e "try{console.log(require('./electron-builder.config.js').extraMetadata.version)}catch(e){console.error(e);process.exit(1)}")"
+        run: echo "::set-output name=build-version::$(node -e "try{console.log(require('./electron-builder.config.js').extraMetadata.version)}catch(e){console.error(e);process.exit(1)}")"
 
 
       - name: Waiting on All checks
@@ -75,8 +76,8 @@ jobs:
         with:
           prerelease: false
           draft: true
-          tag_name: v${{ steps.version.outputs.current-version }}
-          name: v${{ steps.version.outputs.current-version }}
+          tag_name: v${{ steps.version.outputs.build-version }}
+          name: v${{ steps.version.outputs.build-version }}
           body: ${{ steps.release-note.outputs.release-note }}
 
   upload_artifacts:
@@ -126,6 +127,7 @@ jobs:
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           VITE_SHIKI_CLIENT_ID: ${{ secrets.VITE_SHIKI_CLIENT_ID }}
           VITE_SHIKI_CLIENT_SECRET: ${{ secrets.VITE_SHIKI_CLIENT_SECRET }}
+          VITE_APP_VERSION: ${{ needs.draft.outputs.version }}
         with:
           build_script_name: build
           args: --config electron-builder.config.js
