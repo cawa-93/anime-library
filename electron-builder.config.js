@@ -1,5 +1,5 @@
 const now = new Date;
-const buildVersion = `${now.getFullYear() - 2000}.${now.getMonth() + 1}.${now.getDate()}`;
+const buildVersion = `${now.getUTCFullYear() - 2000}.${now.getUTCMonth() + 1}.${now.getUTCDate()}.${now.getUTCHours() * 60 + now.getUTCMinutes()}`;
 
 /**
  * @type {import('electron-builder').Configuration}
