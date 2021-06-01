@@ -1,7 +1,21 @@
 <template>
   <div class="container p-3">
-    <option-anime365 class="mb-3" />
-    <shiki-oauth />
+    <option-anime365 />
+    <shiki-oauth class="my-3" />
+
+    <section class="card my-3 mt-5">
+      <p class="card-header">
+        О приложении
+      </p>
+      <p class="card-body m-0">
+        Версия: <strong>{{ appVersion }}</strong>
+        <br>
+        Исходный код на GitHub: <a
+          href="https://github.com/cawa-93/anime-library"
+          @click.prevent="openExternal"
+        >cawa-93/anime-library</a>
+      </p>
+    </section>
   </div>
 </template>
 
@@ -13,15 +27,14 @@ import {getAccessToken, saveAccessToken} from '/@/utils/videoProvider/providers/
 import ShikiOauth from '/@/components/ShikiOauth.vue';
 import OptionAnime365 from '/@/components/OptionAnime365.vue';
 
+
 export default defineComponent({
   name: 'OptionsPage',
   components: {OptionAnime365, ShikiOauth},
   setup() {
     //
     // Заголовок страницы
-    const t = useTitle();
-    t.value = 'Параметры';
-
+    useTitle('Параметры');
 
     const helpDialog = ref<HTMLDialogElement>();
     onClickOutside(helpDialog, () => {
@@ -62,7 +75,18 @@ export default defineComponent({
     const SmAccessToken = ref(getAccessToken() || '');
     const saveAccessTokenOption = () => saveAccessToken(SmAccessToken.value);
 
-    return {helpDialog, openExternal, jsonData, parsedAccessToken, saveAccessTokenOption, SmAccessToken, openDialog};
+    const appVersion = import.meta.env.VITE_APP_VERSION;
+
+    return {
+      helpDialog,
+      openExternal,
+      jsonData,
+      parsedAccessToken,
+      saveAccessTokenOption,
+      SmAccessToken,
+      openDialog,
+      appVersion,
+    };
   },
 });
 </script>
