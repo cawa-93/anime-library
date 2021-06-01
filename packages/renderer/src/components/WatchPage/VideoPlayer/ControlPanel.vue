@@ -246,8 +246,8 @@ export default defineComponent({
     const getFormattedTime = (sec: number) => {
       const d = new Date(sec * 1000);
 
-      const options: Intl.DateTimeFormatOptions = {minute: 'numeric', second: 'numeric'};
-      if (sec > 1000 * 60 * 60) {
+      const options: Intl.DateTimeFormatOptions = {minute: 'numeric', second: 'numeric', timeZone: 'UTC'};
+      if (sec > 60 * 60) {
         options.hour = 'numeric';
       }
 
