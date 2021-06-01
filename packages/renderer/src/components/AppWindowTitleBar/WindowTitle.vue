@@ -1,5 +1,5 @@
 <template>
-  <span>{{ title }} — Anime Library v{{ appVersion }}</span>
+  <small class="d-inline-block text-truncate">{{ title }} — Anime Library v{{ appVersion }}</small>
 </template>
 
 <script lang="ts">
@@ -19,11 +19,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-span {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow-x: hidden;
-}
-</style>

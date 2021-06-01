@@ -114,7 +114,7 @@ const createWindow = async (pageUrl?: string) => {
     height: mainWindowState.height,
     x: mainWindowState.x,
     y: mainWindowState.y,
-    minWidth: 380,
+    minWidth: 400,
     frame: false,
     backgroundColor: '#fff',
     webPreferences: {

@@ -7,11 +7,15 @@
       <back-button id="back-button" />
       <home-button />
       <a
-        class="button text-primary"
+        class="button text-primary title-bar-github-link text-truncate d-sm-inline-flex align-items-center d-none"
         href="#"
         @click.prevent="onClick"
-      >{{ selectedVariant }}</a>
-      <window-title id="window-title" />
+      >
+        <small>
+          {{ selectedVariant }}
+        </small>
+      </a>
+      <window-title class="flex-fill px-3" />
       <options-button />
       <minimize-button class="window-control" />
       <maximize-button class="window-control" />
@@ -81,9 +85,8 @@ export default defineComponent({
   --padding: 0px;
 }
 
-#window-title {
-  flex: 1;
-  margin-left: 1rem;
+.title-bar-github-link {
+  flex-shrink: 0.15;
 }
 
 #back-button {
