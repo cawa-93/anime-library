@@ -11,7 +11,10 @@ import {init} from '@sentry/electron';
 
 
 if (import.meta.env.VITE_SENTRY_DSN) {
-  init({dsn: import.meta.env.VITE_SENTRY_DSN});
+  init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    release: 'v' + import.meta.env.VITE_APP_VERSION,
+  });
 }
 
 const isSingleInstance = app.requestSingleInstanceLock();
