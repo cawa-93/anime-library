@@ -1,6 +1,6 @@
 <template>
   <button
-    class="button"
+    class="btn rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
     type="button"
     @click="close"
   >
@@ -25,8 +25,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-@import "button.css";
-
+@import "base-titlebar-button.css";
 button:hover {
   background: #E81123 !important;
 }

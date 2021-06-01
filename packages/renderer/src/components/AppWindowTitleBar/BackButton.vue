@@ -2,7 +2,7 @@
   <button
     :disabled="isDisabled"
     title="Вернутся назад"
-    class="button"
+    class="btn rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
     @click="goBack"
   >
     <win-icon>&#xE830;</win-icon>
@@ -53,22 +53,9 @@ export default defineComponent({
 </script>
 
 <style scoped>
-@import "button.css";
+@import "base-titlebar-button.css";
 
-.button {
-  width: auto;
-  min-width: 50px;
-}
-
-button:not(:disabled):hover {
-  background: #E81123 !important;
-}
-
-button:not(:disabled):active {
-  background: #F1707A !important;
-}
-
-button:not(:disabled):active, button:not(:disabled):hover {
-  color: white;
+button:disabled {
+  opacity: 0.3;
 }
 </style>

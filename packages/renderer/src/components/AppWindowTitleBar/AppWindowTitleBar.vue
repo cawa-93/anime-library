@@ -3,11 +3,14 @@
     id="title-bar"
     :class="{maximized: isMaximized}"
   >
-    <div id="drag-region">
+    <div
+      id="drag-region"
+      class="d-flex"
+    >
       <back-button id="back-button" />
       <home-button />
       <a
-        class="button text-primary title-bar-github-link text-truncate d-sm-inline-flex align-items-center d-none"
+        class="btn rounded-0 py-0 border-0 text-primary title-bar-github-link text-truncate d-sm-inline-flex d-none align-items-center justify-content-center "
         href="#"
         @click.prevent="onClick"
       >
@@ -15,7 +18,7 @@
           {{ selectedVariant }}
         </small>
       </a>
-      <window-title class="flex-fill px-3" />
+      <window-title class="flex-fill px-3 align-self-center" />
       <options-button />
       <minimize-button class="window-control" />
       <maximize-button class="window-control" />
@@ -75,7 +78,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-@import "button.css";
+@import "base-titlebar-button.css";
+
 #title-bar {
   --padding: 5px;
   padding: var(--padding);
@@ -100,8 +104,6 @@ export default defineComponent({
 
 #drag-region {
   height: calc(24px + var(--padding) * 2);
-  display: flex;
-  align-items: center;
   -webkit-app-region: drag;
   margin: calc(-1 * var(--padding));
 }
