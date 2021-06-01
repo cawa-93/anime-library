@@ -7,10 +7,10 @@
       <back-button id="back-button" />
       <home-button />
       <a
-        class="button text-danger"
+        class="button text-primary"
         href="#"
-        @click.prevent="openURL('https://github.com/cawa-93/anime-library/issues/new/choose')"
-      >🐞 Обратная связь</a>
+        @click.prevent="onClick"
+      >{{ selectedVariant }}</a>
       <window-title id="window-title" />
       <options-button />
       <minimize-button class="window-control" />
@@ -31,6 +31,7 @@ import {isWindowMaximized} from '/@/use/isWindowMaximized';
 import HomeButton from '/@/components/AppWindowTitleBar/HomeButton.vue';
 import OptionsButton from '/@/components/AppWindowTitleBar/OptionsButton.vue';
 import {useElectron} from '/@/use/electron';
+import {trackEvent} from '/@/utils/telemetry';
 
 
 export default defineComponent({
@@ -45,9 +46,26 @@ export default defineComponent({
     BackButton,
   },
   setup() {
-    const {isMaximized} = isWindowMaximized();
+    const textVariants = [
+      '🐞 Сообщить об ошибке',
+      '💡 Предложить идею',
+      '❓ Задать вопрос',
+    ];
+
+    const selectedVariant = textVariants[Math.floor(Math.random() * textVariants.length)];
+
     const {openURL} = useElectron();
-    return {isMaximized, openURL};
+    const onClick = () => {
+      openURL('https://github.com/cawa-93/anime-library/issues/new/choose');
+      trackEvent({
+        ec: 'New Issue',
+        ea: 'Click Title bar link',
+        el: selectedVariant,
+      });
+    };
+
+    const {isMaximized} = isWindowMaximized();
+    return {isMaximized, onClick, selectedVariant};
   },
 });
 </script>
