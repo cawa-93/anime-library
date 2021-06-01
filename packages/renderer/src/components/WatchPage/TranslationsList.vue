@@ -61,12 +61,32 @@ export default defineComponent({
         groups.set(translation.type, g);
       }
 
-      const translationToPlayListItem = (t: DeepReadonly<Translation>): PlayListItem  => ({
-        id: t.id,
-        label: t.title,
-        title: formatList(t.author.members),
-        url: {params: {translationId: t.id, episodeNum: props.selectedEpisodeNum}, hash: currentLocation.value.hash},
-      });
+      const translationToPlayListItem = (t: DeepReadonly<Translation>): PlayListItem => {
+
+        let badges: PlayListItem['badges'] = [];
+
+        if (t.qualityType !== 'tv') {
+          badges.push({
+            style: 'success',
+            text: t.qualityType.toLocaleUpperCase(),
+          });
+        }
+
+        if (!t.censored) {
+          badges.push({
+            style: 'danger',
+            text: 'CE',
+          });
+        }
+
+        return {
+          id: t.id,
+          label: t.title,
+          title: formatList(t.author.members),
+          url: {params: {translationId: t.id, episodeNum: props.selectedEpisodeNum}, hash: currentLocation.value.hash},
+          badges,
+        };
+      };
 
       const result = [];
       {

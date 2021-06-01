@@ -19,7 +19,16 @@
       >
         &#xF5B0;
       </win-icon>
-      <span class="item-text">{{ item.label }}</span>
+      <span class="d-flex item-label">
+        <span class="flex-fill d-inline-block text-truncate">{{ item.label }}</span>
+        <small
+          v-for="b of item.badges"
+          :key="b.text"
+          style="margin-left: 0.1em"
+          class="badge align-self-center"
+          :class="`bg-${b.style} ${['warning', 'info', 'light'].includes(b.style) ? 'text-dark' : ''}`"
+        >{{ b.text }}</small>
+      </span>
     </router-link>
   </nav>
 </template>
@@ -36,6 +45,7 @@ export interface PlayListItem {
   label: string,
   title?: string,
   url: RouteLocationRaw
+  badges?: {text: string, style: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark'}[]
 }
 
 
@@ -91,12 +101,7 @@ export default defineComponent({
   background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
-.item-text {
-  display: block;
-  width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.item-label {
   grid-column-start: 2;
 }
 </style>

@@ -36,6 +36,9 @@ export interface Translation extends HasID, HasTitle {
    * Автор перевода
    */
   author: TranslationAuthor
+
+  qualityType: 'bd' | 'dvd' | 'tv'
+  censored: boolean
 }
 
 export interface VideoSource {

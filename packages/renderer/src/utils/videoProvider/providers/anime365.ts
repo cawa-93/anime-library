@@ -3,7 +3,8 @@ import type {Episode, Series, Translation, Video, VideoTrack} from '/@/utils/vid
 import {getAuthor} from '/@/utils/videoProvider/providers/anime365-authors';
 
 
-const API_BASE = 'https://smotret-anime.online/api/';
+const HOST_ROOT = 'https://smotret-anime.online';
+const API_BASE = `${HOST_ROOT}/api/`;
 
 
 async function request<T>(url: string | URL): Promise<sm.ApiResponse<T>> {
@@ -127,7 +128,7 @@ export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
 
 
 export async function getTranslations(episodeId: number): Promise<Translation[]> {
-  const fields = ['id', 'authorsSummary', 'authorsList', 'episodeId', 'typeKind', 'typeLang', 'isActive'] as const;
+  const fields = ['id', 'authorsSummary', 'authorsList', 'episodeId', 'typeKind', 'typeLang', 'isActive', 'qualityType'] as const;
   type RequestedFields = typeof fields[number]
   type ResponseItem = Pick<sm.Translation, RequestedFields>
   type ExpectedResponse = Array<ResponseItem>
@@ -166,6 +167,10 @@ export async function getTranslations(episodeId: number): Promise<Translation[]>
         summary: t.authorsSummary,
       });
 
+      const qualityType = t.qualityType === 'uncensored' ? 'tv' : t.qualityType;
+
+      const uncensored = t.qualityType === 'uncensored' ?? (t.authorsSummary !== undefined && /без *ценз|uncensor/i.test(t.authorsSummary)) ?? false;
+
       return ({
         id: t.id,
         get title() {
@@ -173,6 +178,8 @@ export async function getTranslations(episodeId: number): Promise<Translation[]>
         },
         type: t.typeKind,
         author,
+        qualityType,
+        censored: !uncensored,
       });
     });
 }
@@ -194,9 +201,13 @@ export async function getStream(translationId: number): Promise<Video[]> {
 
   const tracks: VideoTrack[] = [];
 
-  const resolvedSubtitlesUrl = subtitlesUrl; // || subtitlesVttUrl ; // .vtt файлы в данный момент НЕ поддерживаются
+  if (subtitlesUrl) {
+    const resolvedSubtitlesUrl = subtitlesUrl.startsWith('http')
+      ? subtitlesUrl
+      : subtitlesUrl.startsWith('/')
+        ? `${HOST_ROOT}${subtitlesUrl}`
+        : `${HOST_ROOT}/${subtitlesUrl}`;
 
-  if (resolvedSubtitlesUrl) {
     tracks.push({
       src: resolvedSubtitlesUrl,
       srcLang: 'ru',
