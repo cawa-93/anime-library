@@ -263,31 +263,31 @@ function getCommitsList(commits, pad = '') {
 function replaceHeader(str) {
   switch (str) {
     case 'feat':
-      return 'New Features';
+      return 'Новые возможности';
     case 'fix':
-      return 'Bug Fixes';
+      return 'Исправления';
     case 'docs':
-      return 'Documentation Changes';
+      return 'Изменения документации';
     case 'build':
-      return 'Build System';
+      return 'Система сборки';
     case 'chore':
-      return 'Chores';
+      return 'Уборка';
     case 'ci':
       return 'Continuous Integration';
     case 'refactor':
-      return 'Refactors';
+      return 'Рефакторинг';
     case 'style':
-      return 'Code Style Changes';
+      return 'Стиль кода';
     case 'test':
-      return 'Tests';
+      return 'Тесты';
     case 'perf':
-      return 'Performance improvements';
+      return 'Улучшение производительности';
     case 'revert':
-      return 'Reverts';
+      return 'Возвраты';
     case 'deps':
-      return 'Dependency updates';
+      return 'Зависимости';
     case 'other':
-      return 'Other Changes';
+      return 'Другие изменения';
     default:
       return str;
   }
