@@ -19,11 +19,11 @@ export function loadAndSetEnv(mode, cwd) {
   }
 
   if (process.env.VITE_APP_VERSION === undefined) {
-    const now = new Date;
-    process.env.VITE_APP_VERSION = mode === 'development' ? '0.0.0' : `${now.getFullYear() - 2000}.${now.getMonth() + 1}.${now.getDate()}`;
-  }
-
-  if (process.env.VITE_BUILD_VERSION === undefined) {
-    process.env.VITE_BUILD_VERSION = String(mode === 'development' ? '0' : Math.round((Date.now() / 1000)));
+    if (mode === 'development') {
+      process.env.VITE_APP_VERSION = '0.0.0';
+    } else {
+      const electronBuilderConfig = require('../electron-builder.config');
+      process.env.VITE_APP_VERSION = electronBuilderConfig.extraMetadata.version;
+    }
   }
 }
