@@ -40,3 +40,4 @@ jobs:
         with:
           environment: production
           sourcemaps: './packages'
+          version: ${{ github.event.release.tag_name }}
