@@ -12,7 +12,7 @@
         :aria-label="group.title"
         :items="group.playListItems"
         :selected-item-id="selectedTranslation.id"
-        @item-click="track"
+        @item-click="onManualSelect"
       />
     </template>
   </div>
@@ -94,9 +94,17 @@ export default defineComponent({
     };
 
 
-    const track = () => trackEvent({ec: 'PlayList Manual Select', ea: 'Translation Select'});
+    const onManualSelect = (item: PlayListItem) => {
+      const targetTranslation = props.translations.find(t => t.id === item.id);
+      if (targetTranslation) {
+        saveToPreferred(targetTranslation);
+      }
+      trackEvent({ec: 'PlayList Manual Select', ea: 'Translation Select'});
+    };
 
-    return {selectedTranslation, groups, currentLocation, saveToPreferred, track};
+
+
+    return {selectedTranslation, groups, currentLocation, onManualSelect};
   },
 });
 </script>

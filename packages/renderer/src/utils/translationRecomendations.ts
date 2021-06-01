@@ -175,5 +175,5 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
 }
 
 function track(time: number, label?: string) {
-  return trackTime('Translation Recomendations', 'Search Preffered Translation', time, label);
+  return trackTime('Translation Recommendations', 'Search Preferred Translation', time, label);
 }
