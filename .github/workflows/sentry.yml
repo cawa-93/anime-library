@@ -30,6 +30,11 @@ jobs:
 
       # Нужно чтобы сгенерировать sourcemaps
       - run: npm run build
+        env:
+          VITE_UA_TRACK_ID: ${{ secrets.VITE_UA_TRACK_ID }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          VITE_SHIKI_CLIENT_ID: ${{ secrets.VITE_SHIKI_CLIENT_ID }}
+          VITE_SHIKI_CLIENT_SECRET: ${{ secrets.VITE_SHIKI_CLIENT_SECRET }}
 
       - name: Create Sentry release
         uses: getsentry/action-release@v1
