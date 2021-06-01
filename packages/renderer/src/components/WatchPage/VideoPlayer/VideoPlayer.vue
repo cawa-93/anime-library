@@ -195,8 +195,8 @@ export default defineComponent({
 
     //
     // Быстрая перемотка
-    const seekBackward = (skipTime = 5) => Math.max(currentTime.value - skipTime, 0);
-    const seekForward = (skipTime = 5) => Math.min(currentTime.value + skipTime, duration.value);
+    const seekBackward = (skipTime = 5) => currentTime.value = Math.max(currentTime.value - skipTime, 0);
+    const seekForward = (skipTime = 5) => currentTime.value = Math.min(currentTime.value + skipTime, duration.value);
 
     //
     // Работа с горячими клавишами
@@ -212,8 +212,8 @@ export default defineComponent({
 
     const {space, arrowRight, arrowLeft, arrowUp, arrowDown, pause, play} = useMagicKeys();
     whenever(and(space, notUsingInteractiveElement), () => playing.value = !playing.value);
-    whenever(and(arrowRight, notUsingInteractiveElement), seekForward);
-    whenever(and(arrowLeft, notUsingInteractiveElement), seekBackward);
+    whenever(and(arrowRight, notUsingInteractiveElement), () => seekForward());
+    whenever(and(arrowLeft, notUsingInteractiveElement), () => seekBackward());
     whenever(pause, () => playing.value = false);
     whenever(play, () => playing.value = true);
     whenever(and(arrowUp, notUsingInteractiveElement), () => volume.value = Math.min(1, volume.value + 0.1));
@@ -234,8 +234,8 @@ export default defineComponent({
       if (navigator.mediaSession !== undefined) {
         navigator.mediaSession.setActionHandler('play', () => playing.value = true);
         navigator.mediaSession.setActionHandler('pause', () => playing.value = false);
-        navigator.mediaSession.setActionHandler('seekbackward', () => seekBackward);
-        navigator.mediaSession.setActionHandler('seekforward', () => seekForward);
+        navigator.mediaSession.setActionHandler('seekbackward', () => seekBackward());
+        navigator.mediaSession.setActionHandler('seekforward', () => seekForward());
       }
     });
 
