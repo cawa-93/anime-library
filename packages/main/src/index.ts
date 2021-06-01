@@ -14,6 +14,7 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
     release: 'v' + import.meta.env.VITE_APP_VERSION,
+    environment: import.meta.env.MODE,
   });
 }
 

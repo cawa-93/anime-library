@@ -16,6 +16,7 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     // @ts-expect-error Sentry ожидает Vue 2 но я передаю Vue 3. Это каким-то образом работает
     integrations: [new VueIntegration({Vue: app, logErrors: true})],
     release: 'v' + import.meta.env.VITE_APP_VERSION,
+    environment: import.meta.env.MODE,
   });
 }
 
