@@ -26,7 +26,7 @@ export default defineConfig({
     },
   },
   build: {
-    sourcemap: 'inline',
+    sourcemap: process.env.MODE === 'development' ? 'inline' : true,
     target: `chrome${chrome}`,
     outDir: 'dist',
     assetsDir: '.',

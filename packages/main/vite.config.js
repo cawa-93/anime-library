@@ -27,7 +27,7 @@ export default defineConfig({
     },
   },
   build: {
-    sourcemap: 'inline',
+    sourcemap: process.env.MODE === 'development' ? 'inline' : true,
     target: `node${node}`,
     outDir: 'dist',
     assetsDir: '.',
