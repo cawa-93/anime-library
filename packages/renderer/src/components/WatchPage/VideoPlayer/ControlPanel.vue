@@ -70,7 +70,7 @@
       @click="$emit('update:isSubtitlesEnabled', !isSubtitlesEnabled)"
     >
       <win-icon :style="!isSubtitlesEnabled ? 'opacity: 0.5' : ''">
-        &#xE7F0;
+        &#xED1E;
       </win-icon>
     </button>
 
