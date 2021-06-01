@@ -39,4 +39,4 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           environment: production
-          sourcemaps: './packages/main/dist' './packages/preload/dist' './packages/renderer/dist'
+          sourcemaps: './packages'
