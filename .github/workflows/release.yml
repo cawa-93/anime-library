@@ -50,7 +50,7 @@ jobs:
           from: ${{ steps.tag.outputs.last-tag }}
           to: ${{ github.ref }}
           include-commit-body: true
-          include-abbreviated-commit: true
+          include-abbreviated-commit: false
 
       - name: Get version from current date
         id: version
