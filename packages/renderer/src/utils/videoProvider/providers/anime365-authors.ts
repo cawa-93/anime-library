@@ -105,14 +105,11 @@ function parseAuthor(summary: string): TranslationAuthor {
 
     if (baseAuthor) {
       baseAuthor.members = authorChunks.filter(c => c !== authorChunk);
-      console.debug('[FOUND]: ', summary, authorChunks);
       break;
     }
   }
 
   if (!baseAuthor) {
-    console.debug('[NOT FOUND]: ', summary, authorChunks);
-
     baseAuthor = {
       team: authorChunks[0],
       members: authorChunks.slice(1),
@@ -128,7 +125,9 @@ function parseAuthor(summary: string): TranslationAuthor {
       members: baseAuthor.members || [],
     };
   } else {
-    console.warn(`Не удалось определить автора: '${summary}'`);
+    if (import.meta.env.MODE === 'development') {
+      console.warn(`Не удалось определить автора: '${summary}'`);
+    }
     return FALLBACK_AUTHOR;
   }
 }

@@ -202,8 +202,6 @@ export default defineComponent({
         .then(v => videos.value = v)
         .catch((err) => {
 
-          console.error(err);
-
           const title = 'Не удалось загрузить видео с Anime.365';
           const message: string = err.code === 403
             ? 'Перейдите в настройки и обновите ключ доступа'

@@ -202,7 +202,6 @@ export default defineComponent({
     // Работа с горячими клавишами
     const activeElement = useActiveElement();
     const notUsingInteractiveElement = computed(() => {
-        console.log(activeElement.value?.tagName);
         return activeElement.value?.tagName !== 'INPUT'
           && activeElement.value?.tagName !== 'TEXTAREA'
           && activeElement.value?.tagName !== 'SELECT'

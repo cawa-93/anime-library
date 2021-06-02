@@ -97,7 +97,6 @@ export async function trackEvent(event: TrackParams): Promise<void> {
 
 export async function trackTime(category: string, variable: string, time: number, label?: string, additionParams: TrackParams = {}): Promise<void> {
   if (TRACKING_ENABLED) {
-    console.log({time, label});
     const payload: TrackParams = {
       ...getBaseParams(),
       t: 'timing',

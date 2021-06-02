@@ -131,7 +131,6 @@ export async function getViewHistoryItem(seriesId: number): Promise<HistoryViews
           number: rate.episodes + 1,
         },
       };
-      console.log({rate, savedItem});
       await saveHistoryItemToDB(savedItem);
     }
   }

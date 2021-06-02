@@ -108,7 +108,6 @@ export default defineComponent({
       }
 
       if (historyItem === undefined) {
-        console.debug('[REDIRECT]: EPISODE (default): ' + episodes[0].number);
         return router.replace({params: {episodeNum: episodes[0].number}});
       }
 
@@ -125,7 +124,6 @@ export default defineComponent({
       // TODO: Проверять что последняя сохранённая серия была досмотрена и открывать следующую
       // const targetEpisodeNum = ...
 
-      console.debug('[REDIRECT]: EPISODE (history): ' + selectedEpisodeNum + ', HASH: ' + `#t=${time}`);
       return router.replace({
         params: {episodeNum: selectedEpisodeNum},
         hash: `#t=${time}`,
@@ -138,7 +136,6 @@ export default defineComponent({
         return;
       }
 
-      console.debug('[REDIRECT] translationId');
       const episodes = await getEpisodes(normalizedSeriesId.value);
       let selectedEpisode = episodes.find(e => e.number === normalizedEpisodeNum.value);
 

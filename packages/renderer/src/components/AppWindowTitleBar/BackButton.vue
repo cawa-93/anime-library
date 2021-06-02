@@ -36,7 +36,6 @@ export default defineComponent({
        * когда по каким-то причинам electron сбрасывает историю навигации
        */
       if (history.value.length === 1 && history.value.state.position === 1) {
-        console.warn('Невозможно вернуться назад. Обновляю стек истории');
         window.history.pushState(window.history.state, document.title);
         window.history.back();
 
