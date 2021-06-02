@@ -27,7 +27,7 @@ async function request<T>(url: string | URL): Promise<sm.ApiResponse<T>> {
 }
 
 
-function isFailureResponse(response: sm.ApiResponseFailure | sm.ApiResponseSuccess<unknown>): response is sm.ApiResponseFailure {
+export function isFailureResponse(response: sm.ApiResponseFailure | sm.ApiResponseSuccess<unknown>): response is sm.ApiResponseFailure {
   return (response as sm.ApiResponseSuccess<unknown>).data === undefined;
 }
 
@@ -241,7 +241,7 @@ export function getAccessToken(): string | null {
 }
 
 
-export function saveAccessToken(token?: string): void {
+export function saveAccessToken(token?: string | null): void {
   if (!token) {
     clearAccessToken();
     return;
