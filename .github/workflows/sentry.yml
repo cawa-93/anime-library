@@ -45,5 +45,5 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
           environment: production
-          sourcemaps: './packages'
+          sourcemaps: ./packages/main/dist ./packages/preload/dist ./packages/renderer/dist
           version: ${{ github.event.release.tag_name }}
