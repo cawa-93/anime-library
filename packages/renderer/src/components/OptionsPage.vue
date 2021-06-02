@@ -3,17 +3,28 @@
     <option-anime365 />
     <shiki-oauth class="my-3" />
 
-    <section class="card my-3 mt-5">
+    <section class="card mt-5">
       <p class="card-header">
         О приложении
       </p>
-      <p class="card-body m-0">
+      <p class="card-body mb-0">
         Версия: <strong>{{ appVersion }}</strong>
         <br>
-        Исходный код на GitHub: <a
+        Исходный код на GitHub:
+        <a
           href="https://github.com/cawa-93/anime-library"
           @click.prevent="openExternal"
         >cawa-93/anime-library</a>
+        <br>
+        Сообщество пользователей в
+        <a
+          href="https://vk.com/playshikionline"
+          @click.prevent="openExternal"
+        >Вконтакте</a> и в
+        <a
+          href="https://t.me/playshikionline"
+          @click.prevent="openExternal"
+        >Telegram</a>
       </p>
     </section>
   </div>
