@@ -19,7 +19,8 @@ class WindowControllersHost implements WindowControllers {
   }
 
   isMaximized() {
-    return !!BrowserWindow.getFocusedWindow()?.isMaximized();
+    // Предполагается что у приложения может быть только одно окно
+    return BrowserWindow.getAllWindows()[0].isMaximized();
   }
 }
 

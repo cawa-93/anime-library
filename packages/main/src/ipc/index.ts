@@ -8,7 +8,7 @@ function hasProperty<T>(host: T, prop: string): prop is string & keyof T {
 
 
 export function registerIpcHost<T extends keyof IpcNameHostsMap>(hostName: T, host: IpcNameHostsMap[T]): void {
-  ipcMain.handle(hostName, async (event, methodName: unknown, ...args) => {
+  ipcMain.handle(hostName, async (_event, methodName: unknown, ...args) => {
     if (typeof methodName !== 'string') {
       throw new Error(`methodName must be a string (got ${JSON.stringify(methodName)}) when called host "${hostName}"`);
     }
