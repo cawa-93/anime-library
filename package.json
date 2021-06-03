@@ -48,7 +48,7 @@
     "@vitejs/plugin-vue": "1.2.2",
     "concurrently": "^6.2.0",
     "cross-env": "7.0.3",
-    "electron": "13.0.1",
+    "electron": "13.1.0",
     "electron-builder": "22.11.3",
     "electron-devtools-installer": "3.2.0",
     "eslint": "^7.27.0",
@@ -63,10 +63,10 @@
     "vue-tsc": "^0.1.6"
   },
   "dependencies": {
-    "@sentry/browser": "6.4.1",
+    "@sentry/browser": "6.5.1",
     "@sentry/electron": "^2.4.1",
-    "@sentry/integrations": "^6.5.0",
-    "@vueuse/core": "4.11.1",
+    "@sentry/integrations": "6.5.1",
+    "@vueuse/core": "4.11.2",
     "bootstrap": "5.0.1",
     "electron-updater": "4.3.9",
     "electron-window-state": "5.0.3",
