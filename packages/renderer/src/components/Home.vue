@@ -1,18 +1,18 @@
 <template>
   <div class="p-3 container-fluid">
-    <main-search />
+    <home-search />
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent} from 'vue';
 import {useTitle} from '@vueuse/core';
-import MainSearch from '/@/components/MainSearch.vue';
+import HomeSearch from '/@/components/HomeSearch.vue';
 
 
 export default defineComponent({
   name: 'Home',
-  components: {MainSearch},
+  components: {HomeSearch},
   setup() {
 
     //
