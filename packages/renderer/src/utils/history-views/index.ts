@@ -60,11 +60,8 @@ function getDB() {
         db.createObjectStore('meta');
       }
 
-      console.log({oldVersion});
-
       if (oldVersion < 2) {
-        transaction.objectStore('history')
-          .createIndex('by-updated-at', 'updated_at');
+        transaction.objectStore('history').createIndex('by-updated-at', 'updated_at');
       }
     },
   });
