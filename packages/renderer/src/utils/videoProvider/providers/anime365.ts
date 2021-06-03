@@ -168,8 +168,7 @@ export async function getTranslations(episodeId: number): Promise<Translation[]>
       });
 
       const qualityType = t.qualityType === 'uncensored' ? 'tv' : t.qualityType;
-
-      const uncensored = t.qualityType === 'uncensored' ?? (t.authorsSummary !== undefined && /без *ценз|uncensor/i.test(t.authorsSummary)) ?? false;
+      const uncensored = t.qualityType === 'uncensored' || (!!t.authorsSummary && /без *ценз|uncensor/i.test(t.authorsSummary));
 
       return ({
         id: t.id,
