@@ -6,7 +6,7 @@ import {getUserRate, isLoggedIn, saveUserRate} from '/@/utils/shikimori-api';
 // type HistoryViewsItemStates = 'planned' | 'watching' | 'rewatching' | 'completed' | 'on_hold' | 'dropped'
 
 
-interface HistoryViewsItem {
+export interface HistoryViewsItem {
   seriesId: number,
   episode: {
     number: number,
@@ -32,9 +32,10 @@ interface HistoryViews extends DBSchema {
   history: {
     value: HistoryViewsItem;
     key: HistoryViewsItem['seriesId'];
-    // indexes: {
-    //   'by-state': HistoryViewsItem['state']
-    // }
+    indexes: {
+      'by-updated-at': number
+      //   'by-state': HistoryViewsItem['state']
+    }
   };
   meta: Meta
 }
@@ -52,15 +53,15 @@ function getDB() {
     return dbPromise;
   }
 
-  dbPromise = openDB<HistoryViews>('history-views', 1, {
-    upgrade(db, oldVersion: number) {
+  dbPromise = openDB<HistoryViews>('history-views', 2, {
+    upgrade(db, oldVersion, _newVersion, transaction) {
       if (oldVersion < 1) {
-        db
-          .createObjectStore('history', {keyPath: 'seriesId'});
-        // .createIndex('by-state', 'state');
-
-
+        db.createObjectStore('history', {keyPath: 'seriesId'});
         db.createObjectStore('meta');
+      }
+
+      if (oldVersion < 2) {
+        transaction.objectStore('history').createIndex('by-updated-at', 'updated_at');
       }
     },
   });
@@ -136,4 +137,11 @@ export async function getViewHistoryItem(seriesId: number): Promise<HistoryViews
   }
 
   return savedItem;
+}
+
+
+export function getHistoryItems(limit = 5): Promise<HistoryViewsItem[]> {
+  return getDB()
+    .then(db => db.getAllFromIndex('history', 'by-updated-at'))
+    .then(items => items.splice(-limit).reverse());
 }

@@ -1,6 +1,6 @@
 <template>
   <form
-    class="container shadow"
+    class="container shadow card"
     @submit.prevent="onSearch"
   >
     <div class="card-body border-primary">
@@ -19,7 +19,25 @@
           type="url"
           class="form-control"
           aria-describedby="search-field-help"
+          list="history"
+          @input="onDatalistOptionSelect"
         >
+
+        <datalist
+          v-if="history.length > 0"
+          id="history"
+        >
+          <optgroup label="Вы недавно смотрели">
+            Вы недавно смотрели
+            <option
+              v-for="item of history"
+              :key="item.id"
+            >
+              {{ item.title }}
+            </option>
+          </optgroup>
+        </datalist>
+
         <button
           class="btn btn-outline-secondary"
           type="submit"
@@ -29,12 +47,12 @@
       </div>
 
 
-      <div
+      <small
         id="search-field-help"
         class="form-text"
       >
         {{ title || 'Вставьте ссылка на аниме с Шикимори или MyAnimeList' }}
-      </div>
+      </small>
     </div>
   </form>
 </template>
@@ -43,9 +61,11 @@
 import {computed, defineComponent, ref, watch} from 'vue';
 import {useRouter} from 'vue-router';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
+import type {Series} from '/@/utils/videoProvider';
 import {getEpisodes, getSeries} from '/@/utils/videoProvider';
 import {asyncComputed} from '@vueuse/core';
 import WinIcon from '/@/components/WinIcon.vue';
+import {getHistoryItems} from '/@/utils/history-views';
 
 
 export default defineComponent({
@@ -54,9 +74,30 @@ export default defineComponent({
   setup() {
 
     const router = useRouter();
-    const defaultSearchText = import.meta.env.MODE === 'development' ? 'https://shikimori.org/animes/14719-jojo-no-kimyou-na-bouken-tv' : '';
-    const searchText = ref(defaultSearchText);
+    const searchText = ref('');
     const animeID = computed(() => getSeriesId(searchText.value));
+
+    const history = ref<Series[]>([]);
+
+    getHistoryItems()
+      .then(items => Promise.all(items.map((i) => getSeries(i.seriesId))))
+      .then(series => history.value = series.filter(<T>(s?: T): s is T => s !== undefined));
+
+
+    const onDatalistOptionSelect = () => {
+      if (history.value.length === 0) {
+        return;
+      }
+
+      const searchTextTrimmed = searchText.value.trim();
+      const target = history.value.find(i => i && i.title.toLowerCase() === searchTextTrimmed.toLowerCase());
+      if (!target) {
+        return;
+      }
+
+      return open(target.id);
+    };
+
 
     /**
      * Если удалось определить ID аниме -- выполнить загрузку серий, чтобы они кэшировались
@@ -82,15 +123,13 @@ export default defineComponent({
      */
     const onSearch = () => {
       if (animeID.value) {
-        router.push({name: 'Watch', params: {seriesId: animeID.value}});
+        open(animeID.value);
       }
     };
 
-    return {onSearch, searchText, title};
+    const open = (seriesId: number) => router.push({name: 'Watch', params: {seriesId}});
+
+    return {onSearch, onDatalistOptionSelect, searchText, title, history};
   },
 });
 </script>
-
-<style scoped>
-
-</style>
