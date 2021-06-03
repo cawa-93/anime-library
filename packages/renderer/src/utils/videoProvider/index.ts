@@ -70,7 +70,7 @@ export interface TranslationAuthor {
 /**
  * Возвращает {@link Series} по его MyAnimeListID
  */
-export function getSeries(malId: number): Promise<DeepReadonly<Series> | undefined> {
+export function getSeries(malId: number): Promise<Series | undefined> {
   return deDuplicatedRequest(
     `series-${malId}`,
     () => provider.getSeries(malId).then(s => s === undefined ? s : readonly(s)),
