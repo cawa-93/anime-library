@@ -29,6 +29,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Get version from tag
+        env:
+          VITE_APP_VERSION: ${{ github.event.release.tag_name }}
+        id: version-from-tag
+        run: echo "::set-output name=version::${VITE_APP_VERSION:1}"
+
       # Нужно чтобы сгенерировать sourcemaps
       - run: npm run build
         env:
@@ -36,6 +42,7 @@ jobs:
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           VITE_SHIKI_CLIENT_ID: ${{ secrets.VITE_SHIKI_CLIENT_ID }}
           VITE_SHIKI_CLIENT_SECRET: ${{ secrets.VITE_SHIKI_CLIENT_SECRET }}
+          VITE_APP_VERSION: ${{ steps.version-from-tag.outputs.version }}
 
       - name: Create Sentry release
         uses: getsentry/action-release@v1
@@ -46,4 +53,5 @@ jobs:
         with:
           environment: production
           sourcemaps: ./packages/main/dist ./packages/preload/dist ./packages/renderer/dist
+          url_prefix: '~'
           version: ${{ github.event.release.tag_name }}
