@@ -83,7 +83,7 @@ export default defineConfig({
     vue(),
 
     VitePWA({
-      mode: 'development',
+      mode: 'production',
       injectRegister: 'script',
       manifest: false,
       workbox: {

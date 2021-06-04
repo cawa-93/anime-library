@@ -1,5 +1,5 @@
 import {app, BrowserWindow, protocol, session} from 'electron';
-import {join} from 'path';
+import {join, basename} from 'path';
 import {createProtocol} from '/@/createCustomProtocol';
 import windowStateKeeper from 'electron-window-state';
 import {registerIpcHost} from '/@/ipc';
@@ -7,14 +7,33 @@ import WindowControllersHost from '/@/ipc/WindowControllersHost';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
 import {URL} from 'url';
 import DialogsHost from '/@/ipc/DialogsHost';
-import {init} from '@sentry/electron';
+import {init} from '@sentry/electron/dist/main';
+import {RewriteFrames as RewriteFramesIntegration} from '@sentry/integrations';
 
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   init({
+    debug: true,
     dsn: import.meta.env.VITE_SENTRY_DSN,
     release: 'v' + import.meta.env.VITE_APP_VERSION,
     environment: import.meta.env.MODE,
+    integrations: [
+
+      // @ts-expect-error ...
+      new RewriteFramesIntegration({
+        iteratee: (frame) => {
+          if (frame.filename) {
+            frame.filename = '/main/dist/' + basename(frame.filename);
+          }
+
+          if (frame.module) {
+            frame.module = '/main/dist/' + basename(frame.module);
+          }
+
+          return frame;
+        },
+      }),
+    ],
   });
 }
 

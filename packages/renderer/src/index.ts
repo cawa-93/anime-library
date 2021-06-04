@@ -2,7 +2,7 @@ import {createApp} from 'vue';
 import App from '/@/App.vue';
 import router from '/@/router';
 import * as Sentry from '@sentry/browser';
-import { Vue as VueIntegration } from '@sentry/integrations';
+import {RewriteFrames as RewriteFramesIntegration, Vue as VueIntegration} from '@sentry/integrations';
 
 
 
@@ -12,11 +12,24 @@ const app = createApp(App)
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
+    debug: import.meta.env.MODE === 'development',
     dsn: import.meta.env.VITE_SENTRY_DSN,
-    // @ts-expect-error Sentry ожидает Vue 2 но я передаю Vue 3. Это каким-то образом работает
-    integrations: [new VueIntegration({Vue: app, logErrors: true})],
     release: 'v' + import.meta.env.VITE_APP_VERSION,
     environment: import.meta.env.MODE,
+    integrations: [
+      new RewriteFramesIntegration({
+        iteratee: (frame) => {
+          if (frame.filename) {
+            frame.filename = frame.filename.replace('anime-lib://.', '/renderer/dist');
+          }
+          return frame;
+        },
+      }),
+
+
+      // @ts-expect-error Sentry ожидает Vue 2 но я передаю Vue 3. Это каким-то образом работает
+      new VueIntegration({Vue: app, logErrors: true}),
+    ],
   });
 }
 
