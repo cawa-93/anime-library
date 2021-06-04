@@ -279,6 +279,9 @@ export default defineComponent({
 
 <style scoped>
 .control-panel {
+  --control-panel-bottom-padding: 8px;
+  --control-panel-left-padding: 10px;
+  --control-panel-right-padding: 10px;
   position: absolute;
   display: grid;
   bottom: 0;
@@ -291,6 +294,7 @@ export default defineComponent({
     "progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar"
     "play-button next-button volume-area time space subtitles settings picture-in-picture fullscreen";
   color: white;
+  padding: 0 var(--control-panel-right-padding) var(--control-panel-bottom-padding) var(--control-panel-left-padding);
 }
 
 .control-panel button, .control-panel a {
@@ -306,7 +310,28 @@ export default defineComponent({
   align-items: center;
   justify-content: center;
   text-decoration: none;
+  position: relative;
 }
+
+.control-panel button:before, .control-panel a:before, .control-panel select:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: calc(100% + var(--control-panel-bottom-padding));
+}
+
+.control-panel button:first-of-type:before {
+  width: calc(100% + var(--control-panel-left-padding));
+}
+
+.control-panel button:last-of-type:before {
+  width: calc(100% + var(--control-panel-right-padding));
+  left: 0;
+  right: auto;
+}
+
 
 .control-panel button:not(:disabled):hover, .control-panel a:not(.disabled):hover {
   background: rgba(255, 255, 255, 0.2);
@@ -356,7 +381,7 @@ export default defineComponent({
   margin: calc(-1 * var(--oversize)) 0;
 }
 
-.progress-bar-container input[type="range"]:hover {
+.progress-bar-container input[type=range]:hover {
   --oversize: 7px;
 }
 
@@ -428,6 +453,12 @@ export default defineComponent({
   border: none;
   background: none;
   color: inherit;
+  cursor: pointer;
+}
+
+.settings:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
 }
 
 select.settings option {

@@ -10,10 +10,10 @@
     <div>
       <button
         v-if="showEpisodesPanel || showTranslationsPanel"
-        class="open-playlist border-0 p-1"
+        class="open-playlist btn btn-dark border-0 p-0"
         @click="isSidePanelOpened = !isSidePanelOpened"
       >
-        <win-icon class="btn btn-dark btn-sm p-2">
+        <win-icon>
           &#xE8FD;
         </win-icon>
       </button>
@@ -305,21 +305,30 @@ export default defineComponent({
   height: 100%;
 }
 
-.open-playlist {
+.open-playlist.btn {
+  --offset-top: 0.3em;
+  --offset-right: 0.3em;
   position: absolute;
-  top:0;
-  right: 0;
+  top: var(--offset-top);
+  right: var(--offset-right);
   mix-blend-mode: difference;
-  background: none;
-}
-
-.open-playlist .btn {
   font-size: 18px;
+  width: 2em;
+  height: 2em;
   line-height: 1;
 }
-.open-playlist:not(:hover) .btn {
-  background: none;
-  border-color: transparent;
+
+.open-playlist.btn:before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: calc(100% + var(--offset-top));
+  width: calc(100% + var(--offset-right));
+}
+
+.open-playlist.btn:not(:hover) {
+  background-color: transparent;
 }
 
 .btn-group input:not(:checked) + label:hover {
