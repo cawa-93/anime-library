@@ -1,22 +1,22 @@
 <template>
-  <section
+  <video-player
     id="video-container"
+    :videos="videos"
+    :next-url="nextEpisodeURL"
+    @source-error="onSourceError"
+    @durationchange="saveWatchProgress"
+    @progress="saveWatchProgress"
   >
-    <video-player
-      :videos="videos"
-      :next-url="nextEpisodeURL"
-      @source-error="onSourceError"
-      @durationchange="saveWatchProgress"
-      @progress="saveWatchProgress"
-    >
+    <div>
       <button
         v-if="showEpisodesPanel || showTranslationsPanel"
-        class="playlist-button"
+        class="open-playlist border-0 p-1"
         @click="isSidePanelOpened = !isSidePanelOpened"
       >
-        <win-icon>&#xE8FD;</win-icon>
+        <win-icon class="btn btn-dark btn-sm p-2">
+          &#xE8FD;
+        </win-icon>
       </button>
-
       <side-panel
         v-if="isSidePanelOpened && (showEpisodesPanel || showTranslationsPanel)"
         v-model:is-opened="isSidePanelOpened"
@@ -76,8 +76,8 @@
           :translations="translations"
         />
       </side-panel>
-    </video-player>
-  </section>
+    </div>
+  </video-player>
 </template>
 
 <script lang="ts">
@@ -305,25 +305,21 @@ export default defineComponent({
   height: 100%;
 }
 
-.playlist-button {
+.open-playlist {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 18px;
-  background: transparent;
-  border: none;
-  color: white;
-  display: flex;
-  width: 30px;
-  height: 30px;
-  justify-content: center;
-  align-items: center;
-  border-radius: 3px;
+  top:0;
+  right: 0;
+  mix-blend-mode: difference;
+  background: none;
 }
 
-.playlist-button:not(:disabled):hover {
-  background: rgba(255, 255, 255, 0.2);
-  cursor: pointer;
+.open-playlist .btn {
+  font-size: 18px;
+  line-height: 1;
+}
+.open-playlist:not(:hover) .btn {
+  background: none;
+  border-color: transparent;
 }
 
 .btn-group input:not(:checked) + label:hover {

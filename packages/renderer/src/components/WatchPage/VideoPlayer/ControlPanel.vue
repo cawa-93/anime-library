@@ -290,7 +290,6 @@ export default defineComponent({
   grid-template-areas:
     "progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar"
     "play-button next-button volume-area time space subtitles settings picture-in-picture fullscreen";
-  padding: 5px;
   color: white;
 }
 
@@ -300,12 +299,12 @@ export default defineComponent({
   color: inherit;
   background: transparent;
   border-radius: 3px;
-  font-size: 15px;
-  width: 30px;
+  font-size: 18px;
+  width: 2em;
+  height: 2em;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 30px;
   text-decoration: none;
 }
 
@@ -380,6 +379,7 @@ export default defineComponent({
 .volume-area {
   grid-area: volume-area;
   display: flex;
+  gap: 5px 10px;
 }
 
 .volume-area input[type="range"] {

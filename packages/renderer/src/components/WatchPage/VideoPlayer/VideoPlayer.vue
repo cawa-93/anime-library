@@ -60,9 +60,7 @@
       />
     </transition>
     <transition name="fade">
-      <div v-if="controlsVisible">
-        <slot />
-      </div>
+      <slot v-if="controlsVisible" />
     </transition>
   </div>
 </template>
