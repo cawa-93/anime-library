@@ -42,11 +42,11 @@
   },
   "devDependencies": {
     "@types/electron-devtools-installer": "2.2.0",
-    "@types/uuid": "^8.3.0",
-    "@types/wicg-mediasession": "^1.1.0",
+    "@types/uuid": "8.3.0",
+    "@types/wicg-mediasession": "1.1.0",
     "@typescript-eslint/eslint-plugin": "4.26.0",
     "@vitejs/plugin-vue": "1.2.3",
-    "concurrently": "^6.2.0",
+    "concurrently": "6.2.0",
     "cross-env": "7.0.3",
     "electron": "13.1.1",
     "electron-builder": "22.11.5",
@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "@sentry/browser": "6.5.1",
-    "@sentry/electron": "^2.4.1",
+    "@sentry/electron": "2.4.1",
     "@sentry/integrations": "6.5.1",
     "@vueuse/core": "5.0.0",
     "bootstrap": "5.0.1",
