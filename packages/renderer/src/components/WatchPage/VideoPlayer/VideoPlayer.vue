@@ -68,7 +68,17 @@
 <script lang="ts">
 import type {DeepReadonly, PropType} from 'vue';
 import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, readonly, ref, watch} from 'vue';
-import {and, useActiveElement, useFullscreen, useIdle, useMagicKeys, useMediaControls, whenever} from '@vueuse/core';
+import {
+  and,
+  syncRef,
+  useActiveElement,
+  useFullscreen,
+  useIdle,
+  useMagicKeys,
+  useMediaControls,
+  useStorage,
+  whenever,
+} from '@vueuse/core';
 import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
 import LoadingSpinner from '/@/components/WatchPage/VideoPlayer/LoadingSpinner.vue';
@@ -168,11 +178,18 @@ export default defineComponent({
       currentTime,
       buffered,
       waiting,
-      volume,
+      volume: videoVolume,
       isPictureInPicture,
-      muted,
+      muted: videoMuted,
     } = useMediaControls(videoElement);
 
+    const volume = useStorage('volume', videoVolume.value);
+    const muted = useStorage('muted', videoMuted.value);
+
+    onMounted(() => {
+      syncRef(volume, videoVolume, {immediate: true});
+      syncRef(muted, videoMuted, {immediate: true});
+    });
 
     //
     // переключение полноэкранного режима
