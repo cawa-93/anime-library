@@ -3,7 +3,7 @@
     "config:base",
     ":semanticCommits",
     ":semanticCommitTypeAll(deps)",
-    ":semanticCommitScope(dev)",
+    ":semanticCommitScopeDisabled",
     ":automergeTypes"
   ],
   "labels": [
@@ -28,12 +28,6 @@
       "enabled": false
     },
     {
-      "depTypeList": [
-        "dependencies"
-      ],
-      "semanticCommitScope": "prod"
-    },
-    {
       "matchSourceUrlPrefixes": [
         "https://github.com/vitejs/vite/"
       ],
@@ -56,6 +50,5 @@
       "separateMajorMinor": false,
       "groupName": "electron"
     }
-  ],
-  "rangeStrategy": "bump"
+  ]
 }
