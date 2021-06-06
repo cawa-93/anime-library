@@ -3,13 +3,13 @@ import {ref} from 'vue';
 import {useEventListener} from '@vueuse/core';
 import {isMaximized as getMaximizedState} from '/@/utils/window-controllers';
 
-export function isWindowMaximized(defaultValue = false): { isMaximized: Ref<boolean> } {
-
+export function isWindowMaximized(defaultValue = false): { isMaximized: Ref<boolean>, forceUpdate(): Promise<boolean> } {
   const isMaximized = ref(defaultValue);
-  getMaximizedState().then(v => isMaximized.value = v);
+  const forceUpdate = () => getMaximizedState().then(v => isMaximized.value = v);
 
-  useEventListener(window, 'resize', () => getMaximizedState().then(v => isMaximized.value = v),
-  );
+  forceUpdate().catch(console.error);
 
-  return {isMaximized};
+  useEventListener(window, 'resize', forceUpdate);
+
+  return {isMaximized, forceUpdate};
 }

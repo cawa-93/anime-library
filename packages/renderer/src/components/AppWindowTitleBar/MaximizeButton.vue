@@ -14,7 +14,7 @@
 import {defineComponent} from 'vue';
 import WinIcon from '/@/components/WinIcon.vue';
 import {isWindowMaximized} from '/@/use/isWindowMaximized';
-import {maximize, unmaximize} from '/@/utils/window-controllers';
+import {toggle} from '/@/utils/window-controllers';
 
 export default defineComponent({
   name: 'MaximizeButton',
@@ -22,10 +22,11 @@ export default defineComponent({
 
   setup() {
 
-    const {isMaximized} = isWindowMaximized();
+    const {isMaximized, forceUpdate} = isWindowMaximized();
 
     const toggleMaximizeState = () => {
-      isMaximized.value ? unmaximize() : maximize();
+      forceUpdate();
+      toggle();
     };
 
     return {isMaximized, toggleMaximizeState};

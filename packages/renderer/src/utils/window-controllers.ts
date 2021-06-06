@@ -32,3 +32,7 @@ export function unmaximize(): Promise<void> {
 export function isMaximized(): Promise<boolean> {
   return getService().isMaximized();
 }
+
+export async function toggle(): Promise<void> {
+  return (await isMaximized()) ? unmaximize() : maximize();
+}
