@@ -21,7 +21,7 @@
       @progress="$emit('progress', $event)"
       @durationchange="$emit('durationchange', $event)"
       @loadeddata="onLoad"
-      @ended="onEpisodeEnded"
+      @ended="goToNextUrl"
     >
       <source
         v-for="source of sources"
@@ -68,21 +68,12 @@
 <script lang="ts">
 import type {DeepReadonly, PropType} from 'vue';
 import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, readonly, ref, watch} from 'vue';
-import {
-  and,
-  syncRef,
-  useActiveElement,
-  useFullscreen,
-  useIdle,
-  useMagicKeys,
-  useMediaControls,
-  useStorage,
-  whenever,
-} from '@vueuse/core';
+import {syncRef, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
 import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
 import LoadingSpinner from '/@/components/WatchPage/VideoPlayer/LoadingSpinner.vue';
 import router from '/@/router';
+import {useMediaHotKeys} from '/@/use/useMediaHotKeys';
 
 
 const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/WatchPage/VideoPlayer/LibAssSubtitlesRenderer.vue'));
@@ -207,31 +198,36 @@ export default defineComponent({
       }
     };
 
+    // Переключатель на следующую серию
+    const goToNextUrl = () => {
+      if (props.nextUrl) {
+        router.replace(props.nextUrl);
+      }
+    };
 
     //
     // Быстрая перемотка
-    const seekBackward = (skipTime = 5) => currentTime.value = Math.max(currentTime.value - skipTime, 0);
-    const seekForward = (skipTime = 5) => currentTime.value = Math.min(currentTime.value + skipTime, duration.value);
+    const DEFAULT_SEEK_SPEED = 5;
+    const seek = (speed = DEFAULT_SEEK_SPEED) => currentTime.value = Math.max(0, Math.min(currentTime.value + speed, duration.value));
 
     //
     // Работа с горячими клавишами
-    const activeElement = useActiveElement();
-    const notUsingInteractiveElement = computed(() => {
-        return activeElement.value?.tagName !== 'INPUT'
-          && activeElement.value?.tagName !== 'TEXTAREA'
-          && activeElement.value?.tagName !== 'SELECT'
-          && activeElement.value?.tagName !== 'BUTTON';
+    useMediaHotKeys({
+      playingToggle: () => playing.value = !playing.value,
+      playingPause: () => playing.value = false,
+      nextTrack: goToNextUrl,
+      volumeDown: e => volume.value = e.shiftKey ? 0 : Math.max(0, volume.value - 0.1),
+      volumeUp: e => volume.value = e.shiftKey ? 1 : Math.min(1, volume.value + 0.1),
+      volumeMute: () => muted.value = true,
+      fastForward: e => {
+        const baseSpeed = DEFAULT_SEEK_SPEED * (e.code === 'KeyL' ? 2 : 1);
+        seek(e.shiftKey ? baseSpeed * 2 : baseSpeed);
       },
-    );
-
-    const {space, arrowRight, arrowLeft, arrowUp, arrowDown, pause, play} = useMagicKeys();
-    whenever(and(space, notUsingInteractiveElement), () => playing.value = !playing.value);
-    whenever(and(arrowRight, notUsingInteractiveElement), () => seekForward());
-    whenever(and(arrowLeft, notUsingInteractiveElement), () => seekBackward());
-    whenever(pause, () => playing.value = false);
-    whenever(play, () => playing.value = true);
-    whenever(and(arrowUp, notUsingInteractiveElement), () => volume.value = Math.min(1, volume.value + 0.1));
-    whenever(and(arrowDown, notUsingInteractiveElement), () => volume.value = Math.max(0, volume.value - 0.1));
+      fastBackward: e => {
+        const baseSpeed = -DEFAULT_SEEK_SPEED * (e.code === 'KeyJ' ? 2 : 1);
+        seek(e.shiftKey ? baseSpeed * 2 : baseSpeed);
+      },
+    });
 
 
     //
@@ -241,15 +237,15 @@ export default defineComponent({
 
     watch(
       () => props.nextUrl,
-      () => navigator.mediaSession && navigator.mediaSession.setActionHandler('nexttrack', props.nextUrl ? () => router.replace(props.nextUrl) : null),
+      () => navigator.mediaSession && navigator.mediaSession.setActionHandler('nexttrack', props.nextUrl ? goToNextUrl : null),
     );
 
     onMounted(() => {
       if (navigator.mediaSession !== undefined) {
         navigator.mediaSession.setActionHandler('play', () => playing.value = true);
         navigator.mediaSession.setActionHandler('pause', () => playing.value = false);
-        navigator.mediaSession.setActionHandler('seekbackward', () => seekBackward());
-        navigator.mediaSession.setActionHandler('seekforward', () => seekForward());
+        navigator.mediaSession.setActionHandler('seekbackward', () => seek(-DEFAULT_SEEK_SPEED));
+        navigator.mediaSession.setActionHandler('seekforward', () => seek(DEFAULT_SEEK_SPEED));
       }
     });
 
@@ -263,14 +259,10 @@ export default defineComponent({
     });
 
 
-    const onEpisodeEnded = () => {
-      if (props.nextUrl) {
-        router.replace(props.nextUrl);
-      }
-    };
+
 
     return {
-      onEpisodeEnded,
+      goToNextUrl,
       onLoad,
       videoLoaded,
       controlsVisible,
