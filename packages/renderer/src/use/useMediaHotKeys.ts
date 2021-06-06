@@ -8,7 +8,7 @@ type SupportedActions =
   | 'nextTrack'
   | 'fastForward'
   | 'fastBackward'
-  | 'volumeMute'
+  | 'volumeMuteToggle'
   | 'volumeUp'
   | 'volumeDown'
 
@@ -48,8 +48,8 @@ const keys = new Map<KeyboardEvent['code'], Action>([
   ['ArrowRight', {action: 'fastForward', ignore: e => matchBySelector(e, 'input, textarea, select')}],
   ['KeyL', {action: 'fastForward'}],
 
-  ['AudioVolumeMute', {action: 'volumeMute'}],
-  ['KeyM', {action: 'volumeMute'}],
+  ['AudioVolumeMute', {action: 'volumeMuteToggle'}],
+  ['KeyM', {action: 'volumeMuteToggle'}],
 
 
   ['AudioVolumeUp', {action: 'volumeUp'}],
@@ -69,7 +69,7 @@ type MediaControls = {
   nextTrack?: (event: KeyboardEvent) => void
   fastForward?: (event: KeyboardEvent) => void
   fastBackward?: (event: KeyboardEvent) => void
-  volumeMute?: (event: KeyboardEvent) => void
+  volumeMuteToggle?: (event: KeyboardEvent) => void
   volumeUp?: (event: KeyboardEvent) => void
   volumeDown?: (event: KeyboardEvent) => void
 }
@@ -81,7 +81,7 @@ export function useMediaHotKeys(controls: MediaControls): void {
     if (!shortcut) {
       return;
     }
-    
+
     if (shortcut.ignore && shortcut.ignore(event)) {
       return;
     }
