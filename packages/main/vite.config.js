@@ -46,8 +46,19 @@ export default defineConfig({
     rollupOptions: {
       external: [
         'electron',
+
+        /**
+         * semver не может быть обработан из-за ошибки
+         * https://github.com/npm/node-semver/issues/381
+         */
         'semver',
+
+        /**
+         * @sentry/electron не может быть обработан из-за ошибки
+         * https://github.com/vitejs/vite/issues/3701
+         */
         '@sentry/electron/dist/main',
+
         ...builtinModules,
       ],
       output: {
