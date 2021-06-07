@@ -68,7 +68,7 @@
 <script lang="ts">
 import type {DeepReadonly, PropType} from 'vue';
 import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, readonly, ref, watch} from 'vue';
-import {syncRef, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
+import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
 import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
 import LoadingSpinner from '/@/components/WatchPage/VideoPlayer/LoadingSpinner.vue';
@@ -227,6 +227,15 @@ export default defineComponent({
         const baseSpeed = -DEFAULT_SEEK_SPEED * (e.code === 'KeyJ' ? 2 : 1);
         seek(e.shiftKey ? baseSpeed * 2 : baseSpeed);
       },
+    });
+
+    useEventListener('keydown', (event: KeyboardEvent) => {
+      if (event.code === 'KeyF') {
+        toggleFullscreen();
+      }
+      else if (event.code === 'KeyI') {
+        togglePictureInPicture();
+      }
     });
 
 
