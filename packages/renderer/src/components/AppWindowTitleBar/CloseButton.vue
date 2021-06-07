@@ -1,24 +1,21 @@
 <template>
   <button
-    class="btn rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
+    class="btn win-icon rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
+    title="Закрыть"
     type="button"
     @click="close"
   >
-    <win-icon>&#xE8BB;</win-icon>
+    &#xE8BB;
   </button>
 </template>
 
 <script lang="ts">
 import {defineComponent} from 'vue';
-import WinIcon from '/@/components/WinIcon.vue';
 import {close} from '/@/utils/window-controllers';
 
 export default defineComponent({
   name: 'CloseButton',
-  components: {WinIcon},
-
   setup() {
-
     return {close};
   },
 });

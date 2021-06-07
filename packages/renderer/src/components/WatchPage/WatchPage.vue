@@ -11,12 +11,10 @@
       <button
         v-if="showEpisodesPanel || showTranslationsPanel"
         title="Выбор эпизода и перевода"
-        class="open-playlist btn btn-dark border-0 p-0"
+        class="open-playlist btn btn-dark win-icon border-0 p-0"
         @click="isSidePanelOpened = !isSidePanelOpened"
       >
-        <win-icon>
-          &#xE8FD;
-        </win-icon>
+        &#xE8FD;
       </button>
       <side-panel
         v-if="isSidePanelOpened && (showEpisodesPanel || showTranslationsPanel)"
@@ -91,7 +89,6 @@ import SidePanel from '/@/components/WatchPage/SidePanel.vue';
 import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
 import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
 import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
-import WinIcon from '/@/components/WinIcon.vue';
 import {useRouter} from 'vue-router';
 import {showErrorMessage} from '/@/utils/dialogs';
 import {getPreferredTranslationFromList} from '/@/utils/translationRecomendations';
@@ -100,7 +97,7 @@ import {putHistoryItem} from '/@/utils/history-views';
 
 
 export default defineComponent({
-  components: {WinIcon, VideoPlayer, TranslationsList, EpisodesList, SidePanel},
+  components: {VideoPlayer, TranslationsList, EpisodesList, SidePanel},
   props: {
     seriesId: {
       type: Number,

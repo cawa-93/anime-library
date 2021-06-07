@@ -40,10 +40,11 @@
         </datalist>
 
         <button
-          class="btn btn-outline-secondary"
+          class="btn btn-outline-secondary win-icon"
           type="submit"
+          title="Найти"
         >
-          <win-icon>&#xF78B;</win-icon>
+          &#xF78B;
         </button>
       </div>
 
@@ -65,13 +66,11 @@ import {getSeriesId} from '/@shared/utils/getSeriesId';
 import type {Series} from '/@/utils/videoProvider';
 import {getEpisodes, getSeries} from '/@/utils/videoProvider';
 import {asyncComputed} from '@vueuse/core';
-import WinIcon from '/@/components/WinIcon.vue';
 import {getHistoryItems} from '/@/utils/history-views';
 
 
 export default defineComponent({
   name: 'MainSearch',
-  components: {WinIcon},
   setup() {
 
     const router = useRouter();

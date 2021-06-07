@@ -75,4 +75,8 @@ main {
 main * {
   -webkit-app-region: no-drag !important;
 }
+
+.win-icon {
+  font-family: "Segoe MDL2 Assets", sans-serif;
+}
 </style>

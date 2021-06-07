@@ -17,45 +17,44 @@
 
 
     <button
-      class="play-button"
+      class="play-button win-icon"
       :title="`${playingState ? 'Пауза' : 'Смотреть'} (k)`"
       @click="playingState = !playingState"
     >
-      <win-icon>{{ playingState ? '&#xE769;' : '&#xE768;' }}</win-icon>
+      {{ playingState ? '&#xE769;' : '&#xE768;' }}
     </button>
 
     <router-link
       v-if="nextUrl"
       :to="nextUrl"
-      class="next-button"
+      class="next-button win-icon"
       title="Следующий эпизод"
     >
-      <win-icon>&#xE893;</win-icon>
+      &#xE893;
     </router-link>
     <a
       v-else
       aria-disabled="true"
       role="link"
-      class="disabled"
+      class="disabled win-icon"
       title="Следующий эпизод"
     >
-      <win-icon>&#xE893;</win-icon>
+      &#xE893;
     </a>
 
     <div class="volume-area">
       <button
+        class="win-icon"
         :title="mutedState ? 'Включить звук' : 'Отключение звука'"
         @click="mutedState = !mutedState"
       >
-        <win-icon>
-          {{
-            volumeState === 0 ? '&#xE74F;'
-            : volumeState > 0.75 ? '&#xE995;'
-              : volumeState > 0.50 ? '&#xE994;'
-                : volumeState > 0.25 ? '&#xE993;'
-                  : '&#xE992;'
-          }}
-        </win-icon>
+        {{
+          volumeState === 0 ? '&#xE74F;'
+          : volumeState > 0.75 ? '&#xE995;'
+            : volumeState > 0.50 ? '&#xE994;'
+              : volumeState > 0.25 ? '&#xE993;'
+                : '&#xE992;'
+        }}
       </button>
 
       <input
@@ -78,9 +77,13 @@
       class="subtitles"
       @click="$emit('update:isSubtitlesEnabled', !isSubtitlesEnabled)"
     >
-      <win-icon :style="!isSubtitlesEnabled ? 'opacity: 0.5' : ''">
+      <span
+        class="win-icon"
+        :style="!isSubtitlesEnabled ? 'opacity: 0.5' : ''"
+        aria-hidden="true"
+      >
         &#xED1E;
-      </win-icon>
+      </span>
     </button>
 
     <select
@@ -101,18 +104,18 @@
 
     <button
       title="Картинка-в-картинке"
-      class="picture-in-picture"
+      class="picture-in-picture win-icon"
       @click="$emit('requestPictureInPicture')"
     >
-      <win-icon>{{ isPictureInPicture ? '&#xE944;' : '&#xE8A7;' }}</win-icon>
+      {{ isPictureInPicture ? '&#xE944;' : '&#xE8A7;' }}
     </button>
 
     <button
       :title="`${isFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
-      class="toggle-fullscreen-button"
+      class="toggle-fullscreen-button win-icon"
       @click="$emit('requestFullscreenToggle')"
     >
-      <win-icon>{{ isFullscreen ? '&#xE73F;' : '&#xE740;' }}</win-icon>
+      {{ isFullscreen ? '&#xE73F;' : '&#xE740;' }}
     </button>
   </section>
 </template>
@@ -120,13 +123,11 @@
 <script lang="ts">
 import type {PropType} from 'vue';
 import {computed, defineComponent} from 'vue';
-import WinIcon from '/@/components/WinIcon.vue';
 import {useVModel} from '@vueuse/core';
 import type {VideoTrack} from '/@/utils/videoProvider';
 
 export default defineComponent({
   name: 'ControlPanel',
-  components: {WinIcon},
 
   props: {
     buffered: {

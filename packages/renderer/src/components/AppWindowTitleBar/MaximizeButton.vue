@@ -1,24 +1,21 @@
 <template>
   <button
-    class="btn rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
+    class="btn win-icon rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
     type="button"
+    :title="isMaximized ? 'Восстановить' : 'Развернуть'"
     @click="toggleMaximizeState"
   >
-    <win-icon>
-      {{ isMaximized ? '&#xE923;' : '&#xE922;' }}
-    </win-icon>
+    {{ isMaximized ? '&#xE923;' : '&#xE922;' }}
   </button>
 </template>
 
 <script lang="ts">
 import {defineComponent} from 'vue';
-import WinIcon from '/@/components/WinIcon.vue';
 import {isWindowMaximized} from '/@/use/isWindowMaximized';
 import {toggle} from '/@/utils/window-controllers';
 
 export default defineComponent({
   name: 'MaximizeButton',
-  components: {WinIcon},
 
   setup() {
 

@@ -2,20 +2,18 @@
   <button
     :disabled="isDisabled"
     title="Вернутся назад"
-    class="btn rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
+    class="btn win-icon rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
     @click="goBack"
   >
-    <win-icon>&#xE830;</win-icon>
+    &#xE830;
   </button>
 </template>
 <script lang="ts">
 import {computed, defineComponent, ref} from 'vue';
-import WinIcon from '/@/components/WinIcon.vue';
 import {useRouter} from 'vue-router';
 
 export default defineComponent({
   name: 'BackButton',
-  components: {WinIcon},
   setup() {
     const router = useRouter();
 

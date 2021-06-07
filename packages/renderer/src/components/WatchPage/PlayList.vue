@@ -13,12 +13,13 @@
       :title="item.title || ''"
       @click="$emit('item-click', item)"
     >
-      <win-icon
+      <span
         v-if="item.id === selectedItemId"
-        class="play-icon"
+        class="play-icon win-icon"
+        aria-hidden="true"
       >
         &#xF5B0;
-      </win-icon>
+      </span>
       <span class="d-flex item-label">
         <span class="flex-fill d-inline-block text-truncate">{{ item.label }}</span>
         <small
@@ -36,7 +37,6 @@
 <script lang="ts">
 import type {PropType} from 'vue';
 import {defineComponent, onMounted, ref} from 'vue';
-import WinIcon from '/@/components/WinIcon.vue';
 import type {RouteLocationRaw} from 'vue-router';
 
 
@@ -52,9 +52,6 @@ export interface PlayListItem {
 export default defineComponent({
   name: 'PlayList',
 
-  components: {
-    WinIcon,
-  },
   props: {
     items: {
       type: Array as PropType<PlayListItem[]>,
