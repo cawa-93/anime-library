@@ -1,0 +1,37 @@
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+/*noinspection CssUnusedSymbol*/
+html, body, #app {
+  height: 100%;
+  margin: 0;
+}
+
+/**/
+body {
+  overflow: hidden;
+  font-family: "Segoe UI", sans-serif;
+  appearance: none;
+}
+
+#app {
+  /*noinspection CssUnresolvedCustomProperty*/
+  border: var(--window-border-width) solid #48545c;
+  display: flex;
+  flex-direction: column;
+}
+
+/**/
+main {
+  flex-grow: 1;
+  overflow: auto;
+}
+
+main * {
+  -webkit-app-region: no-drag !important;
+}
