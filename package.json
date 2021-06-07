@@ -44,7 +44,7 @@
     "@types/electron-devtools-installer": "2.2.0",
     "@types/uuid": "8.3.0",
     "@types/wicg-mediasession": "1.1.0",
-    "@typescript-eslint/eslint-plugin": "4.26.0",
+    "@typescript-eslint/eslint-plugin": "4.26.1",
     "@vitejs/plugin-vue": "1.2.3",
     "concurrently": "6.2.0",
     "cross-env": "7.0.3",
