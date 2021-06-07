@@ -10,6 +10,7 @@
     <div>
       <button
         v-if="showEpisodesPanel || showTranslationsPanel"
+        title="Выбор эпизода и перевода"
         class="open-playlist btn btn-dark border-0 p-0"
         @click="isSidePanelOpened = !isSidePanelOpened"
       >

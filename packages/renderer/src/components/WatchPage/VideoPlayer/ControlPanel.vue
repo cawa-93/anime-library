@@ -18,6 +18,7 @@
 
     <button
       class="play-button"
+      :title="`${playingState ? 'Пауза' : 'Смотреть'} (k)`"
       @click="playingState = !playingState"
     >
       <win-icon>{{ playingState ? '&#xE769;' : '&#xE768;' }}</win-icon>
@@ -27,19 +28,25 @@
       v-if="nextUrl"
       :to="nextUrl"
       class="next-button"
-      :class="{disabled: !nextUrl}"
+      title="Следующий эпизод"
     >
       <win-icon>&#xE893;</win-icon>
     </router-link>
-    <button
+    <a
       v-else
-      disabled
+      aria-disabled="true"
+      role="link"
+      class="disabled"
+      title="Следующий эпизод"
     >
       <win-icon>&#xE893;</win-icon>
-    </button>
+    </a>
 
     <div class="volume-area">
-      <button @click="mutedState = !mutedState">
+      <button
+        :title="mutedState ? 'Включить звук' : 'Отключение звука'"
+        @click="mutedState = !mutedState"
+      >
         <win-icon>
           {{
             volumeState === 0 ? '&#xE74F;'
@@ -53,6 +60,7 @@
 
       <input
         v-model.number="volumeState"
+        :aria-valuetext="`${volumeState * 100}% громкость`"
         type="range"
         min="0"
         max="1"
@@ -66,6 +74,7 @@
 
     <button
       v-if="hasSubtitles"
+      title="Субтитры"
       class="subtitles"
       @click="$emit('update:isSubtitlesEnabled', !isSubtitlesEnabled)"
     >
@@ -77,6 +86,7 @@
     <select
       v-if="qualities.length > 0"
       v-model="selectedQualityState"
+      title="Качество"
       class="settings"
     >
       <option
@@ -90,6 +100,7 @@
 
 
     <button
+      title="Картинка-в-картинке"
       class="picture-in-picture"
       @click="$emit('requestPictureInPicture')"
     >
@@ -97,6 +108,7 @@
     </button>
 
     <button
+      :title="`${isFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
       class="toggle-fullscreen-button"
       @click="$emit('requestFullscreenToggle')"
     >
@@ -333,12 +345,12 @@ export default defineComponent({
 }
 
 
-.control-panel button:not(:disabled):hover, .control-panel a:not(.disabled):hover {
+.control-panel button:not(:disabled):hover, .control-panel a:not([aria-disabled="true"]):hover {
   background: rgba(255, 255, 255, 0.2);
   cursor: pointer;
 }
 
-.control-panel button:disabled {
+.control-panel button:disabled, .control-panel a[aria-disabled="true"] {
   opacity: 0.3;
 }
 
