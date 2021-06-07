@@ -12,6 +12,7 @@
         <input
           id="search-field"
           v-model="searchText"
+          autofocus
           autocomplete="on"
           pattern=".*/animes?/[a-z]*[0-9]+.*"
           placeholder="https://shikimori.one/animes/..."
@@ -75,6 +76,11 @@ export default defineComponent({
 
     const router = useRouter();
     const searchText = ref('');
+    navigator.clipboard.readText().then(t => {
+      if (getSeriesId(t)) { // Простой способ проверить текст в буфере
+        searchText.value = t;
+      }
+    });
     const animeID = computed(() => getSeriesId(searchText.value));
 
     const history = ref<Series[]>([]);
