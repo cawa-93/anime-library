@@ -3,7 +3,7 @@ import App from '/@/App.vue';
 import router from '/@/router';
 import * as Sentry from '@sentry/browser';
 import {RewriteFrames as RewriteFramesIntegration, Vue as VueIntegration} from '@sentry/integrations';
-
+import './styles/index.scss';
 
 
 const app = createApp(App)

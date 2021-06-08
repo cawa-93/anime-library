@@ -17,6 +17,7 @@ import {useRoute} from 'vue-router';
 import {reactivePick} from '@vueuse/core';
 import {isWindowMaximized} from '/@/use/isWindowMaximized';
 
+
 export default defineComponent({
   name: 'App',
   components: {AppWindowTitleBar},
@@ -35,48 +36,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style>
-@import "animations.css";
-@import "../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
-html {
-  box-sizing: border-box;
-}
-
-*, *:before, *:after {
-  box-sizing: inherit;
-}
-
-/*noinspection CssUnusedSymbol*/
-html, body, #app {
-  height: 100%;
-  margin: 0;
-}
-
-/**/
-body {
-  overflow: hidden;
-  font-family: "Segoe UI", sans-serif;
-}
-
-#app {
-  /*noinspection CssUnresolvedCustomProperty*/
-  border: var(--window-border-width) solid #48545c;
-  display: flex;
-  flex-direction: column;
-}
-
-/**/
-main {
-  flex-grow: 1;
-  overflow: auto;
-}
-
-main * {
-  -webkit-app-region: no-drag !important;
-}
-
-.win-icon {
-  font-family: "Segoe MDL2 Assets", sans-serif;
-}
-</style>
