@@ -9,6 +9,7 @@ export interface CustomList {
     kind: string
     order: string
     limit: number
+    mylist: string
   }
 }
 
@@ -49,14 +50,20 @@ function getDB() {
 }
 
 
-export function saveCustomList(data: CustomList): Promise<number> {
-  return getDB().then(db => db.add('custom-lists', {data} as DBItem));
+export function putCustomList(data: CustomList, id?: number): Promise<number> {
+  return getDB().then(db => {
+    if (id) {
+      return db.put('custom-lists', {data, id});
+    }
+
+    return db.add('custom-lists', {data} as DBItem);
+  });
 }
 
 export function getAllCustomLists(): Promise<{data: CustomList, id: number}[]> {
   return getDB().then(db => db.getAll('custom-lists'));
 }
 
-export function deleteCustomList(id: number) {
+export function deleteCustomList(id: number): Promise<void> {
   return getDB().then(db => db.delete('custom-lists', id));
 }

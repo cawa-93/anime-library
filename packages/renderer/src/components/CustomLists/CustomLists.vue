@@ -3,17 +3,27 @@
     v-for="{data, id} of customLists"
     :key="id"
   >
-    <h2 class="px-3 mt-4">
-      {{ data.title }}
+    <div class="px-3 mt-4 d-flex align-items-center">
+      <h2 class="flex-fill">
+        {{ data.title }}
+      </h2>
 
       <button
         type="button"
-        class="btn win-icon"
-        @click="deleteList(id)"
+        class="btn win-icon edit-custom-list"
+        @click="customListForEdit = id"
       >
-        &#xE74D;
+        &#xE713;
       </button>
-    </h2>
+    </div>
+
+    <custom-lists-add
+      v-if="customListForEdit === id"
+      v-bind="data"
+      @save="newList => saveNewList(newList, id)"
+      @close="customListForEdit = null"
+      @delete="deleteList(id)"
+    />
     <section
       :aria-label="data.title"
       class="custom-list-wrapper px-3"
@@ -25,14 +35,28 @@
       />
     </section>
   </template>
-  <custom-lists-add @submit="updateLists" />
+
+  <p class="my-5 text-center">
+    <button
+      class="btn btn-lg btn-outline-info"
+      @click="customListForEdit = 0"
+    >
+      Создать новый список
+    </button>
+  </p>
+
+  <custom-lists-add
+    v-if="customListForEdit === 0"
+    @save="saveNewList"
+    @close="customListForEdit = null"
+  />
 </template>
 
 <script lang="ts">
 import {defineComponent, ref} from 'vue';
 import CustomListsAdd from '/@/components/CustomLists/CustomListsAdd.vue';
 import type {CustomList} from '/@/components/CustomLists/CustomListsDB';
-import {deleteCustomList, getAllCustomLists} from '/@/components/CustomLists/CustomListsDB';
+import {deleteCustomList, getAllCustomLists, putCustomList} from '/@/components/CustomLists/CustomListsDB';
 import CustomListSingle from '/@/components/CustomLists/CustomListSingle.vue';
 
 
@@ -47,15 +71,23 @@ export default defineComponent({
 
     const isLoading = ref(true);
     const customLists = ref<{ data: CustomList, id: number }[]>([]);
+    const customListForEdit = ref<number | null>(null);
 
     updateLists();
 
+    const saveNewList = (newList: CustomList, id?: number) => {
+      console.log({newList});
+      customListForEdit.value = null;
+      putCustomList(newList, id).then(updateLists);
+    };
+
     const deleteList = async (id: number) => {
+      customListForEdit.value = null;
       await deleteCustomList(id);
       await updateLists();
     };
 
-    return {updateLists, customLists, deleteList};
+    return {updateLists, customLists, deleteList, saveNewList, customListForEdit};
   },
 });
 </script>
@@ -71,6 +103,14 @@ export default defineComponent({
 
 .custom-list {
   width: fit-content;
+}
+
+.edit-custom-list {
+  opacity: 0;
+}
+
+:hover > .edit-custom-list {
+  opacity: 1;
 }
 
 </style>

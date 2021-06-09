@@ -1,39 +1,31 @@
 <template>
-  <button
-    class="btn"
-    @click="isDialogOpened = true"
-  >
-    Добавить
-  </button>
-
-  <!-- Modal -->
-
   <dialog
-    :open="isDialogOpened"
-    class="modal-dialog p-0 border-0"
+    ref="root"
+    open
+    class="p-0 border-0 shadow-lg"
+    aria-labelledby="modal-title"
   >
     <form
-      class="modal-content"
+      class="card"
       @submit.prevent="onSave"
     >
-      <div class="modal-header">
+      <div class="card-header d-flex align-items-center">
         <h5
-          id="exampleModalLabel"
-          class="modal-title"
+          id="modal-title"
+          class="card-title flex-fill m-0"
         >
-          Modal title
+          {{ isNewList ? 'Новый список' : 'Изменение списка' }}
         </h5>
         <button
           type="button"
-          class="btn btn-link win-icon"
-          data-bs-dismiss="modal"
+          class="btn btn-light win-icon"
           aria-label="Close"
-          @click="isDialogOpened = false"
+          @click="$emit('close')"
         >
           &#xE8BB;
         </button>
       </div>
-      <div class="modal-body">
+      <div class="card-body">
         <fieldset>
           <label
             for="group-title"
@@ -41,6 +33,7 @@
           >Название списка</label>
           <input
             id="group-title"
+            :value="title"
             type="text"
             name="group-title"
             class="form-control"
@@ -52,22 +45,22 @@
           >Максимум результатов</label>
           <input
             id="limit"
+            :value="requestParams.limit"
             type="number"
             min="1"
             max="50"
-            value="8"
             name="limit"
             class="form-control"
           >
         </fieldset>
 
-        <fieldset>
+        <fieldset class="mt-2">
           <legend>Статус</legend>
 
           <div class="form-check">
             <input
               id="ongoing"
-              checked
+              v-model="status"
               value="ongoing"
               type="checkbox"
               class="form-check-input"
@@ -82,7 +75,7 @@
           <div class="form-check">
             <input
               id="released"
-              checked
+              v-model="status"
               value="released"
               type="checkbox"
               class="form-check-input"
@@ -96,7 +89,7 @@
           <div class="form-check">
             <input
               id="latest"
-              checked
+              v-model="status"
               value="latest"
               type="checkbox"
               class="form-check-input"
@@ -110,13 +103,13 @@
         </fieldset>
 
 
-        <fieldset>
+        <fieldset class="mt-2">
           <legend>Тип</legend>
 
           <div class="form-check">
             <input
               id="tv"
-              checked
+              v-model="kind"
               value="tv"
               type="checkbox"
               class="form-check-input"
@@ -131,7 +124,7 @@
           <div class="form-check">
             <input
               id="movie"
-              checked
+              v-model="kind"
               value="movie"
               type="checkbox"
               class="form-check-input"
@@ -147,7 +140,7 @@
           <div class="form-check">
             <input
               id="ova"
-              checked
+              v-model="kind"
               value="ova"
               type="checkbox"
               class="form-check-input"
@@ -162,7 +155,7 @@
           <div class="form-check">
             <input
               id="ona"
-              checked
+              v-model="kind"
               value="ona"
               type="checkbox"
               class="form-check-input"
@@ -177,7 +170,7 @@
           <div class="form-check">
             <input
               id="special"
-              checked
+              v-model="kind"
               value="special"
               type="checkbox"
               class="form-check-input"
@@ -191,13 +184,13 @@
         </fieldset>
 
 
-        <fieldset>
+        <fieldset class="mt-2">
           <legend>Сортировка</legend>
 
           <div class="form-check">
             <input
               id="ranked"
-              checked
+              v-model="order"
               value="ranked"
               type="radio"
               class="form-check-input"
@@ -212,6 +205,8 @@
           <div class="form-check">
             <input
               id="popularity"
+              v-model="order"
+
               value="popularity"
               type="radio"
               class="form-check-input"
@@ -225,6 +220,7 @@
           <div class="form-check">
             <input
               id="aired_on"
+              v-model="order"
               value="aired_on"
               type="radio"
               class="form-check-input"
@@ -236,13 +232,146 @@
             >По дате выхода</label>
           </div>
         </fieldset>
+
+        <fieldset class="mt-2">
+          <legend>Список</legend>
+
+          <div class="form-check">
+            <input
+              id="exclude"
+              v-model="myListType"
+              value="exclude"
+              type="radio"
+              class="form-check-input"
+              name="my-list-type"
+            >
+            <label
+              class="form-check-label"
+              for="exclude"
+            >Исключить всё из списков:</label>
+          </div>
+
+          <div class="form-check">
+            <input
+              id="include"
+              v-model="myListType"
+              value="include"
+              type="radio"
+              class="form-check-input"
+              name="my-list-type"
+            >
+            <label
+              class="form-check-label"
+              for="include"
+            >Включить только из списков:</label>
+          </div>
+
+          <div class="form-check mt-3">
+            <input
+              id="planned"
+              v-model="myList"
+              value="planned"
+              type="checkbox"
+              class="form-check-input"
+              name="my-list"
+            >
+            <label
+              class="form-check-label"
+              for="planned"
+            >Запланировано</label>
+          </div>
+
+          <div class="form-check">
+            <input
+              id="watching"
+              v-model="myList"
+              value="watching"
+              type="checkbox"
+              class="form-check-input"
+              name="my-list"
+            >
+            <label
+              class="form-check-label"
+              for="watching"
+            >Смотрю</label>
+          </div>
+
+          <div class="form-check">
+            <input
+              id="rewatching"
+              v-model="myList"
+              value="rewatching"
+              type="checkbox"
+              class="form-check-input"
+              name="my-list"
+            >
+            <label
+              class="form-check-label"
+              for="rewatching"
+            >Пересматриваю</label>
+          </div>
+
+
+          <div class="form-check">
+            <input
+              id="completed"
+              v-model="myList"
+              value="completed"
+              type="checkbox"
+              class="form-check-input"
+              name="my-list"
+            >
+            <label
+              class="form-check-label"
+              for="completed"
+            >Просмотрено</label>
+          </div>
+
+          <div class="form-check">
+            <input
+              id="on_hold"
+              v-model="myList"
+              value="on_hold"
+              type="checkbox"
+              class="form-check-input"
+              name="my-list"
+            >
+            <label
+              class="form-check-label"
+              for="on_hold"
+            >Отложено</label>
+          </div>
+          <div class="form-check">
+            <input
+              id="dropped"
+              v-model="myList"
+              value="dropped"
+              type="checkbox"
+              class="form-check-input"
+              name="my-list"
+            >
+            <label
+              class="form-check-label"
+              for="dropped"
+            >Брошено</label>
+          </div>
+        </fieldset>
       </div>
-      <div class="modal-footer">
+      <div class="card-footer d-flex align-items-center">
+        <button
+          v-if="!isNewList"
+          type="button"
+          class="btn btn-outline-danger win-icon"
+          title="Удалить список"
+          @click="$emit('delete')"
+        >
+          &#xE74D;
+        </button>
         <button
           type="submit"
           class="btn btn-primary"
         >
-          Добавить список
+          {{ isNewList ? 'Создать' : 'Сохранить' }} список
         </button>
       </div>
     </form>
@@ -250,20 +379,58 @@
 </template>
 
 <script lang="ts">
+import type {PropType} from 'vue';
 import {defineComponent, ref} from 'vue';
-import {saveCustomList} from '/@/components/CustomLists/CustomListsDB';
+import type {CustomList} from '/@/components/CustomLists/CustomListsDB';
+import {onClickOutside} from '@vueuse/core';
 
+
+const IS_DEFAULT_VALUE = Symbol('ads');
 
 export default defineComponent({
   name: 'CustomListsAdd',
 
-  emits: ['submit'],
+  props: {
+    title: {
+      type: String,
+      required: false,
+      default: '',
+    },
 
-  setup(_, {emit}) {
+    requestParams: {
+      type: Object as PropType<CustomList['requestParams'] & {[IS_DEFAULT_VALUE]?: true}>,
+      required: false,
+      default: () => ({
+        [IS_DEFAULT_VALUE]: true,
+        limit: 10,
+        status: 'ongoing,released',
+        kind: 'tv,movie,ova,ona',
+        order: 'ranked',
+        mylist: '',
+      }),
+    },
+  },
 
-    const isDialogOpened = ref(false);
+  emits: ['save', 'delete', 'close'],
 
-    const onSave = async(event: Event) => {
+  setup(props, {emit}) {
+    const root = ref();
+    onClickOutside(root, () => emit('close'));
+
+
+
+
+    const status = ref(props.requestParams.status.split(','));
+    const kind = ref(props.requestParams.kind.split(','));
+    const order = ref(props.requestParams.order);
+
+    const myList = ref(props.requestParams.mylist.split(',').filter(s => !!s).map(s => s.startsWith('!') ? s.substring(1) : s));
+    const myListType = ref(props.requestParams.mylist && !props.requestParams.mylist.startsWith('!') ? 'include' : 'exclude');
+
+    const isNewList = !!props.requestParams[IS_DEFAULT_VALUE];
+
+
+    const onSave = async (event: Event) => {
       if (!event || !event.target || !(event.target instanceof HTMLFormElement)) {
         return;
       }
@@ -277,19 +444,35 @@ export default defineComponent({
           status: formData.getAll('status').join(','),
           kind: formData.getAll('kind').join(','),
           order: formData.get('order') as string || '',
+          mylist: (
+            myListType.value === 'include' ? myList.value : myList.value.map(s => `!${s}`)
+          ).join(','),
         },
       };
-
-      isDialogOpened.value = false;
-      await saveCustomList(newList);
-      emit('submit', newList);
+      emit('save', newList);
     };
 
-    return {isDialogOpened, onSave};
+
+    return {onSave, status, kind, isNewList, root, order, myListType, myList};
   },
 });
 </script>
 
 <style scoped>
+dialog {
+  z-index: 1060;
+  transform: translateY(-50%);
+  top: 50%;
+  max-height: 100vh;
+  overflow-y: auto;
+  min-width: 20rem;
+}
 
+dialog::backdrop {
+  background-color: #448;
+}
+
+dialog button[type=submit] {
+  margin-left: auto;
+}
 </style>

@@ -77,7 +77,7 @@
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {defineComponent, ref} from 'vue';
+import {defineComponent, ref, watch} from 'vue';
 import type {CustomList} from '/@/components/CustomLists/CustomListsDB';
 import {apiFetch} from '/@/utils/shikimori-api';
 
@@ -110,12 +110,20 @@ export default defineComponent({
     const searchResult = ref<Anime[]>([]);
     const errorText = ref('');
 
-    const searchParams = new URLSearchParams({...props.requestParams, limit: String(props.requestParams.limit)});
-    apiFetch<Anime[]>(`animes?${searchParams.toString()}`).then(data => {
-      searchResult.value = data;
-    })
-      .catch(e => errorText.value = typeof e === 'string' ? e : e instanceof Error ? e.toString() : JSON.stringify(e))
-      .finally(() => isLoading.value = false);
+
+    const searchAnimes = () => {
+      isLoading.value = true;
+      const searchParams = new URLSearchParams({...props.requestParams, limit: String(props.requestParams.limit)});
+      return apiFetch<Anime[]>(`animes?${searchParams.toString()}`).then(data => {
+        searchResult.value = data;
+      })
+        .catch(e => errorText.value = typeof e === 'string' ? e : e instanceof Error ? e.toString() : JSON.stringify(e))
+        .finally(() => isLoading.value = false);
+    };
+
+    searchAnimes();
+
+    watch(() => props.requestParams, searchAnimes);
 
     return {isLoading, searchResult, errorText};
   },
