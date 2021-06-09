@@ -56,3 +56,7 @@ export function saveCustomList(data: CustomList): Promise<number> {
 export function getAllCustomLists(): Promise<{data: CustomList, id: number}[]> {
   return getDB().then(db => db.getAll('custom-lists'));
 }
+
+export function deleteCustomList(id: number) {
+  return getDB().then(db => db.delete('custom-lists', id));
+}

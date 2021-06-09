@@ -5,6 +5,14 @@
   >
     <h2 class="px-3 mt-4">
       {{ data.title }}
+
+      <button
+        type="button"
+        class="btn win-icon"
+        @click="deleteList(id)"
+      >
+        &#xE74D;
+      </button>
     </h2>
     <section
       :aria-label="data.title"
@@ -24,7 +32,7 @@
 import {defineComponent, ref} from 'vue';
 import CustomListsAdd from '/@/components/CustomLists/CustomListsAdd.vue';
 import type {CustomList} from '/@/components/CustomLists/CustomListsDB';
-import {getAllCustomLists} from '/@/components/CustomLists/CustomListsDB';
+import {deleteCustomList, getAllCustomLists} from '/@/components/CustomLists/CustomListsDB';
 import CustomListSingle from '/@/components/CustomLists/CustomListSingle.vue';
 
 
@@ -42,7 +50,12 @@ export default defineComponent({
 
     updateLists();
 
-    return {updateLists, customLists};
+    const deleteList = async (id: number) => {
+      await deleteCustomList(id);
+      await updateLists();
+    };
+
+    return {updateLists, customLists, deleteList};
   },
 });
 </script>
