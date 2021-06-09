@@ -128,7 +128,11 @@ export default defineComponent({
 
     const searchAnimes = () => {
       isLoading.value = true;
-      const searchParams = new URLSearchParams({...props.requestParams, limit: String(props.requestParams.limit)});
+      const searchParams = new URLSearchParams({
+        ...props.requestParams,
+        limit: String(props.requestParams.limit),
+        censored: 'false',
+      });
       return apiFetch<Anime[]>(`animes?${searchParams.toString()}`).then(data => {
         searchResult.value = data;
       })
