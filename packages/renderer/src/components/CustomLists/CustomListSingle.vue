@@ -50,10 +50,23 @@
                 {{ anime.status === 'ongoing' ? 'Выходит' : anime.status === 'released' ? 'Вышло' : 'Анонс' }}
               </li>
               <li
+                class="list-group-item"
+              >
+                {{
+                  anime.kind === 'tv' ? 'TV Сериал' : anime.kind === 'movie' ? 'Фильм' : anime.kind === 'special' ? 'Спешл' : anime.kind.toUpperCase()
+                }}
+              </li>
+              <li
                 v-if="anime.status === 'ongoing'"
                 class="list-group-item"
               >
-                Эпизоды: {{ anime.episodes_aired }} / {{ anime.episodes }}
+                Эпизоды: {{ anime.episodes_aired }} / {{ anime.episodes ? anime.episodes : '?' }}
+              </li>
+              <li
+                v-if="anime.status === 'released' && anime.kind !== 'movie'"
+                class="list-group-item"
+              >
+                Эпизодов: {{ anime.episodes ? anime.episodes : '?' }}
               </li>
               <li class="list-group-item">
                 Оценка: {{ anime.score }}
@@ -95,6 +108,7 @@ interface Anime {
   episodes: number
   episodes_aired: number
   score: string
+  kind: 'tv' | 'movie' | 'ova' | 'ona' | 'special'
 }
 
 
