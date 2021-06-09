@@ -77,7 +77,6 @@ export default defineComponent({
     updateLists();
 
     const saveNewList = (newList: CustomList, id?: number) => {
-      console.log({newList});
       customListForEdit.value = null;
       putCustomList(newList, id).then(updateLists);
     };
