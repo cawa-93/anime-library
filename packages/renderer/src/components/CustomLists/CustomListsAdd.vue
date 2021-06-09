@@ -421,8 +421,8 @@ export default defineComponent({
 
     const listTitle = ref(props.title);
     const listLimit = ref(props.requestParams.limit);
-    const status = ref(props.requestParams.status.split(','));
-    const kind = ref(props.requestParams.kind.split(','));
+    const status = ref(props.requestParams.status.split(',').filter(s => !!s));
+    const kind = ref(props.requestParams.kind.split(',').filter(s => !!s));
     const order = ref(props.requestParams.order);
 
     const myList = ref(props.requestParams.mylist.split(',').filter(s => !!s).map(s => s.startsWith('!') ? s.substring(1) : s));
@@ -432,8 +432,7 @@ export default defineComponent({
 
 
     const onSave = () => {
-
-      const newList = {
+      const newList: CustomList = {
         title: listTitle.value,
         requestParams: {
           limit: listLimit.value,
@@ -445,6 +444,7 @@ export default defineComponent({
           ).join(','),
         },
       };
+
       emit('save', newList);
     };
 
