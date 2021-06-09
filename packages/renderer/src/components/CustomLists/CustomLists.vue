@@ -10,7 +10,8 @@
 
       <button
         type="button"
-        class="btn win-icon edit-custom-list"
+        class="btn btn-lg win-icon edit-custom-list"
+        title="Изменить список"
         @click="customListForEdit = id"
       >
         &#xE713;
