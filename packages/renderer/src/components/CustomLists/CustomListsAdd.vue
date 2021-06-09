@@ -33,7 +33,7 @@
           >Название списка</label>
           <input
             id="group-title"
-            :value="title"
+            v-model="listTitle"
             type="text"
             name="group-title"
             class="form-control"
@@ -419,7 +419,7 @@ export default defineComponent({
 
 
 
-
+    const listTitle = ref(props.title);
     const status = ref(props.requestParams.status.split(','));
     const kind = ref(props.requestParams.kind.split(','));
     const order = ref(props.requestParams.order);
@@ -436,9 +436,9 @@ export default defineComponent({
       }
 
       const formData = new FormData(event.target);
-
+      console.log({formData});
       const newList = {
-        title: formData.get('group-title') as string || '',
+        title: listTitle.value,
         requestParams: {
           limit: Number(formData.get('limit')) || 5,
           status: formData.getAll('status').join(','),
@@ -453,7 +453,7 @@ export default defineComponent({
     };
 
 
-    return {onSave, status, kind, isNewList, root, order, myListType, myList};
+    return {onSave, status, kind, isNewList, root, order, myListType, myList, listTitle};
   },
 });
 </script>
