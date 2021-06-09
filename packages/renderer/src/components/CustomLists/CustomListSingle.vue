@@ -4,7 +4,8 @@
       <div
         v-for="i of 5"
         :key="i"
-        class="card bg-gradient bg-secondary"
+        class="card bg-gradient skeleton"
+
         style="aspect-ratio: 	97/145"
       />
     </template>
@@ -144,8 +145,14 @@ export default defineComponent({
   opacity: 1;
 }
 
+
+.skeleton {
+  background-color: #efefef;
+  cursor: wait;
+}
+
 .anime-status-indicator {
- height: 0.5rem;
+  height: 0.5rem;
 }
 
 .card img {
