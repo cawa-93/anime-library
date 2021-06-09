@@ -66,7 +66,7 @@
     "@sentry/browser": "6.5.1",
     "@sentry/electron": "2.4.1",
     "@sentry/integrations": "6.5.1",
-    "@vueuse/core": "5.0.1",
+    "@vueuse/core": "5.0.2",
     "bootstrap": "5.0.1",
     "electron-updater": "4.3.9",
     "electron-window-state": "5.0.3",
