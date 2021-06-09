@@ -45,7 +45,7 @@
           >Максимум результатов</label>
           <input
             id="limit"
-            :value="requestParams.limit"
+            v-model="listLimit"
             type="number"
             min="1"
             max="50"
@@ -403,8 +403,8 @@ export default defineComponent({
       default: () => ({
         [IS_DEFAULT_VALUE]: true,
         limit: 10,
-        status: 'ongoing,released',
-        kind: 'tv,movie,ova,ona',
+        status: '',
+        kind: '',
         order: 'ranked',
         mylist: '',
       }),
@@ -420,6 +420,7 @@ export default defineComponent({
 
 
     const listTitle = ref(props.title);
+    const listLimit = ref(props.requestParams.limit);
     const status = ref(props.requestParams.status.split(','));
     const kind = ref(props.requestParams.kind.split(','));
     const order = ref(props.requestParams.order);
@@ -430,20 +431,15 @@ export default defineComponent({
     const isNewList = !!props.requestParams[IS_DEFAULT_VALUE];
 
 
-    const onSave = async (event: Event) => {
-      if (!event || !event.target || !(event.target instanceof HTMLFormElement)) {
-        return;
-      }
+    const onSave = () => {
 
-      const formData = new FormData(event.target);
-      console.log({formData});
       const newList = {
         title: listTitle.value,
         requestParams: {
-          limit: Number(formData.get('limit')) || 5,
-          status: formData.getAll('status').join(','),
-          kind: formData.getAll('kind').join(','),
-          order: formData.get('order') as string || '',
+          limit: listLimit.value,
+          status: status.value.join(','),
+          kind: kind.value.join(','),
+          order: order.value,
           mylist: (
             myListType.value === 'include' ? myList.value : myList.value.map(s => `!${s}`)
           ).join(','),
@@ -453,7 +449,7 @@ export default defineComponent({
     };
 
 
-    return {onSave, status, kind, isNewList, root, order, myListType, myList, listTitle};
+    return {onSave, status, kind, isNewList, root, order, myListType, myList, listTitle, listLimit};
   },
 });
 </script>
