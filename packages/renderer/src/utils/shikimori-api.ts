@@ -131,7 +131,17 @@ export async function apiFetch<T>(input: RequestInfo, init: RequestInit = {}): P
 
 
   return fetch(`https://shikimori.one/api/${input}`, init)
-    .then(r => r.json());
+    .then(r => {
+      if (r.ok) {
+        return r.json();
+      }
+
+      return r.text().then(text => {
+        const e = new Error(text);
+        e.name = 'API Error';
+        return Promise.reject(e);
+      });
+    });
 }
 
 

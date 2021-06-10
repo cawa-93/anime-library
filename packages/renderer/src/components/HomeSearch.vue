@@ -1,6 +1,6 @@
 <template>
   <form
-    class="container shadow card"
+    class="container shadow-sm card"
     @submit.prevent="onSearch"
   >
     <div class="card-body border-primary">
