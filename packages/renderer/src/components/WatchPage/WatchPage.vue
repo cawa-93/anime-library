@@ -80,7 +80,7 @@
 </template>
 
 <script lang="ts">
-import {asyncComputed, useTitle} from '@vueuse/core';
+import {asyncComputed, useThrottleFn, useTitle} from '@vueuse/core';
 import type {DeepReadonly} from 'vue';
 import {computed, defineComponent, ref, watch} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
@@ -191,13 +191,12 @@ export default defineComponent({
 
     // Загрузка доступных видео для выбранного перевода
     const videos = ref<DeepReadonly<Video[]>>([]);
-    const loadVideoSources = () => {
+    const loadVideoSources = useThrottleFn((): void => {
       if (!selectedTranslation.value?.id) {
         return;
       }
 
-      return getVideos(selectedTranslation.value.id)
-        .then(v => videos.value = v)
+      getVideos(selectedTranslation.value.id)
         .catch((err) => {
 
           const title = 'Не удалось загрузить видео с Anime.365';
@@ -211,9 +210,10 @@ export default defineComponent({
 
           showErrorMessage({title, message});
 
-          return [] as Video[];
-        });
-    };
+          return [] as DeepReadonly<Video[]>;
+        })
+        .then(v => videos.value = v);
+    }, 1000);
 
     loadVideoSources();
 
