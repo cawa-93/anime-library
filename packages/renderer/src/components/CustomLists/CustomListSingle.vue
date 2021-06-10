@@ -18,6 +18,8 @@
           params: {seriesId: anime.id}
         }"
         class="card position-relative overflow-hidden"
+        @click="openAnime($event, anime)"
+        @auxclick="openAnime($event, anime)"
       >
         <div
           class="anime-status-indicator"
@@ -94,6 +96,7 @@ import type {PropType} from 'vue';
 import {defineComponent, ref, watch} from 'vue';
 import type {CustomList} from '/@/components/CustomLists/CustomListsDB';
 import {apiFetch} from '/@/utils/shikimori-api';
+import {useElectron} from '/@/use/electron';
 
 
 interface Anime {
@@ -108,7 +111,8 @@ interface Anime {
   episodes: number
   episodes_aired: number
   score: string
-  kind: 'tv' | 'movie' | 'ova' | 'ona' | 'special'
+  kind: 'tv' | 'movie' | 'ova' | 'ona' | 'special',
+  url: string
 }
 
 
@@ -124,7 +128,6 @@ export default defineComponent({
     const isLoading = ref(true);
     const searchResult = ref<Anime[]>([]);
     const errorText = ref('');
-
 
     const searchAnimes = () => {
       isLoading.value = true;
@@ -144,7 +147,16 @@ export default defineComponent({
 
     watch(() => props.requestParams, searchAnimes);
 
-    return {isLoading, searchResult, errorText};
+
+    const {openURL} = useElectron();
+    const openAnime = (event: MouseEvent, anime: Anime) => {
+      if (event.ctrlKey || event.button === 1) {
+        event.preventDefault();
+        return openURL('https://shikimori.one' + anime.url);
+      }
+    };
+
+    return {isLoading, searchResult, errorText, openAnime};
   },
 });
 </script>
