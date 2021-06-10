@@ -71,7 +71,6 @@ function getDB() {
 
 
 function saveHistoryItemToDB(item: HistoryViewsItem): Promise<number> {
-  console.log({item});
   return getDB().then(db => db.put('history', item));
 }
 
@@ -116,10 +115,8 @@ export async function putHistoryItem(item: HistoryViewsItem): Promise<void> {
 
   item.updated_at = Math.floor(Date.now() / 1000);
 
-  await Promise.allSettled([
-    saveHistoryItemToDB(item),
-    saveHistoryItemToShiki(item),
-  ]);
+  saveHistoryItemToShiki(item);
+  await saveHistoryItemToDB(item);
 }
 
 
