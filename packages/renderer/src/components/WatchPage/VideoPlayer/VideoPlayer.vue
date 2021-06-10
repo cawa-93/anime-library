@@ -148,9 +148,7 @@ export default defineComponent({
     // Передать ошибку родителю если не удалось загрузить видео
     const errorHandler = (event: Event) => {
       console.error('VIDEO errorHandler', {event, videoElement: videoElement.value});
-      if (videoElement.value?.networkState === videoElement.value?.NETWORK_NO_SOURCE) {
-        emit('source-error', event);
-      }
+      emit('source-error', event);
     };
 
 
