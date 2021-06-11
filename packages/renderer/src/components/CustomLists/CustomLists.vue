@@ -109,7 +109,7 @@ export default defineComponent({
   opacity: 0;
 }
 
-:hover > .edit-custom-list {
+:hover > .edit-custom-list, :focus-within > .edit-custom-list {
   opacity: 1;
 }
 
