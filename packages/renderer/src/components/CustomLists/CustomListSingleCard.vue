@@ -10,6 +10,8 @@
     @auxclick="openAnime($event, anime)"
     @mouseenter="isOverlayVisible = true"
     @mouseleave="isOverlayVisible = false"
+    @focusin="isOverlayVisible = true"
+    @focusout="isOverlayVisible = false"
   >
     <img
       loading="lazy"
