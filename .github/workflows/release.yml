@@ -24,7 +24,7 @@ defaults:
 
 jobs:
 
-  draft:
+  prepare-draft:
     runs-on: ubuntu-latest
     outputs:
       release-note: ${{ steps.release-note.outputs.release-note }}
@@ -62,7 +62,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          running-workflow-name: 'draft'
+          running-workflow-name: 'prepare-draft'
 
       - name: Delete outdated drafts
         uses: hugo19941994/delete-draft-releases@v0.1.0
@@ -80,8 +80,8 @@ jobs:
           name: v${{ steps.version.outputs.build-version }}
           body: ${{ steps.release-note.outputs.release-note }}
 
-  upload_artifacts:
-    needs: [ draft ]
+  compile-app:
+    needs: [ prepare-draft ]
 
     strategy:
       matrix:
@@ -116,7 +116,7 @@ jobs:
       # See https://github.com/electron-userland/electron-builder/issues/1511#issuecomment-310160119
       - name: Prepare release notes
         env:
-          RELEASE_NOTE: ${{ needs.draft.outputs.release-note }}
+          RELEASE_NOTE: ${{ needs.prepare-draft.outputs.release-note }}
         run: echo "$RELEASE_NOTE" >> ./buildResources/release-notes.md
 
       # Compile app and upload artifacts
@@ -127,7 +127,7 @@ jobs:
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           VITE_SHIKI_CLIENT_ID: ${{ secrets.VITE_SHIKI_CLIENT_ID }}
           VITE_SHIKI_CLIENT_SECRET: ${{ secrets.VITE_SHIKI_CLIENT_SECRET }}
-          VITE_APP_VERSION: ${{ needs.draft.outputs.version }}
+          VITE_APP_VERSION: ${{ needs.prepare-draft.outputs.version }}
         with:
           build_script_name: build
           args: --config electron-builder.config.js
@@ -159,6 +159,23 @@ jobs:
           # Password for decrypting `mac_certs`
           # mac_certs_password: ''
 
+      - uses: actions/upload-artifact@v2
+        with:
+          name: builded-assets
+          path: packages/**/dist/**
+
+  create-sentry-relase:
+    needs: [ prepare-draft, compile-app ]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v2
+        with:
+          name: builded-assets
+
       - name: Create Sentry release
         uses: getsentry/action-release@v1
         env:
@@ -169,4 +186,4 @@ jobs:
           environment: production
           finalize: false
           sourcemaps: ./packages
-          version: v${{ needs.draft.outputs.version }}
+          version: v${{ needs.prepare-draft.outputs.version }}
