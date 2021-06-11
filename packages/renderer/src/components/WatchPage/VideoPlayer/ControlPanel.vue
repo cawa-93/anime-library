@@ -326,6 +326,10 @@ export default defineComponent({
   position: relative;
 }
 
+.control-panel button:active, .control-panel a:active {
+  align-items: flex-end;
+}
+
 .control-panel button:before, .control-panel a:before, .control-panel select:before {
   content: "";
   position: absolute;
