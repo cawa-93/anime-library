@@ -158,3 +158,15 @@ jobs:
 
           # Password for decrypting `mac_certs`
           # mac_certs_password: ''
+
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        with:
+          environment: production
+          finalize: false
+          sourcemaps: ./packages
+          version: v${{ needs.draft.outputs.version }}
