@@ -175,6 +175,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: builded-assets
+          path: ./packages
 
       - name: Create Sentry release
         uses: getsentry/action-release@v1
@@ -183,7 +184,6 @@ jobs:
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         with:
-          environment: production
           finalize: false
           sourcemaps: ./packages
           version: v${{ needs.prepare-draft.outputs.version }}
