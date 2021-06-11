@@ -52,6 +52,7 @@
                 {{ anime.status === 'ongoing' ? 'Выходит' : anime.status === 'released' ? 'Вышло' : 'Анонс' }}
               </li>
               <li
+                v-if="anime.kind"
                 class="list-group-item"
               >
                 {{
@@ -111,7 +112,7 @@ interface Anime {
   episodes: number
   episodes_aired: number
   score: string
-  kind: 'tv' | 'movie' | 'ova' | 'ona' | 'special',
+  kind?: 'tv' | 'movie' | 'ova' | 'ona' | 'special',
   url: string
 }
 
