@@ -159,8 +159,13 @@ export default defineComponent({
       }
 
       const currentTime = Math.floor(event.target.currentTime);
+      const duration = Math.floor(event.target.duration);
 
-      location.hash = `t=${currentTime}`;
+      if (currentTime < Math.min(3 * 60, duration * 0.03)) {
+        return;
+      }
+
+      location.hash = currentTime > 0 ? `t=${currentTime}` : '';
 
       putHistoryItem({
         // state: 'watching',
