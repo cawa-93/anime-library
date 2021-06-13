@@ -114,17 +114,17 @@ export default defineConfig({
           },
 
 
-          {
-            urlPattern: /^https:\/\/shikimori\.one\/api\/animes\?.*/,
-            handler: 'CacheFirst',
-            options: {
-              plugins: [waitOnlinePlugin],
-              cacheName: 'shikimori-search-results',
-              expiration: {
-                maxAgeSeconds: 60 * 60 * 12,
-              },
-            },
-          },
+          // {
+          //   urlPattern: /^https:\/\/shikimori\.one\/api\/animes\?.*/,
+          //   handler: 'CacheFirst',
+          //   options: {
+          //     plugins: [waitOnlinePlugin],
+          //     cacheName: 'shikimori-search-results',
+          //     expiration: {
+          //       maxAgeSeconds: 60 * 60 * 12,
+          //     },
+          //   },
+          // },
 
 
         ],
