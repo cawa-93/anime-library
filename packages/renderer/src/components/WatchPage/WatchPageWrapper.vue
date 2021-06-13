@@ -20,8 +20,7 @@
             seriesId: normalizedSeriesId,
             episodeNum: '',
             translationId: '',
-          },
-          hash: ''
+          }
         }"
       >
         Повторить попытку
@@ -112,11 +111,11 @@ export default defineComponent({
       }
 
 
-      let time = historyItem.episode.time || 0;
+      // По умолчанию начать воспроизведение с эпизода сохранённого в истории
       let selectedEpisodeNum = historyItem.episode.number;
 
+      // Если эпизода сохранённого в истории нет в массиве доступных эпизодов -- выбрать последний
       if (!episodes.find(e => e.number === selectedEpisodeNum)) {
-        time = 0;
         selectedEpisodeNum = episodes[episodes.length - 1].number;
       }
 
@@ -126,7 +125,6 @@ export default defineComponent({
 
       return router.replace({
         params: {episodeNum: selectedEpisodeNum},
-        hash: `#t=${time}`,
       });
     });
 
@@ -159,7 +157,6 @@ export default defineComponent({
 
       return router.replace({
         params: {translationId},
-        hash: location.hash,
       });
     });
 

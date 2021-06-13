@@ -3,8 +3,8 @@
     id="video-container"
     :videos="videos"
     :next-url="nextEpisodeURL"
+    :start-from="startFrom"
     @source-error="onSourceError"
-    @durationchange="saveWatchProgress"
     @progress="saveWatchProgress"
   >
     <div>
@@ -92,7 +92,7 @@ import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
 import {useRouter} from 'vue-router';
 import {showErrorMessage} from '/@/utils/dialogs';
 import {getPreferredTranslationFromList} from '/@/utils/translationRecomendations';
-import {putHistoryItem} from '/@/utils/history-views';
+import {getViewHistoryItem, putHistoryItem} from '/@/utils/history-views';
 
 
 
@@ -140,46 +140,17 @@ export default defineComponent({
       const translationId = nextEpisodePreferredTranslations?.id || nextEpisodeTranslations[0].id;
 
 
-      const resolvedNextPageUrl = router.resolve({params: {episodeNum: nextEpisode.number, translationId}, hash: ''});
+      const resolvedNextPageUrl = router.resolve({params: {episodeNum: nextEpisode.number, translationId}});
       nextEpisodeURL.value = resolvedNextPageUrl.href ? resolvedNextPageUrl.href : undefined;
 
-      if (import.meta.env.MODE !== 'development') {
-        // Если удалось определить перевод для следующей серии -- выполнить загрузку видео, чтобы кэшировать их
-        await getVideos(translationId);
-        // TODO: Начать загрузку непосредственно целевого видео-файла для следующего эпизода
-      }
+      // if (import.meta.env.MODE !== 'development') {
+      //   // Если удалось определить перевод для следующей серии -- выполнить загрузку видео, чтобы кэшировать их
+      //   await getVideos(translationId);
+      //   // TODO: Начать загрузку непосредственно целевого видео-файла для следующего эпизода
+      // }
     };
 
     watch(selectedEpisode, prepareNextEpisode);
-
-
-    const saveWatchProgress = (event: Event) => {
-      if (!event.target || !(event.target instanceof HTMLVideoElement) || !selectedEpisode.value || event.target.paused) {
-        return;
-      }
-
-      const currentTime = Math.floor(event.target.currentTime);
-      const duration = Math.floor(event.target.duration);
-
-      if (currentTime < Math.min(3 * 60, duration * 0.03)) {
-        return;
-      }
-
-      location.hash = currentTime > 0 ? `t=${currentTime}` : '';
-
-      putHistoryItem({
-        // state: 'watching',
-        seriesId: props.seriesId,
-        episode: {
-          number: selectedEpisode.value.number,
-          time: currentTime,
-          duration: event.target.duration,
-        },
-      });
-
-    };
-
-
 
     // Доступные переводы
     const translations = ref<DeepReadonly<Translation[]>>([]);
@@ -187,7 +158,7 @@ export default defineComponent({
       if (!selectedEpisode.value?.id) {
         return;
       }
-
+      translations.value = [];
       translations.value = await getTranslations(selectedEpisode.value.id);
     });
 
@@ -197,6 +168,8 @@ export default defineComponent({
     // Загрузка доступных видео для выбранного перевода
     const videos = ref<DeepReadonly<Video[]>>([]);
     const loadVideoSources = useThrottleFn((): void => {
+      videos.value = [];
+
       if (!selectedTranslation.value?.id) {
         return;
       }
@@ -232,7 +205,6 @@ export default defineComponent({
 
       return clearVideosCache(selectedTranslation.value.id).then(loadVideoSources);
     };
-
 
     const isSidePanelOpened = ref(false);
     const sidePanelActiveTab = ref<'episodes' | 'translations'>('translations');
@@ -276,7 +248,41 @@ export default defineComponent({
       t.value = titleChunks.filter(s => !!s).join(', ');
     });
 
+
+    //
+    // Сохранение и восстановление позиции просмотра
+    const startFrom = ref(0);
+    getViewHistoryItem(props.seriesId, false).then(historyItem => {
+      if (historyItem?.episode.number === props.episodeNum && historyItem.episode.time) {
+        startFrom.value = historyItem.episode.time;
+      }
+    });
+    const saveWatchProgress = ({duration, currentTime}: { duration?: number, currentTime?: number } = {}) => {
+      if (!duration || !currentTime || !selectedEpisode.value) {
+        return;
+      }
+
+      startFrom.value = currentTime;
+
+      putHistoryItem({
+        seriesId: props.seriesId,
+        episode: {
+          number: selectedEpisode.value.number,
+          time: currentTime,
+          duration: duration,
+        },
+      });
+    };
+
+    // При изменении серии -- сбросить позицию просмотра
+    watch(selectedEpisode, (oldValue, newValue) => {
+      if (oldValue?.number && newValue?.number && oldValue.number !== newValue.number) {
+        startFrom.value = 0;
+      }
+    });
+
     return {
+      startFrom,
       saveWatchProgress,
       onSourceError,
       nextEpisodeURL,

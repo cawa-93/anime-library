@@ -120,9 +120,9 @@ export async function putHistoryItem(item: HistoryViewsItem): Promise<void> {
 }
 
 
-export async function getViewHistoryItem(seriesId: number): Promise<HistoryViewsItem | undefined> {
+export async function getViewHistoryItem(seriesId: number, allowNetworkFetch = true): Promise<HistoryViewsItem | undefined> {
   let savedItem: HistoryViewsItem | undefined = await getDB().then(db => db.get('history', seriesId));
-  if (!savedItem && isLoggedIn()) {
+  if (!savedItem && allowNetworkFetch && isLoggedIn()) {
     const rate = await getUserRate(seriesId);
     if (rate) {
       savedItem = {

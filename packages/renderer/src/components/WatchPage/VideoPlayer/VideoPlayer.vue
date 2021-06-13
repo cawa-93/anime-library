@@ -18,8 +18,7 @@
       @click="playing = !playing"
       @dblclick="toggleFullscreen"
       @error="errorHandler"
-      @progress="$emit('progress', $event)"
-      @durationchange="$emit('durationchange', $event)"
+      @progress="$emit('progress', {currentTime, duration})"
       @loadeddata="onLoad"
       @ended="goToNextUrl"
     >
@@ -67,7 +66,7 @@
 
 <script lang="ts">
 import type {DeepReadonly, PropType} from 'vue';
-import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, readonly, ref, watch} from 'vue';
+import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch} from 'vue';
 import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
 import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
@@ -83,6 +82,11 @@ export default defineComponent({
   name: 'VideoPlayer',
   components: {LibAssSubtitlesRenderer, LoadingSpinner, ControlPanel},
   props: {
+    startFrom: {
+      type: Number,
+      require: false,
+      default: 120,
+    },
     videos: {
       type: Array as PropType<DeepReadonly<Video[]>>,
       required: true,
@@ -120,20 +124,14 @@ export default defineComponent({
 
 
     // Массив видео для выбранного качества
-    const selectedQualityVideos = computed(() => props.videos.filter(s => s.quality === selectedQuality.value));
+    const selectedQualityVideo = computed(() => props.videos.find(s => s.quality === selectedQuality.value));
 
 
     // Ссылки на видео-ресурсы для выбранного качества
-    const sources = computed<VideoSource[]>(() => {
-      const mediaFragment = location.hash.startsWith('#t=') ? location.hash : '';
-
-      return selectedQualityVideos.value
-        .flatMap((v) =>
-          mediaFragment !== ''
-            ? v.sources.map(source => readonly({...source, src: source.src + mediaFragment}))
-            : v.sources);
+    const sources = ref<VideoSource[] | null>(null);
+    watch(selectedQualityVideo, (selectedQualityVideo) => {
+      sources.value = selectedQualityVideo ? selectedQualityVideo.sources.map(s => ({...s, src: s.src + '#t=' + props.startFrom ?? 0})) : null;
     });
-
 
     const videoLoaded = ref(false);
     const onLoad = () => videoLoaded.value = true;
@@ -154,7 +152,7 @@ export default defineComponent({
 
     // Ссылки на субтитры для выбранного качества
     const tracks = computed<VideoTrack[]>(() => {
-      const allTracks = selectedQualityVideos.value.flatMap(v => v.tracks || []);
+      const allTracks = selectedQualityVideo.value?.tracks || [];
       const map = new Map<string, VideoTrack>();
       allTracks.forEach(item => map.set(item.src, item));
       return [...map.values()];

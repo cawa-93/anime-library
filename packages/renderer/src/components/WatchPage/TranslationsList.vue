@@ -83,7 +83,7 @@ export default defineComponent({
           id: t.id,
           label: t.title,
           title: formatList(t.author.members),
-          url: {params: {translationId: t.id, episodeNum: props.selectedEpisodeNum}, hash: currentLocation.value.hash},
+          url: {params: {translationId: t.id, episodeNum: props.selectedEpisodeNum}},
           badges,
         };
       };

@@ -34,7 +34,7 @@ export default defineComponent({
       () => props.episodes.map(e => ({
         id: e.id,
         label: e.title,
-        url: {params: {episodeNum: e.number, translationId: ''}, hash: ''},
+        url: {params: {episodeNum: e.number, translationId: ''}},
       })),
     );
 
