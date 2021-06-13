@@ -131,7 +131,7 @@ export default defineComponent({
     const sources = ref<VideoSource[] | null>(null);
     watch(selectedQualityVideo, (selectedQualityVideo) => {
       sources.value = selectedQualityVideo ? selectedQualityVideo.sources.map(s => ({...s, src: s.src + '#t=' + props.startFrom ?? 0})) : null;
-    });
+    }, {immediate: true});
 
     const videoLoaded = ref(false);
     const onLoad = () => videoLoaded.value = true;

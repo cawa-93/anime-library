@@ -115,7 +115,6 @@ export default defineComponent({
   setup(props) {
     const router = useRouter();
 
-
     // Эпизоды
     const episodes = asyncComputed(() => getEpisodes(props.seriesId), [] as Episode[]);
 
@@ -150,7 +149,7 @@ export default defineComponent({
       // }
     };
 
-    watch(selectedEpisode, prepareNextEpisode);
+    watch(selectedEpisode, prepareNextEpisode, {immediate: true});
 
     // Доступные переводы
     const translations = ref<DeepReadonly<Translation[]>>([]);
@@ -160,7 +159,7 @@ export default defineComponent({
       }
       translations.value = [];
       translations.value = await getTranslations(selectedEpisode.value.id);
-    });
+    }, {immediate: true});
 
     const selectedTranslation = computed(() => translations.value.find(e => e.id === props.translationId));
 
@@ -193,10 +192,7 @@ export default defineComponent({
         .then(v => videos.value = v);
     }, 1000);
 
-    loadVideoSources();
-
-
-    watch(selectedTranslation, loadVideoSources);
+    watch(selectedTranslation, loadVideoSources, {immediate: true});
 
     const onSourceError = () => {
       if (!selectedTranslation.value) {
@@ -246,7 +242,7 @@ export default defineComponent({
         translations.value.length > 1 ? selectedTranslation.value?.title : null,
       ];
       t.value = titleChunks.filter(s => !!s).join(', ');
-    });
+    }, {immediate: true});
 
 
     //
