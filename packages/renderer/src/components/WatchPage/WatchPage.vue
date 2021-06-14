@@ -1,73 +1,75 @@
 <template>
-  <side-panel
-    v-if="episodes.length > 1 || translations.length"
-  >
-    <template #activator="{toggle}">
-      <button
-        title="Выбор эпизода и перевода"
-        class="open-playlist btn btn-dark win-icon border-0 p-0"
-        @click="toggle"
-      >
-        &#xE8FD;
-      </button>
-    </template>
+  <main class="position-relative">
+    <side-panel
+      v-if="episodes.length > 1 || translations.length"
+    >
+      <template #activator="{toggle}">
+        <button
+          title="Выбор эпизода и перевода"
+          class="open-playlist btn btn-dark win-icon border-0 p-0"
+          @click="toggle"
+        >
+          &#xE8FD;
+        </button>
+      </template>
 
-    <tabs-section>
-      <template #tab-header="{tabName, isActive, select}">
-        <input
-          :id="`${tabName}-tab-header`"
-          value="episodes"
-          type="radio"
-          class="btn-check"
-          name="active-tab"
-          autocomplete="off"
-          :checked="isActive"
-          @input="select"
-        >
-        <label
-          class="btn rounded-0"
-          :for="`${tabName}-tab-header`"
-        >
-          <span
-            class="border-dark px-2 pb-2"
-            :class="{'border-bottom': isActive}"
+      <tabs-section>
+        <template #tab-header="{tabName, isActive, select}">
+          <input
+            :id="`${tabName}-tab-header`"
+            value="episodes"
+            type="radio"
+            class="btn-check"
+            name="active-tab"
+            autocomplete="off"
+            :checked="isActive"
+            @input="select"
           >
-            {{ tabName === 'episodes' ? 'Эпизоды' : tabName === 'translations' ? 'Переводы' : tabName }}
-          </span>
-        </label>
-      </template>
-      <template
-        v-if="episodes.length > 1"
-        #episodes
-      >
-        <episodes-list
-          v-model:currentEpisode="currentEpisode"
-          :episodes="episodes"
-        />
-      </template>
+          <label
+            class="btn rounded-0"
+            :for="`${tabName}-tab-header`"
+          >
+            <span
+              class="border-dark px-2 pb-2"
+              :class="{'border-bottom': isActive}"
+            >
+              {{ tabName === 'episodes' ? 'Эпизоды' : tabName === 'translations' ? 'Переводы' : tabName }}
+            </span>
+          </label>
+        </template>
+        <template
+          v-if="episodes.length > 1"
+          #episodes
+        >
+          <episodes-list
+            v-model:currentEpisode="currentEpisode"
+            :episodes="episodes"
+          />
+        </template>
 
-      <template
-        v-if="translations.length && currentEpisode !== undefined"
-        #translations
-      >
-        <translations-list
-          v-model:currentTranslation="currentTranslation"
-          :series-id="Number(seriesId)"
-          :translations="translations"
-        />
-      </template>
-    </tabs-section>
-  </side-panel>
+        <template
+          v-if="translations.length && currentEpisode !== undefined"
+          #translations
+        >
+          <translations-list
+            v-model:currentTranslation="currentTranslation"
+            :series-id="Number(seriesId)"
+            :translations="translations"
+          />
+        </template>
+      </tabs-section>
+    </side-panel>
 
-  <video-player
-    id="video-container"
-    :videos="videos"
-    :has-next-episode="!!nextEpisode"
-    :start-from="historyItem ? (historyItem.episode.time && historyItem.episode.number === currentEpisode?.number ? historyItem.episode.time : 0) : 0"
-    @goToNextEpisode="goToNextEpisode"
-    @progress="saveWatchProgress"
-    @source-error="onSourceError"
-  />
+    <video-player
+      id="video-container"
+      :videos="videos"
+      :has-next-episode="!!nextEpisode"
+      :start-from="historyItem ? (historyItem.episode.time && historyItem.episode.number === currentEpisode?.number ? historyItem.episode.time : 0) : 0"
+      @goToNextEpisode="goToNextEpisode"
+      @progress="saveWatchProgress"
+      @source-error="onSourceError"
+    />
+  </main>
 </template>
 
 <script lang="ts">

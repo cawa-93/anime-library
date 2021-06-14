@@ -1,9 +1,11 @@
 <template>
-  <div class="p-3 container-fluid">
-    <home-search />
-  </div>
+  <main>
+    <div class="p-3 container-fluid">
+      <home-search />
+    </div>
 
-  <custom-lists />
+    <custom-lists />
+  </main>
 </template>
 
 <script lang="ts">
