@@ -1,296 +1,407 @@
 <template>
-  <video-player
-    id="video-container"
-    :videos="videos"
-    :next-url="nextEpisodeURL"
-    :start-from="startFrom"
-    @source-error="onSourceError"
-    @progress="saveWatchProgress"
+  <side-panel
+    v-if="episodes.length > 1 || translations.length"
   >
-    <div>
+    <template #activator="{toggle}">
       <button
-        v-if="showEpisodesPanel || showTranslationsPanel"
         title="Выбор эпизода и перевода"
         class="open-playlist btn btn-dark win-icon border-0 p-0"
-        @click="isSidePanelOpened = !isSidePanelOpened"
+        @click="toggle"
       >
         &#xE8FD;
       </button>
-      <side-panel
-        v-if="isSidePanelOpened && (showEpisodesPanel || showTranslationsPanel)"
-        v-model:is-opened="isSidePanelOpened"
-      >
-        <div
-          class="btn-group d-flex"
-          role="group"
-          aria-label="Basic radio toggle button group"
+    </template>
+
+    <tabs-section>
+      <template #tab-header="{tabName, isActive, select}">
+        <input
+          :id="`${tabName}-tab-header`"
+          value="episodes"
+          type="radio"
+          class="btn-check"
+          name="active-tab"
+          autocomplete="off"
+          :checked="isActive"
+          @input="select"
         >
-          <input
-            id="episodes-tab"
-            v-model="sidePanelActiveTab"
-            value="episodes"
-            type="radio"
-            class="btn-check"
-            name="active-tab"
-            autocomplete="off"
-            checked
+        <label
+          class="btn rounded-0"
+          :for="`${tabName}-tab-header`"
+        >
+          <span
+            class="border-dark px-2 pb-2"
+            :class="{'border-bottom': isActive}"
           >
-          <label
-            class="btn rounded-0"
-            for="episodes-tab"
-          >
-            <span
-              class="border-dark px-2 pb-2"
-              :class="{'border-bottom': sidePanelActiveTab ==='episodes'}"
-            >Эпизоды</span>
-          </label>
-
-          <input
-            id="translations-tab"
-            v-model="sidePanelActiveTab"
-            value="translations"
-            type="radio"
-            class="btn-check"
-            name="active-tab"
-            autocomplete="off"
-          >
-          <label
-            class="btn rounded-0"
-            for="translations-tab"
-          >
-            <span
-              class="border-dark px-2 pb-2"
-              :class="{'border-bottom': sidePanelActiveTab ==='translations'}"
-            >Переводы</span>
-          </label>
-        </div>
-
+            {{ tabName === 'episodes' ? 'Эпизоды' : tabName === 'translations' ? 'Переводы' : tabName }}
+          </span>
+        </label>
+      </template>
+      <template
+        v-if="episodes.length > 1"
+        #episodes
+      >
         <episodes-list
-          v-if="showEpisodesPanel && sidePanelActiveTab === 'episodes'"
+          v-model:currentEpisode="currentEpisode"
           :episodes="episodes"
         />
+      </template>
+
+      <template
+        v-if="translations.length && currentEpisode !== undefined"
+        #translations
+      >
         <translations-list
-          v-if="showTranslationsPanel && sidePanelActiveTab === 'translations' && selectedEpisode"
-          :selected-episode-num="selectedEpisode.number"
+          v-model:currentTranslation="currentTranslation"
+          :series-id="Number(seriesId)"
           :translations="translations"
         />
-      </side-panel>
-    </div>
-  </video-player>
+      </template>
+    </tabs-section>
+  </side-panel>
+
+  <!--      :next-url="nextEpisodeURL"-->
+  <!--      :start-from="startFrom"-->
+  <!--      @source-error="onSourceError"-->
+  <!--      @progress="saveWatchProgress"-->
+  <video-player
+    id="video-container"
+    :videos="videos"
+  />
 </template>
 
 <script lang="ts">
-import {asyncComputed, useThrottleFn, useTitle} from '@vueuse/core';
-import type {DeepReadonly} from 'vue';
-import {computed, defineComponent, ref, watch} from 'vue';
+import {defineComponent, ref, watch} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
-import {clearVideosCache, getEpisodes, getSeries, getTranslations, getVideos} from '/@/utils/videoProvider';
-import SidePanel from '/@/components/WatchPage/SidePanel.vue';
+import {getVideos} from '/@/utils/videoProvider';
+import SidePanel from '/@/components/SidePanel.vue';
 import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
 import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
 import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
-import {useRouter} from 'vue-router';
-import {showErrorMessage} from '/@/utils/dialogs';
-import {getPreferredTranslationFromList} from '/@/utils/translationRecomendations';
-import {getViewHistoryItem, putHistoryItem} from '/@/utils/history-views';
+import {getEpisodesList, getTranslationsList} from '/@/utils/prepareWatchData';
+import TabsSection from '/@/components/TabsSection.vue';
+import {useRoute} from 'vue-router';
 
 
 
 export default defineComponent({
-  components: {VideoPlayer, TranslationsList, EpisodesList, SidePanel},
+  components: {TabsSection, VideoPlayer, TranslationsList, EpisodesList, SidePanel},
   props: {
     seriesId: {
-      type: Number,
+      type: [String, Number],
       required: true,
     },
     episodeNum: {
-      type: Number,
-      required: true,
+      type: [String, Number],
+      required: false,
+      default: '',
     },
     translationId: {
-      type: Number,
-      required: true,
+      type: [String, Number],
+      required: false,
+      default: '',
     },
   },
   setup(props) {
-    const router = useRouter();
+    const route = useRoute();
+    const error = ref('');
 
-    // Эпизоды
-    const episodes = asyncComputed(() => getEpisodes(props.seriesId), [] as Episode[]);
 
-    const selectedEpisode = computed(() => episodes.value.find(e => e.number == props.episodeNum));
+    /**
+     * Загрузка серий
+     */
+    const episodes = ref<Episode[]>([]);
+    const currentEpisode = ref<Episode | undefined>();
+    watch(() => props.seriesId, (seriesId, oldSeriesId) => {
 
-    const nextEpisodeURL = ref<string>();
-    const prepareNextEpisode = async () => {
-      const nextEpisode = episodes.value[episodes.value.findIndex(e => e === selectedEpisode.value) + 1];
-      if (nextEpisode === undefined) {
-        nextEpisodeURL.value = undefined;
+      if (seriesId === oldSeriesId) {
         return;
       }
 
-      const nextEpisodeTranslations = await getTranslations(nextEpisode.id);
-      if (!nextEpisodeTranslations.length) {
-        nextEpisodeURL.value = undefined;
-        return;
-      }
+      episodes.value = [];
+      currentEpisode.value = undefined;
 
-      const nextEpisodePreferredTranslations = await getPreferredTranslationFromList(props.seriesId, nextEpisodeTranslations as Translation[]);
+      getEpisodesList(seriesId, props.episodeNum === '' ? undefined : props.episodeNum).then(data => {
+        console.debug('[getEpisodesList]', data);
+        const {episodes: eps, startEpisode} = data;
 
-      const translationId = nextEpisodePreferredTranslations?.id || nextEpisodeTranslations[0].id;
-
-
-      const resolvedNextPageUrl = router.resolve({params: {episodeNum: nextEpisode.number, translationId}});
-      nextEpisodeURL.value = resolvedNextPageUrl.href ? resolvedNextPageUrl.href : undefined;
-
-      // if (import.meta.env.MODE !== 'development') {
-      //   // Если удалось определить перевод для следующей серии -- выполнить загрузку видео, чтобы кэшировать их
-      //   await getVideos(translationId);
-      //   // TODO: Начать загрузку непосредственно целевого видео-файла для следующего эпизода
-      // }
-    };
-
-    watch(selectedEpisode, prepareNextEpisode, {immediate: true});
-
-    // Доступные переводы
-    const translations = ref<DeepReadonly<Translation[]>>([]);
-    watch(selectedEpisode, async () => {
-      if (!selectedEpisode.value?.id) {
-        return;
-      }
-      translations.value = [];
-      translations.value = await getTranslations(selectedEpisode.value.id);
-    }, {immediate: true});
-
-    const selectedTranslation = computed(() => translations.value.find(e => e.id === props.translationId));
-
-
-    // Загрузка доступных видео для выбранного перевода
-    const videos = ref<DeepReadonly<Video[]>>([]);
-    const loadVideoSources = useThrottleFn((): void => {
-      videos.value = [];
-
-      if (!selectedTranslation.value?.id) {
-        return;
-      }
-
-      getVideos(selectedTranslation.value.id)
-        .catch((err) => {
-
-          const title = 'Не удалось загрузить видео с Anime.365';
-          const message: string = err.code === 403
-            ? 'Перейдите в настройки и обновите ключ доступа'
-            : err.message !== undefined
-              ? err.message
-              : typeof err === 'string'
-                ? err
-                : JSON.stringify(err);
-
-          showErrorMessage({title, message});
-
-          return [] as DeepReadonly<Video[]>;
-        })
-        .then(v => videos.value = v);
-    }, 1000);
-
-    watch(selectedTranslation, loadVideoSources, {immediate: true});
-
-    const onSourceError = () => {
-      if (!selectedTranslation.value) {
-        return;
-      }
-
-      return clearVideosCache(selectedTranslation.value.id).then(loadVideoSources);
-    };
-
-    const isSidePanelOpened = ref(false);
-    const sidePanelActiveTab = ref<'episodes' | 'translations'>('translations');
-    const showEpisodesPanel = computed(() => episodes.value.length > 1);
-    const showTranslationsPanel = computed(() => selectedEpisode.value !== undefined && translations.value.length > 0);
-
-
-
-    // Информация про само аниме
-    const series = asyncComputed(() => getSeries(props.seriesId), undefined);
-    watch([series, selectedEpisode, selectedTranslation], () => {
-      if (!series.value) {
-        if (navigator.mediaSession !== undefined) {
-          navigator.mediaSession.metadata = null;
+        if (eps.length === 0) {
+          error.value = 'Не было найдено ни одной серии для выбранного аниме';
+          return;
         }
 
+        episodes.value = eps;
+
+        if (startEpisode !== undefined) {
+          currentEpisode.value = startEpisode;
+        }
+
+      });
+    }, {immediate: true});
+
+    // watch(() => props.episodeNum, (episodeNum) => {
+    //   const num = typeof episodeNum === 'string' ? Number(episodeNum) : episodeNum;
+    //   if (Number.isNaN(num) || currentEpisode.value?.number === num) {
+    //     return;
+    //   }
+    //
+    //   currentEpisode.value = episodes.value.find(e => e.number === num);
+    // });
+
+    /**
+     * Загрузка переводов
+     */
+    const translations = ref<Translation[]>([]);
+    const currentTranslation = ref<Translation | undefined>();
+    watch(currentEpisode, (currentEpisode, oldCurrentEpisode) => {
+      if (currentEpisode && oldCurrentEpisode && currentEpisode.id === oldCurrentEpisode.id) {
         return;
       }
 
-      if (navigator.mediaSession !== undefined) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: selectedEpisode.value?.title || '',
-          artist: series.value.title,
-          artwork: [
-            {src: series.value.poster || ''},
-          ],
-        });
+      translations.value = [];
+      currentTranslation.value = undefined;
+
+      if (!currentEpisode) {
+        return;
       }
-    });
 
 
+      getTranslationsList(currentEpisode.id, props.seriesId, props.translationId === '' ? undefined : props.translationId).then(data => {
+        console.debug('[getTranslationsList]', data);
+        const {translations: trs, startTranslation} = data;
+
+        if (trs.length === 0) {
+          error.value = 'Не было найдено ни одной серии для выбранного аниме';
+          return;
+        }
+
+        translations.value = trs;
+
+        if (startTranslation !== undefined) {
+          currentTranslation.value = startTranslation;
+        }
+      });
+    }, {immediate: true});
+
+    // watch(() => props.translationId, (translationId) => {
+    //   const id = typeof translationId === 'string' ? Number(translationId) : translationId;
+    //   if (Number.isNaN(id) || currentTranslation.value?.id === id) {
+    //     return;
+    //   }
     //
-    // Заголовок страницы
-    const t = useTitle();
-    watch([series, selectedEpisode, selectedTranslation], () => {
-      const titleChunks = [
-        series.value?.title,
-        episodes.value.length > 1 ? selectedEpisode.value?.title : null,
-        translations.value.length > 1 ? selectedTranslation.value?.title : null,
-      ];
-      t.value = titleChunks.filter(s => !!s).join(', ');
+    //   currentTranslation.value = translations.value.find(t => t.id === id);
+    // });
+
+    /**
+     * Загрузка видео
+     */
+    const videos = ref<Video[]>([]);
+    watch(currentTranslation, (currentTranslation, oldCurrentTranslation) => {
+      if (currentTranslation && oldCurrentTranslation && currentTranslation.id === oldCurrentTranslation.id) {
+        return;
+      }
+
+      videos.value = [];
+
+      if (!currentTranslation) {
+        return;
+      }
+
+      getVideos(currentTranslation.id).then(v => {
+        videos.value = v;
+      });
     }, {immediate: true});
 
 
-    //
-    // Сохранение и восстановление позиции просмотра
-    const startFrom = ref(0);
-    getViewHistoryItem(props.seriesId, false).then(historyItem => {
-      if (historyItem?.episode.number === props.episodeNum && historyItem.episode.time) {
-        startFrom.value = historyItem.episode.time;
-      }
-    });
-    const saveWatchProgress = ({duration, currentTime}: { duration?: number, currentTime?: number } = {}) => {
-      if (!duration || !currentTime || !selectedEpisode.value) {
-        return;
-      }
-
-      startFrom.value = currentTime;
-
-      putHistoryItem({
-        seriesId: props.seriesId,
-        episode: {
-          number: selectedEpisode.value.number,
-          time: currentTime,
-          duration: duration,
-        },
-      });
-    };
-
-    // При изменении серии -- сбросить позицию просмотра
-    watch(selectedEpisode, (oldValue, newValue) => {
-      if (oldValue?.number && newValue?.number && oldValue.number !== newValue.number) {
-        startFrom.value = 0;
-      }
-    });
-
     return {
-      startFrom,
-      saveWatchProgress,
-      onSourceError,
-      nextEpisodeURL,
+      error,
       episodes,
-      selectedEpisode,
+      currentEpisode,
       translations,
+      currentTranslation,
       videos,
-      isSidePanelOpened,
-      sidePanelActiveTab,
-      showEpisodesPanel,
-      showTranslationsPanel,
+
+      route,
     };
+
+
+    // const router = useRouter();
+    //
+    // // Эпизоды
+    // const episodes = asyncComputed(() => getEpisodes(props.seriesId), [] as Episode[]);
+    //
+    // const selectedEpisode = computed(() => episodes.value.find(e => e.number == props.episodeNum));
+    //
+    // const nextEpisodeURL = ref<string>();
+    // const prepareNextEpisode = async () => {
+    //   const nextEpisode = episodes.value[episodes.value.findIndex(e => e === selectedEpisode.value) + 1];
+    //   if (nextEpisode === undefined) {
+    //     nextEpisodeURL.value = undefined;
+    //     return;
+    //   }
+    //
+    //   const nextEpisodeTranslations = await getTranslations(nextEpisode.id);
+    //   if (!nextEpisodeTranslations.length) {
+    //     nextEpisodeURL.value = undefined;
+    //     return;
+    //   }
+    //
+    //   const nextEpisodePreferredTranslations = await getPreferredTranslationFromList(props.seriesId, nextEpisodeTranslations as Translation[]);
+    //
+    //   const translationId = nextEpisodePreferredTranslations?.id || nextEpisodeTranslations[0].id;
+    //
+    //
+    //   const resolvedNextPageUrl = router.resolve({params: {episodeNum: nextEpisode.number, translationId}});
+    //   nextEpisodeURL.value = resolvedNextPageUrl.href ? resolvedNextPageUrl.href : undefined;
+    //
+    //   // if (import.meta.env.MODE !== 'development') {
+    //   //   // Если удалось определить перевод для следующей серии -- выполнить загрузку видео, чтобы кэшировать их
+    //   //   await getVideos(translationId);
+    //   //   // TODO: Начать загрузку непосредственно целевого видео-файла для следующего эпизода
+    //   // }
+    // };
+    //
+    // watch(selectedEpisode, prepareNextEpisode, {immediate: true});
+    //
+    // // Доступные переводы
+    // const translations = ref<DeepReadonly<Translation[]>>([]);
+    // watch(selectedEpisode, async () => {
+    //   if (!selectedEpisode.value?.id) {
+    //     return;
+    //   }
+    //   translations.value = [];
+    //   translations.value = await getTranslations(selectedEpisode.value.id);
+    // }, {immediate: true});
+    //
+    // const selectedTranslation = computed(() => translations.value.find(e => e.id === props.translationId));
+    //
+    //
+    // // Загрузка доступных видео для выбранного перевода
+    // const videos = ref<DeepReadonly<Video[]>>([]);
+    // const loadVideoSources = useThrottleFn((): void => {
+    //   videos.value = [];
+    //
+    //   if (!selectedTranslation.value?.id) {
+    //     return;
+    //   }
+    //
+    //   getVideos(selectedTranslation.value.id)
+    //     .catch((err) => {
+    //
+    //       const title = 'Не удалось загрузить видео с Anime.365';
+    //       const message: string = err.code === 403
+    //         ? 'Перейдите в настройки и обновите ключ доступа'
+    //         : err.message !== undefined
+    //           ? err.message
+    //           : typeof err === 'string'
+    //             ? err
+    //             : JSON.stringify(err);
+    //
+    //       showErrorMessage({title, message});
+    //
+    //       return [] as DeepReadonly<Video[]>;
+    //     })
+    //     .then(v => videos.value = v);
+    // }, 1000);
+    //
+    // watch(selectedTranslation, loadVideoSources, {immediate: true});
+    //
+    // const onSourceError = () => {
+    //   if (!selectedTranslation.value) {
+    //     return;
+    //   }
+    //
+    //   return clearVideosCache(selectedTranslation.value.id).then(loadVideoSources);
+    // };
+    //
+    // const isSidePanelOpened = ref(false);
+    // const sidePanelActiveTab = ref<'episodes' | 'translations'>('translations');
+    // const showEpisodesPanel = computed(() => episodes.value.length > 1);
+    // const showTranslationsPanel = computed(() => selectedEpisode.value !== undefined && translations.value.length > 0);
+    //
+    //
+    //
+    // // Информация про само аниме
+    // const series = asyncComputed(() => getSeries(props.seriesId), undefined);
+    // watch([series, selectedEpisode, selectedTranslation], () => {
+    //   if (!series.value) {
+    //     if (navigator.mediaSession !== undefined) {
+    //       navigator.mediaSession.metadata = null;
+    //     }
+    //
+    //     return;
+    //   }
+    //
+    //   if (navigator.mediaSession !== undefined) {
+    //     navigator.mediaSession.metadata = new MediaMetadata({
+    //       title: selectedEpisode.value?.title || '',
+    //       artist: series.value.title,
+    //       artwork: [
+    //         {src: series.value.poster || ''},
+    //       ],
+    //     });
+    //   }
+    // });
+    //
+    //
+    // //
+    // // Заголовок страницы
+    // const t = useTitle();
+    // watch([series, selectedEpisode, selectedTranslation], () => {
+    //   const titleChunks = [
+    //     series.value?.title,
+    //     episodes.value.length > 1 ? selectedEpisode.value?.title : null,
+    //     translations.value.length > 1 ? selectedTranslation.value?.title : null,
+    //   ];
+    //   t.value = titleChunks.filter(s => !!s).join(', ');
+    // }, {immediate: true});
+    //
+    //
+    // //
+    // // Сохранение и восстановление позиции просмотра
+    // const startFrom = ref(0);
+    // getViewHistoryItem(props.seriesId, false).then(historyItem => {
+    //   if (historyItem?.episode.number === props.episodeNum && historyItem.episode.time) {
+    //     startFrom.value = historyItem.episode.time;
+    //   }
+    // });
+    // const saveWatchProgress = ({duration, currentTime}: { duration?: number, currentTime?: number } = {}) => {
+    //   if (!duration || !currentTime || !selectedEpisode.value) {
+    //     return;
+    //   }
+    //
+    //   startFrom.value = currentTime;
+    //
+    //   putHistoryItem({
+    //     seriesId: props.seriesId,
+    //     episode: {
+    //       number: selectedEpisode.value.number,
+    //       time: currentTime,
+    //       duration: duration,
+    //     },
+    //   });
+    // };
+    //
+    // // При изменении серии -- сбросить позицию просмотра
+    // watch(selectedEpisode, (oldValue, newValue) => {
+    //   if (oldValue?.number && newValue?.number && oldValue.number !== newValue.number) {
+    //     startFrom.value = 0;
+    //   }
+    // });
+    //
+    // return {
+    //   startFrom,
+    //   saveWatchProgress,
+    //   onSourceError,
+    //   nextEpisodeURL,
+    //   episodes,
+    //   selectedEpisode,
+    //   translations,
+    //   videos,
+    //   isSidePanelOpened,
+    //   sidePanelActiveTab,
+    //   showEpisodesPanel,
+    //   showTranslationsPanel,
+    // };
   },
 });
 </script>
@@ -321,6 +432,7 @@ export default defineComponent({
   width: 2em;
   height: 2em;
   line-height: 1;
+  z-index: 10;
 }
 
 .open-playlist.btn:before {

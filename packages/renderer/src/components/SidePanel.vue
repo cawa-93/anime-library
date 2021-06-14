@@ -1,5 +1,12 @@
 <template>
+  <slot
+    name="activator"
+    :open="() => opened = true"
+    :close="() => opened = false"
+    :toggle="() => opened = !opened"
+  />
   <section
+    v-if="opened"
     ref="el"
     class="slided"
   >
@@ -14,22 +21,12 @@ import {onClickOutside} from '@vueuse/core';
 
 export default defineComponent({
   name: 'SidePanel',
-  props: {
-    isOpened: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-  },
 
-  emits: ['update:isOpened'],
-
-  setup(_, {emit}) {
+  setup() {
     const el = ref();
-
-    onClickOutside(el, () => emit('update:isOpened', false));
-
-    return {el};
+    const opened = ref(false);
+    onClickOutside(el, () => opened.value = false);
+    return {el, opened};
   },
 });
 </script>

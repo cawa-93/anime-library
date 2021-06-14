@@ -5,6 +5,8 @@ import type {IndexKey} from 'idb/build/esm/entry';
 import {isAuthorsEqual} from '/@/utils/videoProvider/providers/anime365-authors';
 import type {MaybeReadonly} from '/@shared/types/utils';
 import {trackTime} from '/@/utils/telemetry';
+import type {MaybeRef} from '@vueuse/core';
+import { toRaw } from 'vue';
 
 
 interface TranslationRecommendations extends DBSchema {
@@ -38,8 +40,9 @@ function getDB() {
 }
 
 
-export async function savePreferredTranslation(seriesId: number, translation: Translation): Promise<number> {
-  return getDB().then(db => db.put('preferences', {...translation, seriesId}));
+export async function savePreferredTranslation(seriesId: number, translation: MaybeRef<Translation>): Promise<number> {
+  const t = toRaw(translation) as Translation;
+  return getDB().then(db => db.put('preferences', {...t, seriesId}));
 }
 
 

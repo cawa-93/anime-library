@@ -4,7 +4,7 @@
     :style="`--window-border-width: ${borderWidth}`"
   >
     <app-window-title-bar />
-    <main>
+    <main class="position-relative">
       <router-view />
     </main>
   </div>
