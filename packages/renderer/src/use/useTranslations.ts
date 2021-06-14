@@ -21,7 +21,6 @@ export default function (currentEpisode: Ref<Episode | undefined>, seriesId: str
 
 
     getTranslationsList(currentEpisode.id, seriesId, !translationId ? undefined : translationId).then(data => {
-      console.debug('[getTranslationsList]', data);
       const {translations: trs, startTranslation} = data;
 
       translations.value = trs;

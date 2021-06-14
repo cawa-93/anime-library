@@ -146,7 +146,6 @@ export default defineComponent({
 
     // Передать ошибку родителю если не удалось загрузить видео
     const errorHandler = (event: Event) => {
-      console.error('VIDEO errorHandler', {event, videoElement: videoElement.value});
       emit('source-error', event);
     };
 
