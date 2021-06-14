@@ -1,5 +1,32 @@
 <template>
   <main class="position-relative">
+    <p
+      v-if="error"
+      class="text-danger position-absolute top-50 text-center w-100 fw-bold lead"
+    >
+      {{ error }}
+      <br>
+      <button
+        class="btn btn-link"
+        @click="reloadPage"
+      >
+        Повторить попытку
+      </button>
+    </p>
+    <template v-else>
+      <video-player
+        v-if="videos.length"
+        id="video-container"
+        :videos="videos"
+        :has-next-episode="!!nextEpisode"
+        :start-from="historyItem ? (historyItem.episode.time && historyItem.episode.number === currentEpisode?.number ? historyItem.episode.time : 0) : 0"
+        @goToNextEpisode="goToNextEpisode"
+        @progress="saveWatchProgress"
+        @source-error="onSourceError"
+      />
+      <loading-spinner v-if="videos.length === 0" />
+    </template>
+
     <side-panel
       v-if="episodes.length > 1 || translations.length"
     >
@@ -59,18 +86,6 @@
         </template>
       </tabs-section>
     </side-panel>
-
-    <video-player
-      v-if="videos.length"
-      id="video-container"
-      :videos="videos"
-      :has-next-episode="!!nextEpisode"
-      :start-from="historyItem ? (historyItem.episode.time && historyItem.episode.number === currentEpisode?.number ? historyItem.episode.time : 0) : 0"
-      @goToNextEpisode="goToNextEpisode"
-      @progress="saveWatchProgress"
-      @source-error="onSourceError"
-    />
-    <loading-spinner v-if="videos.length === 0" />
   </main>
 </template>
 
@@ -113,7 +128,9 @@ export default defineComponent({
   },
   setup(props) {
     const error = ref('');
-
+    const reloadPage = () => {
+      location.pathname = `/watch/${props.seriesId}`;
+    };
 
 
     /**
@@ -127,6 +144,7 @@ export default defineComponent({
         return;
       }
 
+      error.value = '';
       episodes.value = [];
       currentEpisode.value = undefined;
 
@@ -155,9 +173,9 @@ export default defineComponent({
     const {
       translations,
       startTranslation: currentTranslation,
+      error: translationError,
     } = useTranslations(currentEpisode, props.seriesId, props.translationId);
-
-
+    watch(translationError, translationError => error.value = translationError);
 
     /**
      * Загрузка видео
@@ -166,7 +184,7 @@ export default defineComponent({
 
     const loadVideoSources = useThrottleFn(async (selectedTranslationId: number, force = false) => {
       videos.value = [];
-
+      error.value = '';
       if (force) {
         await clearVideosCache(selectedTranslationId);
       }
@@ -187,7 +205,14 @@ export default defineComponent({
 
           return [] as Video[];
         })
-        .then(v => videos.value = v);
+        .then(v => {
+          if (v.length === 0) {
+            error.value = 'Нет загруженных видео. Попробуйте выбрать другой перевод';
+            return;
+          }
+
+          videos.value = v;
+        });
     }, 1000);
 
 
@@ -281,6 +306,7 @@ export default defineComponent({
 
     return {
       error,
+      reloadPage,
       episodes,
       currentEpisode,
       translations,
