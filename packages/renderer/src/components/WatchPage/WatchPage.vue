@@ -104,7 +104,7 @@ import {getViewHistoryItem, putHistoryItem} from '/@/utils/history-views';
 import {ignorableWatch, useDebounceFn, useThrottleFn} from '@vueuse/core';
 import {showErrorMessage} from '/@/utils/dialogs';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
-import {MINUTE} from '/@/utils/time';
+import {MINUTE, SECOND} from '/@/utils/time';
 
 
 
@@ -245,7 +245,7 @@ export default defineComponent({
 
           videos.value = v;
         });
-    }, 1000);
+    }, SECOND);
 
 
     const {ignoreUpdates: doNotUpdateVideos} = ignorableWatch(currentTranslation, (currentTranslation, oldCurrentTranslation) => {
