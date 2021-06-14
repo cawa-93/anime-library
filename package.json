@@ -63,9 +63,9 @@
     "vue-tsc": "0.1.7"
   },
   "dependencies": {
-    "@sentry/browser": "6.6.0",
+    "@sentry/browser": "6.7.0",
     "@sentry/electron": "2.4.1",
-    "@sentry/integrations": "6.6.0",
+    "@sentry/integrations": "6.7.0",
     "@vueuse/core": "5.0.3",
     "bootstrap": "5.0.1",
     "electron-updater": "4.3.9",
