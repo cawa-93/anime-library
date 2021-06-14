@@ -113,11 +113,7 @@ export default defineComponent({
 
     // Выбор качества видео по умолчанию
     const selectedQuality = ref(qualities.value[0]);
-    watch(qualities, () => {
-      if (!qualities.value.includes(selectedQuality.value)) {
-        selectedQuality.value = qualities.value[0];
-      }
-    });
+    watch(qualities, () => selectedQuality.value = qualities.value[0]);
 
 
     // Массив видео для выбранного качества
