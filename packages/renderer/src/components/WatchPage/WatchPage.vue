@@ -91,20 +91,20 @@
 
 <script lang="ts">
 import {computed, defineComponent, ref, toRaw, watch} from 'vue';
-import type {Episode, Video} from '/@/utils/videoProvider';
+import type {Episode, Translation, Video} from '/@/utils/videoProvider';
 import {clearVideosCache, getVideos} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/SidePanel.vue';
 import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
 import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
 import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
-import {getEpisodesList} from '/@/utils/prepareWatchData';
+import {getEpisodesList, getTranslationsList} from '/@/utils/prepareWatchData';
 import TabsSection from '/@/components/TabsSection.vue';
-import useTranslations from '/@/use/useTranslations';
 import type {HistoryViewsItem} from '/@/utils/history-views';
 import {getViewHistoryItem, putHistoryItem} from '/@/utils/history-views';
-import {useThrottleFn} from '@vueuse/core';
+import {ignorableWatch, useDebounceFn, useThrottleFn} from '@vueuse/core';
 import {showErrorMessage} from '/@/utils/dialogs';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
+import {MINUTE} from '/@/utils/time';
 
 
 
@@ -170,12 +170,44 @@ export default defineComponent({
     /**
      * Загрузка переводов
      */
-    const {
-      translations,
-      startTranslation: currentTranslation,
-      error: translationError,
-    } = useTranslations(currentEpisode, props.seriesId, props.translationId);
-    watch(translationError, translationError => error.value = translationError);
+    const translations = ref<Translation[]>([]);
+    const currentTranslation = ref<Translation | undefined>();
+    const {ignoreUpdates: doNotUpdateEpisodes} = ignorableWatch(currentEpisode, (currentEpisode, oldCurrentEpisode) => {
+      if (currentEpisode && oldCurrentEpisode && currentEpisode.id === oldCurrentEpisode.id) {
+        return;
+      }
+
+      error.value = '';
+      translations.value = [];
+      currentTranslation.value = undefined;
+
+      if (!currentEpisode) {
+        return;
+      }
+
+
+      getTranslationsList(currentEpisode.id, props.seriesId, !props.translationId ? undefined : props.translationId).then(data => {
+        const {translations: trs, startTranslation} = data;
+
+        if (trs.length === 0) {
+          error.value = 'Не найдено ни одного перевода для выбранной серии';
+          return;
+        }
+
+        translations.value = trs;
+
+        if (startTranslation !== undefined) {
+          currentTranslation.value = startTranslation;
+        }
+      });
+    }, {immediate: true});
+
+    // const {
+    //   translations,
+    //   startTranslation: currentTranslation,
+    //   error: translationError,
+    // } = useTranslations(currentEpisode, props.seriesId, props.translationId);
+    // watch(translationError, translationError => error.value = translationError);
 
     /**
      * Загрузка видео
@@ -216,7 +248,7 @@ export default defineComponent({
     }, 1000);
 
 
-    watch(currentTranslation, (currentTranslation, oldCurrentTranslation) => {
+    const {ignoreUpdates: doNotUpdateVideos} = ignorableWatch(currentTranslation, (currentTranslation, oldCurrentTranslation) => {
       if (currentTranslation && oldCurrentTranslation && currentTranslation.id === oldCurrentTranslation.id) {
         return;
       }
@@ -262,12 +294,76 @@ export default defineComponent({
     });
 
 
+    /**
+     * Загрузка переводов и видео для следующей серии
+     */
+    let nextEpisodeMetadata: {
+      translations?: Translation[],
+      startTranslation?: Translation,
+      videos?: Video[]
+    } | null = null;
+
+    const updateNextEpisodeMetadata = useDebounceFn(async () => {
+      if (!nextEpisode.value?.id) {
+        return;
+      }
+
+      const {translations, startTranslation} = await getTranslationsList(nextEpisode.value.id, props.seriesId);
+
+      if (startTranslation) {
+        nextEpisodeMetadata = {
+          translations,
+          startTranslation,
+        };
+
+        const videos = await getVideos(startTranslation.id);
+        if (videos.length) {
+          nextEpisodeMetadata.videos = videos;
+
+          // Нужно вставить тег `<video preload="metadata">` в документ, чтобы пред загрузить метаданные для видео следующей серии
+          // Это необходимо для быстрого переключения серий
+          // Для пред загрузки выбирается источник с максимальным качеством
+          const maxQuality = videos.reduce((pv, cv) => cv.quality > pv.quality ? cv : pv, videos[0]);
+          const video = document.createElement('video');
+          video.crossOrigin = 'anonymous';
+          video.src = maxQuality.sources[0].src;
+          video.preload = 'metadata';
+          video.onerror = () => {
+            if (nextEpisodeMetadata) delete nextEpisodeMetadata.videos;
+          };
+          document.head.appendChild(video);
+        }
+      }
+    }, MINUTE);
+
+    watch(currentTranslation, () => {
+      nextEpisodeMetadata = null;
+      updateNextEpisodeMetadata();
+    });
+
+
     const goToNextEpisode = () => {
       if (!nextEpisode.value) {
         return;
       }
 
-      currentEpisode.value = nextEpisode.value;
+      if (nextEpisodeMetadata && nextEpisodeMetadata.translations?.length && nextEpisodeMetadata.startTranslation) {
+        doNotUpdateEpisodes(() => currentEpisode.value = nextEpisode.value);
+
+        translations.value = nextEpisodeMetadata.translations;
+
+        if (nextEpisodeMetadata.videos?.length) {
+          doNotUpdateVideos(() => currentTranslation.value = nextEpisodeMetadata!.startTranslation);
+          videos.value = nextEpisodeMetadata.videos;
+        } else {
+          currentTranslation.value = nextEpisodeMetadata.startTranslation;
+        }
+      } else {
+        currentEpisode.value = nextEpisode.value;
+      }
+
+      // currentEpisode.value = nextEpisode.value;
+      // videos.value = nextEpisodeMetadata.videos;
     };
 
 
