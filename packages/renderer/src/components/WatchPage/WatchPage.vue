@@ -61,6 +61,7 @@
     </side-panel>
 
     <video-player
+      v-if="videos.length"
       id="video-container"
       :videos="videos"
       :has-next-episode="!!nextEpisode"
@@ -69,6 +70,7 @@
       @progress="saveWatchProgress"
       @source-error="onSourceError"
     />
+    <loading-spinner v-if="videos.length === 0" />
   </main>
 </template>
 
@@ -87,11 +89,12 @@ import type {HistoryViewsItem} from '/@/utils/history-views';
 import {getViewHistoryItem, putHistoryItem} from '/@/utils/history-views';
 import {useThrottleFn} from '@vueuse/core';
 import {showErrorMessage} from '/@/utils/dialogs';
+import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 
 
 
 export default defineComponent({
-  components: {TabsSection, VideoPlayer, TranslationsList, EpisodesList, SidePanel},
+  components: {LoadingSpinner, TabsSection, VideoPlayer, TranslationsList, EpisodesList, SidePanel},
   props: {
     seriesId: {
       type: [String, Number],
@@ -272,6 +275,10 @@ export default defineComponent({
       putHistoryItem(toRaw(historyItem.value));
     };
 
+
+
+    const videoPlayerWaiting = ref(true);
+
     return {
       error,
       episodes,
@@ -284,12 +291,18 @@ export default defineComponent({
       historyItem,
       saveWatchProgress,
       onSourceError,
+      videoPlayerWaiting,
     };
   },
 });
 </script>
 
 <style scoped>
+
+main {
+  background-color: black;
+}
+
 #video-container {
   width: 100%;
   height: 100%;

@@ -1,13 +1,9 @@
 <template>
   <div
-    ref="componentRoot"
     class="component-root"
     :class="{hideCursor: isFullscreen && idle}"
   >
-    <loading-spinner
-      v-if="waiting || !videoLoaded"
-      class="loading"
-    />
+    <loading-spinner v-if="waiting || !videoLoaded" />
     <video
       ref="videoElement"
       preload="auto"
@@ -71,7 +67,7 @@ import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted,
 import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
 import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
-import LoadingSpinner from '/@/components/WatchPage/VideoPlayer/LoadingSpinner.vue';
+import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 import {useMediaHotKeys} from '/@/use/useMediaHotKeys';
 
 
@@ -181,8 +177,8 @@ export default defineComponent({
 
     //
     // переключение полноэкранного режима
-    const componentRoot = ref<HTMLVideoElement>();
-    const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(componentRoot);
+    const pageRoot = document.querySelector('main');
+    const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(pageRoot);
 
 
     //
@@ -278,7 +274,6 @@ export default defineComponent({
       waiting,
       volume,
       muted,
-      componentRoot,
       isFullscreen,
       toggleFullscreen,
       isPictureInPicture,
@@ -312,12 +307,7 @@ video.controls-visible::-webkit-media-text-track-display {
   transform: translateY(-50px);
 }
 
-.loading {
-  position: absolute;
-  top:50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
+
 
 .hideCursor {
   cursor: none;

@@ -14,10 +14,14 @@ export default defineComponent({
 
 <style scoped>
 .lds-roller {
+  position: absolute;
+  top:50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: inline-block;
-  position: relative;
   width: 80px;
   height: 80px;
+  pointer-events: none;
 }
 .lds-roller div {
   animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
