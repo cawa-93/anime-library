@@ -98,4 +98,9 @@ export default defineComponent({
 .item-label {
   grid-column-start: 2;
 }
+
+a {
+  content-visibility: auto;
+  contain-intrinsic-size: 31px;
+}
 </style>
