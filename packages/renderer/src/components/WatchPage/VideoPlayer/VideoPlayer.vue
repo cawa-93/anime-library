@@ -20,7 +20,7 @@
       @error="errorHandler"
       @progress="$emit('progress', {currentTime, duration})"
       @loadeddata="onLoad"
-      @ended="goToNextUrl"
+      @ended="$emit('go-to-next-episode')"
     >
       <source
         v-for="source of sources"
@@ -52,10 +52,11 @@
         :buffered="buffered"
         :is-fullscreen="isFullscreen"
         :qualities="qualities"
-        :next-url="nextUrl"
+        :has-next-episode="hasNextEpisode"
         :is-picture-in-picture="isPictureInPicture"
         @requestFullscreenToggle="toggleFullscreen"
         @requestPictureInPicture="togglePictureInPicture"
+        @goToNextEpisode="$emit('go-to-next-episode')"
       />
     </transition>
     <transition name="fade">
@@ -71,7 +72,6 @@ import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, use
 import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
 import LoadingSpinner from '/@/components/WatchPage/VideoPlayer/LoadingSpinner.vue';
-import router from '/@/router';
 import {useMediaHotKeys} from '/@/use/useMediaHotKeys';
 
 
@@ -91,10 +91,10 @@ export default defineComponent({
       type: Array as PropType<DeepReadonly<Video[]>>,
       required: true,
     },
-    nextUrl: {
-      type: String,
+    hasNextEpisode: {
+      type: Boolean,
       required: false,
-      default: null,
+      default: false,
     },
   },
 
@@ -102,6 +102,7 @@ export default defineComponent({
     'source-error',
     'progress',
     'durationchange',
+    'go-to-next-episode',
   ],
 
   setup: function (props, {emit}) {
@@ -195,13 +196,6 @@ export default defineComponent({
       }
     };
 
-    // Переключатель на следующую серию
-    const goToNextUrl = () => {
-      if (props.nextUrl) {
-        router.replace(props.nextUrl);
-      }
-    };
-
     //
     // Быстрая перемотка
     const DEFAULT_SEEK_SPEED = 5;
@@ -212,7 +206,6 @@ export default defineComponent({
     useMediaHotKeys({
       playingToggle: () => playing.value = !playing.value,
       playingPause: () => playing.value = false,
-      nextTrack: goToNextUrl,
       volumeDown: e => volume.value = e.shiftKey ? 0 : Math.max(0, volume.value - 0.05),
       volumeUp: e => volume.value = e.shiftKey ? 1 : Math.min(1, volume.value + 0.05),
       volumeMuteToggle: () => muted.value = !muted.value,
@@ -242,8 +235,8 @@ export default defineComponent({
     const controlsVisible = computed(() => !playing.value || !idle.value);
 
     watch(
-      () => props.nextUrl,
-      () => navigator.mediaSession && navigator.mediaSession.setActionHandler('nexttrack', props.nextUrl ? goToNextUrl : null),
+      () => props.hasNextEpisode,
+      () => navigator.mediaSession && navigator.mediaSession.setActionHandler('nexttrack', props.hasNextEpisode ? () => emit('go-to-next-episode') : null),
     );
 
     onMounted(() => {
@@ -268,7 +261,6 @@ export default defineComponent({
 
 
     return {
-      goToNextUrl,
       onLoad,
       videoLoaded,
       controlsVisible,

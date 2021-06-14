@@ -59,27 +59,29 @@
     </tabs-section>
   </side-panel>
 
-  <!--      :next-url="nextEpisodeURL"-->
   <!--      :start-from="startFrom"-->
   <!--      @source-error="onSourceError"-->
   <!--      @progress="saveWatchProgress"-->
   <video-player
     id="video-container"
     :videos="videos"
+    :has-next-episode="!!nextEpisode"
+    @goToNextEpisode="goToNextEpisode"
   />
 </template>
 
 <script lang="ts">
-import {defineComponent, ref, watch} from 'vue';
-import type {Episode, Translation, Video} from '/@/utils/videoProvider';
+import {computed, defineComponent, ref, watch} from 'vue';
+import type {Episode, Video} from '/@/utils/videoProvider';
 import {getVideos} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/SidePanel.vue';
 import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
 import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
 import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
-import {getEpisodesList, getTranslationsList} from '/@/utils/prepareWatchData';
+import {getEpisodesList} from '/@/utils/prepareWatchData';
 import TabsSection from '/@/components/TabsSection.vue';
 import {useRoute} from 'vue-router';
+import useTranslations from '/@/use/useTranslations';
 
 
 
@@ -138,58 +140,14 @@ export default defineComponent({
       });
     }, {immediate: true});
 
-    // watch(() => props.episodeNum, (episodeNum) => {
-    //   const num = typeof episodeNum === 'string' ? Number(episodeNum) : episodeNum;
-    //   if (Number.isNaN(num) || currentEpisode.value?.number === num) {
-    //     return;
-    //   }
-    //
-    //   currentEpisode.value = episodes.value.find(e => e.number === num);
-    // });
-
     /**
      * Загрузка переводов
      */
-    const translations = ref<Translation[]>([]);
-    const currentTranslation = ref<Translation | undefined>();
-    watch(currentEpisode, (currentEpisode, oldCurrentEpisode) => {
-      if (currentEpisode && oldCurrentEpisode && currentEpisode.id === oldCurrentEpisode.id) {
-        return;
-      }
+    const {
+      translations,
+      startTranslation: currentTranslation,
+    } = useTranslations(currentEpisode, props.seriesId, props.translationId);
 
-      translations.value = [];
-      currentTranslation.value = undefined;
-
-      if (!currentEpisode) {
-        return;
-      }
-
-
-      getTranslationsList(currentEpisode.id, props.seriesId, props.translationId === '' ? undefined : props.translationId).then(data => {
-        console.debug('[getTranslationsList]', data);
-        const {translations: trs, startTranslation} = data;
-
-        if (trs.length === 0) {
-          error.value = 'Не было найдено ни одной серии для выбранного аниме';
-          return;
-        }
-
-        translations.value = trs;
-
-        if (startTranslation !== undefined) {
-          currentTranslation.value = startTranslation;
-        }
-      });
-    }, {immediate: true});
-
-    // watch(() => props.translationId, (translationId) => {
-    //   const id = typeof translationId === 'string' ? Number(translationId) : translationId;
-    //   if (Number.isNaN(id) || currentTranslation.value?.id === id) {
-    //     return;
-    //   }
-    //
-    //   currentTranslation.value = translations.value.find(t => t.id === id);
-    // });
 
     /**
      * Загрузка видео
@@ -212,6 +170,37 @@ export default defineComponent({
     }, {immediate: true});
 
 
+    /**
+     * Подготовка следующей серии
+     */
+    const nextEpisode = computed(() => {
+      if (!currentEpisode.value) {
+        return;
+      }
+
+      let minEpisodeByNum: Episode | undefined = undefined;
+      for (const e of episodes.value) {
+        if (e.number <= currentEpisode.value.number) {
+          continue;
+        }
+
+        if (minEpisodeByNum === undefined || minEpisodeByNum.number > e.number) {
+          minEpisodeByNum = e;
+        }
+      }
+
+      return minEpisodeByNum;
+    });
+
+
+    const goToNextEpisode = () => {
+      if (!nextEpisode.value) {
+        return;
+      }
+
+      currentEpisode.value = nextEpisode.value;
+    };
+
     return {
       error,
       episodes,
@@ -219,7 +208,8 @@ export default defineComponent({
       translations,
       currentTranslation,
       videos,
-
+      goToNextEpisode,
+      nextEpisode,
       route,
     };
 

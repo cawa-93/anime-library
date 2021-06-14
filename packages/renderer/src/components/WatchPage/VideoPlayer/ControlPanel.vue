@@ -24,23 +24,14 @@
       {{ playingState ? '&#xE769;' : '&#xE768;' }}
     </button>
 
-    <router-link
-      v-if="nextUrl"
-      :to="nextUrl"
+    <button
+      :disabled="!hasNextEpisode"
       class="next-button win-icon"
       title="Следующий эпизод"
+      @click="$emit('go-to-next-episode')"
     >
       &#xE893;
-    </router-link>
-    <a
-      v-else
-      aria-disabled="true"
-      role="link"
-      class="disabled win-icon"
-      title="Следующий эпизод"
-    >
-      &#xE893;
-    </a>
+    </button>
 
     <div class="volume-area">
       <button
@@ -146,10 +137,10 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
-    nextUrl: {
-      type: String,
+    hasNextEpisode: {
+      type: Boolean,
       required: false,
-      default: null,
+      default: false,
     },
     muted: {
       type: Boolean,
@@ -204,6 +195,7 @@ export default defineComponent({
     'requestFullscreenToggle': null,
     'requestPictureInPicture': null,
     'update:isSubtitlesEnabled': null,
+    'go-to-next-episode': null,
   },
 
   setup(props, {emit}) {
