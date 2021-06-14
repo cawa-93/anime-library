@@ -83,6 +83,12 @@ const lastCallCache = new Map<number, HistoryViewsItem>();
 
 
 function saveHistoryItemToShiki(item: HistoryViewsItem): void {
+  // В режиме разработки отключить синхронизацию с шикимори
+  // Иначе это засоряет профиль Шики десятками изменений в истории
+  if (import.meta.env.MODE === 'development') {
+    return;
+  }
+
   if (!item.episode || !item.episode.number) {
     return;
   }
