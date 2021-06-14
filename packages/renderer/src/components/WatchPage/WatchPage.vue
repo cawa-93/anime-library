@@ -59,19 +59,20 @@
     </tabs-section>
   </side-panel>
 
-  <!--      :start-from="startFrom"-->
   <!--      @source-error="onSourceError"-->
-  <!--      @progress="saveWatchProgress"-->
   <video-player
+    v-if="videos.length"
     id="video-container"
     :videos="videos"
     :has-next-episode="!!nextEpisode"
+    :start-from="historyItem ? (historyItem.episode.time && historyItem.episode.number === currentEpisode?.number ? historyItem.episode.time : 0) : 0"
     @goToNextEpisode="goToNextEpisode"
+    @progress="saveWatchProgress"
   />
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, watch} from 'vue';
+import {computed, defineComponent, ref, toRaw, watch} from 'vue';
 import type {Episode, Video} from '/@/utils/videoProvider';
 import {getVideos} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/SidePanel.vue';
@@ -82,6 +83,8 @@ import {getEpisodesList} from '/@/utils/prepareWatchData';
 import TabsSection from '/@/components/TabsSection.vue';
 import {useRoute} from 'vue-router';
 import useTranslations from '/@/use/useTranslations';
+import type {HistoryViewsItem} from '/@/utils/history-views';
+import {getViewHistoryItem, putHistoryItem} from '/@/utils/history-views';
 
 
 
@@ -201,6 +204,46 @@ export default defineComponent({
       currentEpisode.value = nextEpisode.value;
     };
 
+
+    /**
+     * Позиция просмотра текущей серии
+     */
+    const historyItem = ref<HistoryViewsItem | undefined>();
+    getViewHistoryItem(Number(props.seriesId), false).then(item => {
+      historyItem.value = item;
+    });
+
+
+    /**
+     * Сохранение позиции просмотра
+     */
+    const saveWatchProgress = ({duration, currentTime}: { duration?: number, currentTime?: number } = {}) => {
+      if (!duration || !currentTime || !currentEpisode.value) {
+        return;
+      }
+
+      console.log('Save current time', currentTime);
+      historyItem.value = {
+        seriesId: Number(props.seriesId),
+        episode: {
+          number: currentEpisode.value.number,
+          time: currentTime,
+          duration: duration,
+        },
+      };
+
+      putHistoryItem(toRaw(historyItem.value));
+    };
+
+    /**
+     * При изменении серии -- сбросить позицию просмотра
+     */
+    // watch(currentEpisode, (oldValue, newValue) => {
+    //   if (oldValue?.number && newValue?.number && oldValue.number !== newValue.number) {
+    //     startFrom.value = 0;
+    //   }
+    // });
+
     return {
       error,
       episodes,
@@ -210,6 +253,8 @@ export default defineComponent({
       videos,
       goToNextEpisode,
       nextEpisode,
+      historyItem,
+      saveWatchProgress,
       route,
     };
 
@@ -346,37 +391,7 @@ export default defineComponent({
     // }, {immediate: true});
     //
     //
-    // //
-    // // Сохранение и восстановление позиции просмотра
-    // const startFrom = ref(0);
-    // getViewHistoryItem(props.seriesId, false).then(historyItem => {
-    //   if (historyItem?.episode.number === props.episodeNum && historyItem.episode.time) {
-    //     startFrom.value = historyItem.episode.time;
-    //   }
-    // });
-    // const saveWatchProgress = ({duration, currentTime}: { duration?: number, currentTime?: number } = {}) => {
-    //   if (!duration || !currentTime || !selectedEpisode.value) {
-    //     return;
-    //   }
-    //
-    //   startFrom.value = currentTime;
-    //
-    //   putHistoryItem({
-    //     seriesId: props.seriesId,
-    //     episode: {
-    //       number: selectedEpisode.value.number,
-    //       time: currentTime,
-    //       duration: duration,
-    //     },
-    //   });
-    // };
-    //
-    // // При изменении серии -- сбросить позицию просмотра
-    // watch(selectedEpisode, (oldValue, newValue) => {
-    //   if (oldValue?.number && newValue?.number && oldValue.number !== newValue.number) {
-    //     startFrom.value = 0;
-    //   }
-    // });
+
     //
     // return {
     //   startFrom,

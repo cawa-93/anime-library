@@ -85,7 +85,7 @@ export default defineComponent({
     startFrom: {
       type: Number,
       require: false,
-      default: 120,
+      default: 0,
     },
     videos: {
       type: Array as PropType<DeepReadonly<Video[]>>,
