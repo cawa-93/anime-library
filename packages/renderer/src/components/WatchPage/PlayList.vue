@@ -3,15 +3,14 @@
     ref="root"
     class="list-group list-group-flush"
   >
-    <router-link
+    <a
       v-for="item of items"
       :key="item.id"
+      href="#"
       :class="{active: item.id === selectedItemId}"
       class="list-group-item"
-      :to="item.url"
-      replace
       :title="item.title || ''"
-      @click="$emit('item-click', item)"
+      @click.prevent="$emit('item-click', item)"
     >
       <span
         v-if="item.id === selectedItemId"
@@ -30,21 +29,19 @@
           :class="`bg-${b.style} ${['warning', 'info', 'light'].includes(b.style) ? 'text-dark' : ''}`"
         >{{ b.text }}</small>
       </span>
-    </router-link>
+    </a>
   </nav>
 </template>
 
 <script lang="ts">
 import type {PropType} from 'vue';
 import {defineComponent, onMounted, ref} from 'vue';
-import type {RouteLocationRaw} from 'vue-router';
 
 
 export interface PlayListItem {
   id: number,
   label: string,
   title?: string,
-  url: RouteLocationRaw
   badges?: {text: string, style: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark'}[]
 }
 
@@ -82,11 +79,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 .list-group-item {
   display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: 25px 1fr;
+  content-visibility: auto;
+  contain-intrinsic-size: 24px;
 }
 
 .list-group-item:not(.active) {

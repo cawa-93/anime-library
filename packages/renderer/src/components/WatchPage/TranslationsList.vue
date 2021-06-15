@@ -11,7 +11,7 @@
         class="my-3"
         :aria-label="group.title"
         :items="group.playListItems"
-        :selected-item-id="selectedTranslation.id"
+        :selected-item-id="currentTranslation.id"
         @item-click="onManualSelect"
       />
     </template>
@@ -19,11 +19,9 @@
 </template>
 
 <script lang="ts">
-import type {DeepReadonly, PropType} from 'vue';
-import {computed, defineComponent, toRaw} from 'vue';
-import {useRoute} from 'vue-router';
+import type {PropType} from 'vue';
+import {computed, defineComponent} from 'vue';
 import type {Translation} from '/@/utils/videoProvider';
-import {useBrowserLocation} from '@vueuse/core';
 import {savePreferredTranslation} from '/@/utils/translationRecomendations';
 import {formatList} from '/@/utils/formatList';
 import type {PlayListItem} from '/@/components/WatchPage/PlayList.vue';
@@ -31,28 +29,34 @@ import PlayList from '/@/components/WatchPage/PlayList.vue';
 import {trackEvent} from '/@/utils/telemetry';
 
 
+interface TranslationPlayListItem extends PlayListItem {
+  translation: Translation
+}
+
+
 export default defineComponent({
   name: 'TranslationsList',
   components: {PlayList},
   props: {
+    seriesId: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
     translations: {
-      type: Array as PropType<DeepReadonly<Translation[]>>,
+      type: Array as PropType<Translation[]>,
       required: true,
     },
-    selectedEpisodeNum: {
-      required: true,
-      type: Number,
+    currentTranslation: {
+      required: false,
+      type: Object as PropType<Translation>,
+      default: () => ({}),
     },
   },
-  setup(props) {
-    const route = useRoute();
-    const selectedTranslation = computed(() => props.translations.find(e => String(e.id) === route.params.translationId) || props.translations[0]);
-
-    const currentLocation = useBrowserLocation();
-
-
-    const groups = computed<{title: string, playListItems: PlayListItem[]}[]>(() => {
-      const groups = new Map<string, DeepReadonly<Translation>[]>();
+  emits: ['update:currentTranslation'],
+  setup(props, {emit}) {
+    const groups = computed<{ title: string, playListItems: PlayListItem[] }[]>(() => {
+      const groups = new Map<string, Translation[]>();
 
       for (const translation of props.translations) {
         const g = groups.get(translation.type) || [];
@@ -61,7 +65,7 @@ export default defineComponent({
         groups.set(translation.type, g);
       }
 
-      const translationToPlayListItem = (t: DeepReadonly<Translation>): PlayListItem => {
+      const translationToPlayListItem = (t: Translation): TranslationPlayListItem => {
 
         let badges: PlayListItem['badges'] = [];
 
@@ -83,8 +87,8 @@ export default defineComponent({
           id: t.id,
           label: t.title,
           title: formatList(t.author.members),
-          url: {params: {translationId: t.id, episodeNum: props.selectedEpisodeNum}, hash: currentLocation.value.hash},
           badges,
+          translation: t,
         };
       };
 
@@ -109,22 +113,22 @@ export default defineComponent({
 
 
     // Сохранение выбранного перевода в предпочтениях
-    const saveToPreferred = (translation: DeepReadonly<Translation>) => {
-      savePreferredTranslation(Number(route.params.seriesId), toRaw(translation) as Translation);
-    };
+    const onManualSelect = (item: TranslationPlayListItem) => {
+      const targetTranslation = item.translation;
+      emit('update:currentTranslation', targetTranslation);
 
-
-    const onManualSelect = (item: PlayListItem) => {
-      const targetTranslation = props.translations.find(t => t.id === item.id);
-      if (targetTranslation) {
-        saveToPreferred(targetTranslation);
+      if (props.seriesId !== 0) {
+        savePreferredTranslation(props.seriesId, targetTranslation);
+      } else {
+        console.warn('Невозможно сохранить выбранный перевод как предпочитаемый', {seriesId: props.seriesId});
       }
+
       trackEvent({ec: 'PlayList Manual Select', ea: 'Translation Select'});
     };
 
 
 
-    return {selectedTranslation, groups, currentLocation, onManualSelect};
+    return {groups, onManualSelect};
   },
 });
 </script>

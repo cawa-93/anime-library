@@ -1,13 +1,9 @@
 <template>
   <div
-    ref="componentRoot"
     class="component-root"
     :class="{hideCursor: isFullscreen && idle}"
   >
-    <loading-spinner
-      v-if="waiting || !videoLoaded"
-      class="loading"
-    />
+    <loading-spinner v-if="waiting || !videoLoaded" />
     <video
       ref="videoElement"
       preload="auto"
@@ -18,10 +14,9 @@
       @click="playing = !playing"
       @dblclick="toggleFullscreen"
       @error="errorHandler"
-      @progress="$emit('progress', $event)"
-      @durationchange="$emit('durationchange', $event)"
+      @progress="$emit('progress', {currentTime, duration})"
       @loadeddata="onLoad"
-      @ended="goToNextUrl"
+      @ended="$emit('go-to-next-episode')"
     >
       <source
         v-for="source of sources"
@@ -53,10 +48,11 @@
         :buffered="buffered"
         :is-fullscreen="isFullscreen"
         :qualities="qualities"
-        :next-url="nextUrl"
+        :has-next-episode="hasNextEpisode"
         :is-picture-in-picture="isPictureInPicture"
         @requestFullscreenToggle="toggleFullscreen"
         @requestPictureInPicture="togglePictureInPicture"
+        @goToNextEpisode="$emit('go-to-next-episode')"
       />
     </transition>
     <transition name="fade">
@@ -67,12 +63,11 @@
 
 <script lang="ts">
 import type {DeepReadonly, PropType} from 'vue';
-import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, readonly, ref, watch} from 'vue';
+import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch} from 'vue';
 import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
 import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
-import LoadingSpinner from '/@/components/WatchPage/VideoPlayer/LoadingSpinner.vue';
-import router from '/@/router';
+import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 import {useMediaHotKeys} from '/@/use/useMediaHotKeys';
 
 
@@ -83,14 +78,19 @@ export default defineComponent({
   name: 'VideoPlayer',
   components: {LibAssSubtitlesRenderer, LoadingSpinner, ControlPanel},
   props: {
+    startFrom: {
+      type: Number,
+      require: false,
+      default: 0,
+    },
     videos: {
       type: Array as PropType<DeepReadonly<Video[]>>,
       required: true,
     },
-    nextUrl: {
-      type: String,
+    hasNextEpisode: {
+      type: Boolean,
       required: false,
-      default: null,
+      default: false,
     },
   },
 
@@ -98,6 +98,8 @@ export default defineComponent({
     'source-error',
     'progress',
     'durationchange',
+    'go-to-next-episode',
+    'controls-visibility-change',
   ],
 
   setup: function (props, {emit}) {
@@ -112,28 +114,18 @@ export default defineComponent({
 
     // Выбор качества видео по умолчанию
     const selectedQuality = ref(qualities.value[0]);
-    watch(qualities, () => {
-      if (!qualities.value.includes(selectedQuality.value)) {
-        selectedQuality.value = qualities.value[0];
-      }
-    });
+    watch(qualities, () => selectedQuality.value = qualities.value[0]);
 
 
     // Массив видео для выбранного качества
-    const selectedQualityVideos = computed(() => props.videos.filter(s => s.quality === selectedQuality.value));
+    const selectedQualityVideo = computed(() => props.videos.find(s => s.quality === selectedQuality.value));
 
 
     // Ссылки на видео-ресурсы для выбранного качества
-    const sources = computed<VideoSource[]>(() => {
-      const mediaFragment = location.hash.startsWith('#t=') ? location.hash : '';
-
-      return selectedQualityVideos.value
-        .flatMap((v) =>
-          mediaFragment !== ''
-            ? v.sources.map(source => readonly({...source, src: source.src + mediaFragment}))
-            : v.sources);
-    });
-
+    const sources = ref<VideoSource[] | null>(null);
+    watch(selectedQualityVideo, (selectedQualityVideo) => {
+      sources.value = selectedQualityVideo ? selectedQualityVideo.sources.map(s => ({...s, src: s.src + '#t=' + props.startFrom ?? 0})) : null;
+    }, {immediate: true});
 
     const videoLoaded = ref(false);
     const onLoad = () => videoLoaded.value = true;
@@ -147,14 +139,13 @@ export default defineComponent({
 
     // Передать ошибку родителю если не удалось загрузить видео
     const errorHandler = (event: Event) => {
-      console.error('VIDEO errorHandler', {event, videoElement: videoElement.value});
       emit('source-error', event);
     };
 
 
     // Ссылки на субтитры для выбранного качества
     const tracks = computed<VideoTrack[]>(() => {
-      const allTracks = selectedQualityVideos.value.flatMap(v => v.tracks || []);
+      const allTracks = selectedQualityVideo.value?.tracks || [];
       const map = new Map<string, VideoTrack>();
       allTracks.forEach(item => map.set(item.src, item));
       return [...map.values()];
@@ -183,8 +174,8 @@ export default defineComponent({
 
     //
     // переключение полноэкранного режима
-    const componentRoot = ref<HTMLVideoElement>();
-    const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(componentRoot);
+    const pageRoot = document.querySelector('main');
+    const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(pageRoot);
 
 
     //
@@ -194,13 +185,6 @@ export default defineComponent({
         document.exitPictureInPicture();
       } else if (videoElement.value) {
         videoElement.value.requestPictureInPicture();
-      }
-    };
-
-    // Переключатель на следующую серию
-    const goToNextUrl = () => {
-      if (props.nextUrl) {
-        router.replace(props.nextUrl);
       }
     };
 
@@ -214,7 +198,6 @@ export default defineComponent({
     useMediaHotKeys({
       playingToggle: () => playing.value = !playing.value,
       playingPause: () => playing.value = false,
-      nextTrack: goToNextUrl,
       volumeDown: e => volume.value = e.shiftKey ? 0 : Math.max(0, volume.value - 0.05),
       volumeUp: e => volume.value = e.shiftKey ? 1 : Math.min(1, volume.value + 0.05),
       volumeMuteToggle: () => muted.value = !muted.value,
@@ -226,13 +209,14 @@ export default defineComponent({
         const baseSpeed = -DEFAULT_SEEK_SPEED * (e.code === 'KeyJ' ? 2 : 1);
         seek(e.shiftKey ? baseSpeed * 2 : baseSpeed);
       },
+      nextTrack: () => emit('go-to-next-episode'),
     });
 
     useEventListener('keydown', (event: KeyboardEvent) => {
-      if (event.code === 'KeyF') {
+      if (event.code === 'KeyF' && !event.shiftKey && !event.ctrlKey) {
         toggleFullscreen();
       }
-      else if (event.code === 'KeyI') {
+      else if (event.code === 'KeyI' && !event.shiftKey && !event.ctrlKey) {
         togglePictureInPicture();
       }
     });
@@ -242,10 +226,11 @@ export default defineComponent({
     // Показывать/скрывать контрол бар в зависимости от активности пользователя
     const {idle} = useIdle(1000 * 3);
     const controlsVisible = computed(() => !playing.value || !idle.value);
+    watch(controlsVisible, controlsVisible => emit('controls-visibility-change', controlsVisible));
 
     watch(
-      () => props.nextUrl,
-      () => navigator.mediaSession && navigator.mediaSession.setActionHandler('nexttrack', props.nextUrl ? goToNextUrl : null),
+      () => props.hasNextEpisode,
+      () => navigator.mediaSession && navigator.mediaSession.setActionHandler('nexttrack', props.hasNextEpisode ? () => emit('go-to-next-episode') : null),
     );
 
     onMounted(() => {
@@ -270,7 +255,6 @@ export default defineComponent({
 
 
     return {
-      goToNextUrl,
       onLoad,
       videoLoaded,
       controlsVisible,
@@ -289,7 +273,6 @@ export default defineComponent({
       waiting,
       volume,
       muted,
-      componentRoot,
       isFullscreen,
       toggleFullscreen,
       isPictureInPicture,
@@ -323,25 +306,10 @@ video.controls-visible::-webkit-media-text-track-display {
   transform: translateY(-50px);
 }
 
-.loading {
-  position: absolute;
-  top:50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
+
 
 .hideCursor {
   cursor: none;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 </style>

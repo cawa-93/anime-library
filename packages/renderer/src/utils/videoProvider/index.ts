@@ -1,4 +1,3 @@
-import type {DeepReadonly} from 'vue';
 import {readonly} from 'vue';
 import * as provider from '/@/utils/videoProvider/providers/anime365';
 import {deDuplicatedRequest} from '/@/utils/deDuplicatedRequest';
@@ -81,10 +80,10 @@ export function getSeries(malId: number): Promise<Series | undefined> {
 /**
  * Возвращает массив {@link Episode} относящихся к аниме
  */
-export function getEpisodes(malId: number): Promise<DeepReadonly<Episode[]>> {
+export function getEpisodes(malId: number): Promise<Episode[]> {
   return deDuplicatedRequest(
     `episodes-${malId}`,
-    () => provider.getEpisodes(malId).then(readonly),
+    () => provider.getEpisodes(malId),
   );
 }
 
@@ -93,10 +92,10 @@ export function getEpisodes(malId: number): Promise<DeepReadonly<Episode[]>> {
  * Возвращает массив переводов относящихся к конкретной серии
  * @param providerEpisodeId ID Серии полученный от конкретного видео-провайдера
  */
-export function getTranslations(providerEpisodeId: number): Promise<DeepReadonly<Translation[]>> {
+export function getTranslations(providerEpisodeId: number): Promise<Translation[]> {
   return deDuplicatedRequest(
     `translations-${providerEpisodeId}`,
-    () => provider.getTranslations(providerEpisodeId).then(readonly),
+    () => provider.getTranslations(providerEpisodeId),
   );
 }
 
@@ -104,10 +103,10 @@ export function getTranslations(providerEpisodeId: number): Promise<DeepReadonly
 /**
  * Возвращает массив видео для конкретного перевода
  */
-export function getVideos(providerTranslationId: number): Promise<DeepReadonly<Video[]>> {
+export function getVideos(providerTranslationId: number): Promise<Video[]> {
   return deDuplicatedRequest(
     `videos-${providerTranslationId}`,
-    () => provider.getStream(providerTranslationId).then(readonly),
+    () => provider.getStream(providerTranslationId),
   );
 }
 
