@@ -208,6 +208,7 @@ export default defineComponent({
         const baseSpeed = -DEFAULT_SEEK_SPEED * (e.code === 'KeyJ' ? 2 : 1);
         seek(e.shiftKey ? baseSpeed * 2 : baseSpeed);
       },
+      nextTrack: () => emit('go-to-next-episode'),
     });
 
     useEventListener('keydown', (event: KeyboardEvent) => {
