@@ -1,6 +1,6 @@
 <template>
   <div
-    class="btn-group d-flex"
+    class="btn-group d-flex position-sticky top-0"
     role="group"
     aria-label="Basic radio toggle button group"
   >
@@ -41,5 +41,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+.position-sticky {
+  background-color: rgb(193,193,193);
+  z-index: 3;
+}
 </style>
