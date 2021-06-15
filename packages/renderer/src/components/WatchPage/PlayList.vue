@@ -79,11 +79,12 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 .list-group-item {
   display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: 25px 1fr;
+  content-visibility: auto;
+  contain-intrinsic-size: 24px;
 }
 
 .list-group-item:not(.active) {
@@ -97,10 +98,5 @@ export default defineComponent({
 
 .item-label {
   grid-column-start: 2;
-}
-
-a {
-  content-visibility: auto;
-  contain-intrinsic-size: 31px;
 }
 </style>
