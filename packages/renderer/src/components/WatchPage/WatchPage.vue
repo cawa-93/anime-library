@@ -96,7 +96,7 @@
 <script lang="ts">
 import {computed, defineComponent, ref, toRaw, watch} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
-import {clearVideosCache, getVideos} from '/@/utils/videoProvider';
+import {clearVideosCache, getSeries, getVideos} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/SidePanel.vue';
 import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
 import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
@@ -406,7 +406,47 @@ export default defineComponent({
     };
 
 
+    /**
+     * Загрузка подробной информации об открытом Аниме
+     * Необходимо для заголовка окна
+     */
+    const seriesTitle = ref('');
+    getSeries(Number(props.seriesId)).then(series => {
+      if (series && series.title) {
+        seriesTitle.value = series.title;
+      }
+    });
 
+
+    /**
+     * Формирование заголовка окна на основе названия аниме, серии и перевода
+     */
+    const pageTitle = computed(() => {
+      let title = '';
+
+      if (seriesTitle.value) {
+        title += `${title !== '' ? ', ' : ''}${seriesTitle.value}`;
+      }
+
+      if (currentEpisode.value?.title !== undefined) {
+        title += `${title !== '' ? ', ' : ''}${currentEpisode.value.title}`;
+      }
+
+
+      if (currentTranslation.value?.title !== undefined) {
+        title += `${title !== '' ? ', ' : ''}${currentTranslation.value.title}`;
+      }
+
+      return title;
+    });
+
+    watch(pageTitle, pageTitle => document.title = pageTitle);
+
+
+    /**
+     * Отвечает за видимость кнопки плейлистов
+     * Синхронизируется с состоянием видимости панели управления видео
+     */
     const isPlaylistButtonVisible = ref(true);
 
     return {
