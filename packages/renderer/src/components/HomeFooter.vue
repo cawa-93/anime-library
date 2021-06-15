@@ -75,8 +75,8 @@
 
 <script lang="ts">
 import {defineComponent, ref} from 'vue';
-import {useElectron} from '/@/use/electron';
 import {trackEvent} from '/@/utils/telemetry';
+import {openTG, openVK} from '/@/use/socialLinks';
 
 
 const STATES = {
@@ -105,28 +105,6 @@ export default defineComponent({
         ea: 'NotSatisfied',
       });
     };
-
-    const {openURL} = useElectron();
-
-    const openVK = () => {
-      openURL('https://vk.com/playshikionline');
-      trackEvent({
-        ec: 'Social',
-        ea: 'Click on social link',
-        el: 'VK',
-      });
-    };
-
-    const openTG = () => {
-      openURL('https://t.me/playshikionline');
-      trackEvent({
-        ec: 'Social',
-        ea: 'Click on social link',
-        el: 'TG',
-      });
-    };
-
-
 
     return {state, liked, disliked, STATES, openVK, openTG};
   },

@@ -13,18 +13,18 @@
           <br>
           Исходный код на GitHub:
           <a
-            href="https://github.com/cawa-93/anime-library"
-            @click.prevent="openExternal"
+            href="#"
+            @click.prevent="openGitHub"
           >cawa-93/anime-library</a>
           <br>
           Сообщество пользователей в
           <a
-            href="https://vk.com/playshikionline"
-            @click.prevent="openExternal"
+            href="#"
+            @click.prevent="openVK"
           >Вконтакте</a> и в
           <a
-            href="https://t.me/playshikionline"
-            @click.prevent="openExternal"
+            href="#"
+            @click.prevent="openTG"
           >Telegram</a>
         </p>
       </section>
@@ -34,11 +34,11 @@
 
 <script lang="ts">
 import {computed, defineComponent, ref} from 'vue';
-import {useElectron} from '/@/use/electron';
 import {onClickOutside, useTitle} from '@vueuse/core';
 import {getAccessToken, saveAccessToken} from '/@/utils/videoProvider/providers/anime365';
 import ShikiOauth from '/@/components/ShikiOauth.vue';
 import OptionAnime365 from '/@/components/OptionAnime365.vue';
+import {openGitHub, openTG, openVK} from '/@/use/socialLinks';
 
 
 export default defineComponent({
@@ -61,20 +61,18 @@ export default defineComponent({
         helpDialog.value.open = true;
       }
     };
-
-    const {openURL} = useElectron();
-    const openExternal = (event: MouseEvent) => {
-      if (!event.target) {
-        return;
-      }
-
-      const target = event.target as HTMLAnchorElement;
-      if (!target.href) {
-        return;
-      }
-
-      openURL(target.href);
-    };
+    // const openExternal = (event: MouseEvent) => {
+    //   if (!event.target) {
+    //     return;
+    //   }
+    //
+    //   const target = event.target as HTMLAnchorElement;
+    //   if (!target.href) {
+    //     return;
+    //   }
+    //
+    //   openURL(target.href);
+    // };
 
     const jsonData = ref('');
     const parsedAccessToken = computed(() => {
@@ -92,7 +90,9 @@ export default defineComponent({
 
     return {
       helpDialog,
-      openExternal,
+      openGitHub,
+      openVK,
+      openTG,
       jsonData,
       parsedAccessToken,
       saveAccessTokenOption,
