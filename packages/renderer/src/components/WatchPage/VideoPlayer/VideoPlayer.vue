@@ -213,10 +213,10 @@ export default defineComponent({
     });
 
     useEventListener('keydown', (event: KeyboardEvent) => {
-      if (event.code === 'KeyF') {
+      if (event.code === 'KeyF' && !event.shiftKey && !event.ctrlKey) {
         toggleFullscreen();
       }
-      else if (event.code === 'KeyI') {
+      else if (event.code === 'KeyI' && !event.shiftKey && !event.ctrlKey) {
         togglePictureInPicture();
       }
     });
