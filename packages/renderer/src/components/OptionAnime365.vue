@@ -7,8 +7,8 @@
       <p>
         Для доступа к видео необходимо подключить ваш аккаунт видео-провайдера
         <a
-          href="https://smotret-anime.online/users/login"
-          @click.prevent="openExternal"
+          href="#"
+          @click.prevent="openURL('https://smotret-anime.online/users/login')"
         >Anime.365</a>.
       </p>
       <label
@@ -29,8 +29,8 @@
       >
         Чтобы получить ключ доступа авторизуйтесь в браузере и
         <strong><a
-          href="https://smotret-anime.online/api/accessToken?app=play-shikimori-online"
-          @click.prevent="openExternal"
+          href="#"
+          @click.prevent="openURL('https://smotret-anime.online/api/accessToken?app=play-shikimori-online')"
         >
           перейдите по этой ссылке
         </a>
@@ -63,17 +63,17 @@ import {
   isFailureResponse,
   saveAccessToken,
 } from '/@/utils/videoProvider/providers/anime365';
-import {openExternalElement} from '/@/use/openExternal';
 import type {ApiResponse} from '/@/utils/videoProvider/providers/anime365-interfaces';
 import {showErrorMessage} from '/@/utils/dialogs';
 import {getVideos} from '/@/utils/videoProvider';
+import {useElectron} from '/@/use/electron';
 
 
 export default defineComponent({
   name: 'OptionAnime365',
   setup() {
 
-
+    const {openURL} = useElectron();
     const SmAccessToken = ref(getAccessToken() || '');
 
 
@@ -141,58 +141,10 @@ export default defineComponent({
         isLoading.value = false;
       }
 
-
-      // try {
-      //   const json: ApiResponse<{ access_token: string }> = JSON.parse(SmAccessToken.value);
-      //   if (isFailureResponse(json)) {
-      //     await showErrorMessage({
-      //       title: 'Ключ доступа не верный',
-      //       message: json.error.message === 'Authorization required.'
-      //           ? 'Вы должны авторизоваться на Anime.365 в том же браузере в котором получаете ключ.'
-      //           : json.error.message,
-      //     });
-      //   } else {
-      //     const access_token = json.data.access_token;
-      //
-      //     if (access_token) {
-      //
-      //       const originValue = getAccessToken();
-      //       saveAccessToken(access_token);
-      //
-      //       // Попытка выполнить запрос
-      //       try {
-      //         await getVideos(2825677);
-      //       } catch (e) {
-      //         saveAccessToken(originValue);
-      //         await showErrorMessage({
-      //           title: 'Ключ доступа не верный',
-      //           message: e.message,
-      //         });
-      //       }
-      //     }
-      //   }
-      //   } catch (e) {
-      //   const originValue = getAccessToken();
-      //   saveAccessToken(SmAccessToken.value);
-      //
-      //   // Попытка выполнить запрос
-      //   try {
-      //     await getVideos(2825677);
-      //   } catch (e) {
-      //     saveAccessToken(originValue);
-      //     await showErrorMessage({
-      //       title: 'Ключ доступа не верный',
-      //       message: e.message,
-      //     });
-      //   }
-      //
-      // }
-
-
       isLoading.value = false;
     };
 
-    return {openExternal: openExternalElement, SmAccessToken, saveAccessTokenOption, isLoading};
+    return {openURL, SmAccessToken, saveAccessTokenOption, isLoading};
   },
 });
 </script>

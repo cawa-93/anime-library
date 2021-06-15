@@ -25,7 +25,7 @@
             Подключенный аккаунт Шикимори:
             <strong><a
               :href="profile.url"
-              @click.prevent="openExternalElement"
+              @click.prevent="() => profile && profile.url && openURL(profile.url)"
             >{{ profile.nickname }}</a></strong>
           </span>
         </template>
@@ -48,7 +48,6 @@ import type {ShikiUser} from '/@/utils/shikimori-api';
 import {clearCredentials, getAuthUrl, getUser, refreshCredentials} from '/@/utils/shikimori-api';
 import {showErrorMessage} from '/@/utils/dialogs';
 import {useRouter} from 'vue-router';
-import {openExternalElement} from '/@/use/openExternal';
 
 
 export default defineComponent({
@@ -98,7 +97,7 @@ export default defineComponent({
     };
 
 
-    return {login, profile, isLoading, openExternalElement, logOut};
+    return {login, profile, isLoading, openURL, logOut};
   },
 });
 </script>
