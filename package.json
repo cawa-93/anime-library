@@ -73,7 +73,7 @@
     "idb": "6.1.2",
     "libass-wasm": "4.0.0",
     "postcss-preset-env": "6.7.0",
-    "sass": "1.34.1",
+    "sass": "1.35.0",
     "uuid": "8.3.2",
     "vue": "3.1.1",
     "vue-router": "4.0.8"
