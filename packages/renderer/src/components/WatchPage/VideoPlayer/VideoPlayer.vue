@@ -99,6 +99,7 @@ export default defineComponent({
     'progress',
     'durationchange',
     'go-to-next-episode',
+    'controls-visibility-change',
   ],
 
   setup: function (props, {emit}) {
@@ -225,6 +226,7 @@ export default defineComponent({
     // Показывать/скрывать контрол бар в зависимости от активности пользователя
     const {idle} = useIdle(1000 * 3);
     const controlsVisible = computed(() => !playing.value || !idle.value);
+    watch(controlsVisible, controlsVisible => emit('controls-visibility-change', controlsVisible));
 
     watch(
       () => props.hasNextEpisode,
@@ -308,16 +310,6 @@ video.controls-visible::-webkit-media-text-track-display {
 
 .hideCursor {
   cursor: none;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 </style>

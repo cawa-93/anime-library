@@ -23,6 +23,7 @@
         @goToNextEpisode="goToNextEpisode"
         @progress="saveWatchProgress"
         @source-error="onSourceError"
+        @controls-visibility-change="v => isPlaylistButtonVisible = v"
       />
       <loading-spinner v-if="videos.length === 0" />
     </template>
@@ -31,13 +32,16 @@
       v-if="episodes.length > 1 || translations.length"
     >
       <template #activator="{toggle}">
-        <button
-          title="Выбор эпизода и перевода"
-          class="open-playlist btn btn-dark win-icon border-0 p-0"
-          @click="toggle"
-        >
-          &#xE8FD;
-        </button>
+        <transition name="fade">
+          <button
+            v-if="isPlaylistButtonVisible"
+            title="Выбор эпизода и перевода"
+            class="open-playlist btn btn-dark win-icon border-0 p-0"
+            @click="toggle"
+          >
+            &#xE8FD;
+          </button>
+        </transition>
       </template>
 
       <tabs-section>
@@ -403,7 +407,7 @@ export default defineComponent({
 
 
 
-    const videoPlayerWaiting = ref(true);
+    const isPlaylistButtonVisible = ref(true);
 
     return {
       error,
@@ -418,7 +422,7 @@ export default defineComponent({
       historyItem,
       saveWatchProgress,
       onSourceError,
-      videoPlayerWaiting,
+      isPlaylistButtonVisible,
     };
   },
 });
