@@ -5,6 +5,8 @@
     </div>
 
     <custom-lists />
+
+    <home-footer class="mt-5 border-top" />
   </main>
 </template>
 
@@ -13,11 +15,12 @@ import {defineComponent} from 'vue';
 import {useTitle} from '@vueuse/core';
 import HomeSearch from '/@/components/HomeSearch.vue';
 import CustomLists from '/@/components/CustomLists/CustomLists.vue';
+import HomeFooter from '/@/components/HomeFooter.vue';
 
 
 export default defineComponent({
   name: 'Home',
-  components: {CustomLists, HomeSearch},
+  components: {HomeFooter, CustomLists, HomeSearch},
   setup() {
 
     //
