@@ -323,15 +323,20 @@ export default defineComponent({
           // Нужно вставить тег `<video preload="metadata">` в документ, чтобы пред загрузить метаданные для видео следующей серии
           // Это необходимо для быстрого переключения серий
           // Для пред загрузки выбирается источник с максимальным качеством
+          let preloadMetadataTag = document.head.querySelector<HTMLVideoElement>('#preloadMetadataTag');
+          if (preloadMetadataTag === null) {
+            preloadMetadataTag = document.createElement('video');
+            preloadMetadataTag.id = 'preloadMetadataTag';
+            preloadMetadataTag.crossOrigin = 'anonymous';
+            preloadMetadataTag.preload = 'metadata';
+            document.head.appendChild(preloadMetadataTag);
+          }
+
           const maxQuality = videos.reduce((pv, cv) => cv.quality > pv.quality ? cv : pv, videos[0]);
-          const video = document.createElement('video');
-          video.crossOrigin = 'anonymous';
-          video.src = maxQuality.sources[0].src;
-          video.preload = 'metadata';
-          video.onerror = () => {
+          preloadMetadataTag.onerror = () => {
             if (nextEpisodeMetadata) delete nextEpisodeMetadata.videos;
           };
-          document.head.appendChild(video);
+          preloadMetadataTag.src = maxQuality.sources[0].src;
         }
       }
     }, MINUTE);
