@@ -79,7 +79,7 @@ export default defineComponent({
       if (getSeriesId(t)) { // Простой способ проверить текст в буфере
         searchText.value = t;
       }
-    });
+    }).catch(() => ({})); // Если прочитать буфер не удалось просто заглушить сообщение об ошибке
     const animeID = computed(() => getSeriesId(searchText.value));
 
     const history = ref<Series[]>([]);
