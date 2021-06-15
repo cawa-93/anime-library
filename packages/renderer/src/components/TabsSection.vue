@@ -23,9 +23,18 @@ import {defineComponent, ref} from 'vue';
 
 export default defineComponent({
   name: 'TabsSection',
-  setup(_, {slots}) {
+
+  props: {
+    defaultTab: {
+      type: String,
+      required: false,
+      default: '',
+    },
+  },
+
+  setup(props, {slots}) {
     const slotsNames = Object.keys(slots).filter(name => name !== 'tab-header');
-    const activeTab = ref(slotsNames[0]);
+    const activeTab = ref(props.defaultTab || slotsNames[0]);
     return {slotsNames, activeTab};
   },
 });

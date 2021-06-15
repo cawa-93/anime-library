@@ -44,7 +44,7 @@
         </transition>
       </template>
 
-      <tabs-section>
+      <tabs-section default-tab="translations">
         <template #tab-header="{tabName, isActive, select}">
           <input
             :id="`${tabName}-tab-header`"
