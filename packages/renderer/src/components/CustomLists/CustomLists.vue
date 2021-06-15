@@ -104,13 +104,4 @@ export default defineComponent({
 .custom-list {
   width: fit-content;
 }
-
-.edit-custom-list {
-  opacity: 0;
-}
-
-:hover > .edit-custom-list, :focus-within > .edit-custom-list {
-  opacity: 1;
-}
-
 </style>
