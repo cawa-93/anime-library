@@ -156,9 +156,18 @@ interface ShikiUserRate {
   updated_at: string
 }
 
+/**
+ * Кэш последних сохранений в историю просмотров Шики
+ */
+const savedUserRatesCache = new Map<number, number>();
 
 export function getUserRate(seriesId: number): Promise<ShikiUserRate | null> {
-  return apiFetch<{ user_rate: ShikiUserRate | null }>(`animes/${seriesId}`).then(r => r.user_rate);
+  return apiFetch<{ user_rate: ShikiUserRate | null }>(`animes/${seriesId}`).then(({user_rate}) => {
+    if (user_rate?.episodes) {
+      savedUserRatesCache.set(seriesId, user_rate.episodes);
+    }
+    return user_rate;
+  });
 }
 
 
@@ -175,23 +184,27 @@ export function getUser(): Promise<ShikiUser> {
 }
 
 
+
 export async function saveUserRate(seriesId: number, episodes: number): Promise<void> {
 
   if (!isLoggedIn()) {
     return;
   }
 
-  const [user, user_rate] = await Promise.all([
-    getUser(),
-    getUserRate(seriesId),
-  ]);
-
-  if (!user || !user.id) {
+  if (savedUserRatesCache.get(seriesId) === episodes) {
     return;
   }
 
+  const user_rate = await getUserRate(seriesId);
+
   if (!user_rate) {
-    return apiFetch<void>('v2/user_rates/', {
+    const user = await getUser();
+
+    if (!user?.id) {
+      return;
+    }
+
+    return apiFetch<ShikiUserRate>('v2/user_rates/', {
       method: 'POST',
       body: JSON.stringify({
         user_rate: {
@@ -202,23 +215,27 @@ export async function saveUserRate(seriesId: number, episodes: number): Promise<
           target_type: 'Anime',
         },
       }),
-    });
-  } else {
-
-    if (user_rate.episodes === episodes && (user_rate.status === 'watching' || user_rate.status === 'rewatching')) {
-      return;
-    }
-
-    return apiFetch<void>(`v2/user_rates/${user_rate.id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        user_rate: {
-          episodes: String(episodes),
-          status: (user_rate.status === 'watching' || user_rate.status === 'rewatching')
-            ? undefined
-            : user_rate.status === 'completed' ? 'rewatching' : 'watching',
-        },
-      }),
+    }).then(() => {
+      savedUserRatesCache.set(seriesId, episodes);
     });
   }
+
+  if (user_rate.episodes === episodes && (user_rate.status === 'watching' || user_rate.status === 'rewatching')) {
+    savedUserRatesCache.set(seriesId, episodes);
+    return;
+  }
+
+  return apiFetch<void>(`v2/user_rates/${user_rate.id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      user_rate: {
+        episodes: String(episodes),
+        status: (user_rate.status === 'watching' || user_rate.status === 'rewatching')
+          ? undefined
+          : user_rate.status === 'completed' ? 'rewatching' : 'watching',
+      },
+    }),
+  }).then(() => {
+    savedUserRatesCache.set(seriesId, episodes);
+  });
 }

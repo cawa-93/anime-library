@@ -76,40 +76,6 @@ function saveHistoryItemToDB(item: HistoryViewsItem): Promise<number> {
 }
 
 
-/**
- * Хранит параметры с предыдущего вызова {@link saveHistoryItemToShiki}
- * Необходим, чтобы не выполнять много однотипных запросов к апи Шикимори
- */
-const lastCallCache = new Map<number, HistoryViewsItem>();
-
-
-function saveHistoryItemToShiki(item: HistoryViewsItem): void {
-  // В режиме разработки отключить синхронизацию с шикимори
-  // Иначе это засоряет профиль Шики десятками изменений в истории
-  if (import.meta.env.MODE === 'development') {
-    return;
-  }
-
-  if (!item.episode || !item.episode.number) {
-    return;
-  }
-
-  const lastItem = lastCallCache.get(item.seriesId);
-
-  const isCurrentEpisodeFullWatched = isEpisodeCompleted(item.episode.time || 0, item.episode.duration || Infinity);
-  const isCurrentEpisodeFullWatchedInLastCall = lastItem && lastItem.episode && isEpisodeCompleted(lastItem.episode.time || 0, lastItem.episode.duration || Infinity);
-
-  if (!lastItem
-    || !lastItem.episode
-    || (item.episode.number && item.episode.number !== lastItem.episode.number)
-    || isCurrentEpisodeFullWatched !== isCurrentEpisodeFullWatchedInLastCall
-  ) {
-    saveUserRate(item.seriesId, isCurrentEpisodeFullWatched ? item.episode.number : Math.max(0, item.episode.number - 1))
-      .catch(console.error);
-  }
-
-  lastCallCache.set(item.seriesId, item);
-}
 
 
 
@@ -122,7 +88,24 @@ export async function putHistoryItem(item: HistoryViewsItem): Promise<void> {
 
   item.updated_at = Math.floor(Date.now() / 1000);
 
-  saveHistoryItemToShiki(item);
+  /**
+   * Синхронизация с Шикимори
+   * Отключена в режиме разработки
+   */
+  if (import.meta.env.MODE !== 'development') {
+    const seriesId = item.seriesId;
+    let episode = item.episode.number;
+
+    /**
+     * Если текущий эпизод не просмотрен до конца то на Шики нужно отмечать просмотренным предыдущий эпизод
+     */
+    if (item.episode.time && item.episode.duration && !isEpisodeCompleted(item.episode.time, item.episode.duration)) {
+      episode = Math.max(0, item.episode.number - 1);
+    }
+
+    saveUserRate(seriesId, episode).catch(console.error);
+  }
+
   await saveHistoryItemToDB(item);
 }
 
