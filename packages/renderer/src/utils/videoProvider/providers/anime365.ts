@@ -126,33 +126,33 @@ export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
     )
     .map(e => {
       const number = parseFloat(e.episodeInt);
-      let title = titles.get(number);
-      if (title) {
-        title = `${number}. ${title}`;
-      } else {
-        title = e.episodeTitle || e.episodeFull;
-      }
+      const malEpisode = titles.get(number);
+      const title = e.episodeTitle || (malEpisode ? `${number}. ${malEpisode.title}` : e.episodeFull);
       return {
         id: e.id,
         title,
         number,
+        recap: malEpisode?.recap,
+        filler: malEpisode?.filler,
       };
     });
 }
 
+interface MalEpisode {
+  episode_id: number
+  title: string
+  filler: boolean,
+  recap: boolean,
+}
 
-async function getEpisodesTitles(seriesId: number): Promise<Map<number, string>> {
-
-  interface MalResponse {
-    episodes_last_page?: number
-    episodes?: {
-      episode_id: number
-      title: string
-    }[]
-  }
+interface MalResponse {
+  episodes_last_page?: number
+  episodes?: MalEpisode[]
+}
 
 
-  const episodes = new Map<number, string>();
+async function getEpisodesTitles(seriesId: number): Promise<Map<number, MalEpisode>> {
+  const episodes = new Map<number, MalEpisode>();
   const firstPage: MalResponse | undefined = await fetch(`https://api.jikan.moe/v3/anime/${seriesId}/episodes/1`)
     .then(r => r.json())
     .catch(e => {
@@ -164,7 +164,7 @@ async function getEpisodesTitles(seriesId: number): Promise<Map<number, string>>
     return episodes;
   }
 
-  firstPage.episodes.forEach(e => episodes.set(e.episode_id, e.title));
+  firstPage.episodes.forEach(e => episodes.set(e.episode_id, e));
 
   if (firstPage.episodes_last_page && firstPage.episodes_last_page > 1) {
     const promises: Promise<MalResponse>[] = [];
@@ -175,7 +175,7 @@ async function getEpisodesTitles(seriesId: number): Promise<Map<number, string>>
     const responses = await Promise.allSettled(promises);
     responses.forEach(response => {
       if (response.status === 'fulfilled' && response.value.episodes && response.value.episodes.length) {
-        response.value.episodes.forEach(e => episodes.set(e.episode_id, e.title));
+        response.value.episodes.forEach(e => episodes.set(e.episode_id, e));
       }
     });
   }

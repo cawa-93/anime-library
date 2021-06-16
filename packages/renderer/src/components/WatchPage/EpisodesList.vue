@@ -39,11 +39,30 @@ export default defineComponent({
   setup(props, {emit}) {
 
     const playListItems = computed<EpisodePlayListItem[]>(
-      () => props.episodes.map(e => ({
-        id: e.id,
-        label: e.title,
-        episode: e,
-      })),
+      () => props.episodes.map(e => {
+        const badges: EpisodePlayListItem['badges'] = [];
+
+        if (e.recap) {
+          badges.push({
+            text: 'recap',
+            style: 'info',
+          });
+        }
+
+        if (e.filler) {
+          badges.push({
+            text: 'filler',
+            style: 'danger',
+          });
+        }
+
+        return ({
+          id: e.id,
+          label: e.title,
+          episode: e,
+          badges,
+        });
+      }),
     );
 
     const onManualSelect = (item: EpisodePlayListItem) => {

@@ -21,6 +21,8 @@ export interface Episode extends HasID, HasTitle {
    * Порядковый номер эпизода в сериале
    */
   number: number
+  recap?: boolean
+  filler?: boolean
 }
 
 export type TranslationType = 'sub' | 'voice'
