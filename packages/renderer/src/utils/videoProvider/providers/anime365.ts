@@ -168,7 +168,7 @@ async function getEpisodesTitles(seriesId: number): Promise<Map<number, string>>
 
   if (firstPage.episodes_last_page && firstPage.episodes_last_page > 1) {
     const promises: Promise<MalResponse>[] = [];
-    for (let i = 2; i < firstPage.episodes_last_page; i++) {
+    for (let i = 2; i <= firstPage.episodes_last_page; i++) {
       promises.push(fetch(`https://api.jikan.moe/v3/anime/${seriesId}/episodes/${i}`).then(r => r.json()));
     }
 
