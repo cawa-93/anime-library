@@ -237,6 +237,9 @@ app.whenReady()
       urls: ['https://*/*'],
     }, (details, callback) => {
 
+      if (details.responseHeaders) {
+        delete details.responseHeaders['Access-Control-Allow-Origin'];
+      }
 
       callback({
         responseHeaders: {

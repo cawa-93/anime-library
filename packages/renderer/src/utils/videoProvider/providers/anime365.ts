@@ -104,7 +104,13 @@ export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
     );
   }
 
-  return (targetSeries.episodes || [])
+  if (!targetSeries.episodes || !targetSeries.episodes.length) {
+    return [];
+  }
+
+  const titles = await getEpisodesTitles(myAnimeListId);
+
+  return targetSeries.episodes
     .filter(e =>
       e.isActive === 1
       && parseFloat(e.episodeInt) >= 1
@@ -118,13 +124,64 @@ export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
         || targetSeries.numberOfEpisodes >= parseFloat(e.episodeInt)
       ),
     )
-    .map(e => ({
-      id: e.id,
-      title: e.episodeTitle || e.episodeFull,
-      number: parseFloat(e.episodeInt),
-    }));
+    .map(e => {
+      const number = parseFloat(e.episodeInt);
+      let title = titles.get(number);
+      if (title) {
+        title = `${number}. ${title}`;
+      } else {
+        title = e.episodeTitle || e.episodeFull;
+      }
+      return {
+        id: e.id,
+        title,
+        number,
+      };
+    });
 }
 
+
+async function getEpisodesTitles(seriesId: number): Promise<Map<number, string>> {
+
+  interface MalResponse {
+    episodes_last_page?: number
+    episodes?: {
+      episode_id: number
+      title: string
+    }[]
+  }
+
+
+  const episodes = new Map<number, string>();
+  const firstPage: MalResponse | undefined = await fetch(`https://api.jikan.moe/v3/anime/${seriesId}/episodes/1`)
+    .then(r => r.json())
+    .catch(e => {
+      console.error(e);
+      return undefined;
+    });
+
+  if (!firstPage?.episodes?.length) {
+    return episodes;
+  }
+
+  firstPage.episodes.forEach(e => episodes.set(e.episode_id, e.title));
+
+  if (firstPage.episodes_last_page && firstPage.episodes_last_page > 1) {
+    const promises: Promise<MalResponse>[] = [];
+    for (let i = 2; i < firstPage.episodes_last_page; i++) {
+      promises.push(fetch(`https://api.jikan.moe/v3/anime/${seriesId}/episodes/${i}`).then(r => r.json()));
+    }
+
+    const responses = await Promise.allSettled(promises);
+    responses.forEach(response => {
+      if (response.status === 'fulfilled' && response.value.episodes && response.value.episodes.length) {
+        response.value.episodes.forEach(e => episodes.set(e.episode_id, e.title));
+      }
+    });
+  }
+
+  return episodes;
+}
 
 
 export async function getTranslations(episodeId: number): Promise<Translation[]> {
