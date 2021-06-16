@@ -1,6 +1,7 @@
 import type {DBSchema, IDBPDatabase} from 'idb';
 import {openDB} from 'idb';
 import {getUserRate, isLoggedIn, saveUserRate} from '/@/utils/shikimori-api';
+import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
 
 
 // type HistoryViewsItemStates = 'planned' | 'watching' | 'rewatching' | 'completed' | 'on_hold' | 'dropped'
@@ -95,8 +96,8 @@ function saveHistoryItemToShiki(item: HistoryViewsItem): void {
 
   const lastItem = lastCallCache.get(item.seriesId);
 
-  const isCurrentEpisodeFullWatched = ((item.episode.time || 0) >= (item.episode.duration || Infinity) - 60 * 3);
-  const isCurrentEpisodeFullWatchedInLastCall = lastItem && lastItem.episode && ((lastItem.episode.time || 0) >= (lastItem.episode.duration || Infinity) - 60 * 3);
+  const isCurrentEpisodeFullWatched = isEpisodeCompleted(item.episode.time || 0, item.episode.duration || Infinity);
+  const isCurrentEpisodeFullWatchedInLastCall = lastItem && lastItem.episode && isEpisodeCompleted(lastItem.episode.time || 0, lastItem.episode.duration || Infinity);
 
   if (!lastItem
     || !lastItem.episode

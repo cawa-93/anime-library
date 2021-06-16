@@ -21,7 +21,7 @@
         :has-next-episode="!!nextEpisode"
         :start-from="historyItem ? (historyItem.episode.time && historyItem.episode.number === currentEpisode?.number ? historyItem.episode.time : 0) : 0"
         @goToNextEpisode="goToNextEpisode"
-        @progress="saveWatchProgress"
+        @progress="videoProgressHandler"
         @source-error="onSourceError"
         @controls-visibility-change="v => isPlaylistButtonVisible = v"
       />
@@ -105,10 +105,11 @@ import {getEpisodesList, getTranslationsList} from '/@/utils/prepareWatchData';
 import TabsSection from '/@/components/TabsSection.vue';
 import type {HistoryViewsItem} from '/@/utils/history-views';
 import {getViewHistoryItem, putHistoryItem} from '/@/utils/history-views';
-import {ignorableWatch, useDebounceFn, useThrottleFn} from '@vueuse/core';
+import {ignorableWatch, useThrottleFn} from '@vueuse/core';
 import {showErrorMessage} from '/@/utils/dialogs';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
-import {MINUTE, SECOND} from '/@/utils/time';
+import {SECOND_MS} from '/@/utils/time';
+import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
 
 
 
@@ -206,13 +207,6 @@ export default defineComponent({
       });
     }, {immediate: true});
 
-    // const {
-    //   translations,
-    //   startTranslation: currentTranslation,
-    //   error: translationError,
-    // } = useTranslations(currentEpisode, props.seriesId, props.translationId);
-    // watch(translationError, translationError => error.value = translationError);
-
     /**
      * Загрузка видео
      */
@@ -249,7 +243,7 @@ export default defineComponent({
 
           videos.value = v;
         });
-    }, SECOND);
+    }, SECOND_MS);
 
 
     const {ignoreUpdates: doNotUpdateVideos} = ignorableWatch(currentTranslation, (currentTranslation, oldCurrentTranslation) => {
@@ -302,25 +296,60 @@ export default defineComponent({
      * Загрузка переводов и видео для следующей серии
      */
     let nextEpisodeMetadata: {
+      basedOn: {
+        episode: number,
+        translation: number
+      },
       translations?: Translation[],
       startTranslation?: Translation,
       videos?: Video[]
     } | null = null;
 
-    const updateNextEpisodeMetadata = useDebounceFn(async () => {
-      if (!nextEpisode.value?.id) {
+    const updateNextEpisodeMetadata = async () => {
+      if (!nextEpisode.value?.id || !currentTranslation.value?.id) {
         return;
       }
 
-      const {translations, startTranslation} = await getTranslationsList(nextEpisode.value.id, props.seriesId);
+      /**
+       * Если данные для целевой серии и перевода уже загружены не делать ничего
+       */
+      if (nextEpisodeMetadata !== null
+        && nextEpisodeMetadata.basedOn.episode === nextEpisode.value.id
+        && nextEpisodeMetadata.basedOn.translation === currentTranslation.value.id) {
+        return;
+      }
 
-      if (startTranslation) {
-        nextEpisodeMetadata = {
-          translations,
-          startTranslation,
-        };
+      nextEpisodeMetadata = {
+        basedOn: {
+          episode: nextEpisode.value.id,
+          translation: currentTranslation.value.id,
+        },
+      };
 
-        const videos = await getVideos(startTranslation.id);
+      const {
+        translations,
+        startTranslation,
+      } = await getTranslationsList(nextEpisode.value.id, props.seriesId).catch(e => {
+        console.error(e);
+        nextEpisodeMetadata = null;
+        return {translations: [], startTranslation: undefined};
+      });
+
+      if (!startTranslation) {
+        nextEpisodeMetadata = null;
+        return;
+      }
+
+      nextEpisodeMetadata = {
+        basedOn: {
+          episode: nextEpisode.value.id,
+          translation: currentTranslation.value.id,
+        },
+        translations,
+        startTranslation,
+      };
+
+      const videos = await getVideos(startTranslation.id);
         if (videos.length) {
           nextEpisodeMetadata.videos = videos;
 
@@ -342,13 +371,7 @@ export default defineComponent({
           };
           preloadMetadataTag.src = maxQuality.sources[0].src;
         }
-      }
-    }, MINUTE);
-
-    watch(currentTranslation, () => {
-      nextEpisodeMetadata = null;
-      updateNextEpisodeMetadata();
-    });
+    };
 
 
     const goToNextEpisode = () => {
@@ -388,7 +411,7 @@ export default defineComponent({
     /**
      * Сохранение позиции просмотра
      */
-    const saveWatchProgress = ({duration, currentTime}: { duration?: number, currentTime?: number } = {}) => {
+    const videoProgressHandler = ({duration, currentTime}: { duration?: number, currentTime?: number } = {}) => {
       if (!duration || !currentTime || !currentEpisode.value) {
         return;
       }
@@ -403,6 +426,10 @@ export default defineComponent({
       };
 
       putHistoryItem(toRaw(historyItem.value));
+
+      if (isEpisodeCompleted(currentTime, duration)) {
+        updateNextEpisodeMetadata();
+      }
     };
 
 
@@ -460,7 +487,7 @@ export default defineComponent({
       goToNextEpisode,
       nextEpisode,
       historyItem,
-      saveWatchProgress,
+      videoProgressHandler,
       onSourceError,
       isPlaylistButtonVisible,
     };
