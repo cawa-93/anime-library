@@ -12,14 +12,7 @@
       :title="item.title || ''"
       @click.prevent="$emit('item-click', item)"
     >
-      <span
-        v-if="item.id === selectedItemId"
-        class="play-icon win-icon"
-        aria-hidden="true"
-      >
-        &#xF5B0;
-      </span>
-      <span class="d-flex item-label">
+      <span class="d-flex item-label text-truncate">
         <span class="flex-fill d-inline-block text-truncate">{{ item.label }}</span>
         <small
           v-for="b of item.badges"

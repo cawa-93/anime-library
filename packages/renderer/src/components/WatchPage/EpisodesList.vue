@@ -1,6 +1,6 @@
 <template>
   <play-list
-    class="my-3"
+    class="my-3 episode-list"
     :items="playListItems"
     :selected-item-id="currentEpisode.id"
     @item-click="onManualSelect"
@@ -56,3 +56,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.episode-list {
+  max-width: 500px;
+}
+</style>

@@ -8,7 +8,6 @@
   <section
     v-if="opened"
     ref="el"
-    class="slided"
   >
     <slot />
   </section>
@@ -33,25 +32,13 @@ export default defineComponent({
 
 <style scoped>
 
-.slided {
+section {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  /*display: none;*/
-  /*transform: translateX(100%);*/
-  /*transition: transform 250ms linear;*/
-  /*will-change: transform;*/
-}
-
-/*.slided.open {*/
-/*  display: block;*/
-/*transform: translateX(0);*/
-/*}*/
-
-section {
   z-index: 10;
-  width: 300px;
+  min-width: 250px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   background-color: rgba(255, 255, 255, 0.75);
