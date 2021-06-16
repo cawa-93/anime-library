@@ -79,6 +79,13 @@ export default defineConfig({
     },
     emptyOutDir: true,
   },
+  css: {
+    preprocessorOptions: {
+      sass: {
+        quietDeps: true,
+      },
+    },
+  },
   plugins: [
     vue(),
 
