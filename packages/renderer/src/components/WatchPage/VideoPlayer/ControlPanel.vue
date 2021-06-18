@@ -1,20 +1,26 @@
 <template>
   <section class="control-panel">
-    <div class="progress-bar-container">
-      <progress
-        :style="`--gradient: ${bufferedIndicator}`"
-        :max="duration"
-        :value="currentTimeState"
-      />
+    <!--    <div class="progress-bar-container">-->
+    <!--      <progress-->
+    <!--        :style="`&#45;&#45;gradient: ${bufferedIndicator}`"-->
+    <!--        :max="duration"-->
+    <!--        :value="currentTimeState"-->
+    <!--      />-->
 
-      <input
-        v-model.number="currentTimeState"
-        type="range"
-        min="0"
-        :max="duration"
-      >
-    </div>
+    <!--      <input-->
+    <!--        v-model.number="currentTimeState"-->
+    <!--        type="range"-->
+    <!--        min="0"-->
+    <!--        :max="duration"-->
+    <!--      >-->
+    <!--    </div>-->
 
+    <progress-bar
+      v-model:time="currentTimeState"
+      class="progress-bar-container"
+      :duration="duration"
+      :buffered="buffered"
+    />
 
     <button
       class="play-button win-icon"
@@ -116,10 +122,11 @@ import type {PropType} from 'vue';
 import {computed, defineComponent} from 'vue';
 import {useVModel} from '@vueuse/core';
 import type {VideoTrack} from '/@/utils/videoProvider';
+import ProgressBar from '/@/components/WatchPage/VideoPlayer/ProgressBar.vue';
 
 export default defineComponent({
   name: 'ControlPanel',
-
+  components: {ProgressBar},
   props: {
     buffered: {
       type: Array as PropType<[number, number][]>,
@@ -353,54 +360,54 @@ export default defineComponent({
 
 .progress-bar-container {
   grid-area: progress-bar;
-  flex: 1;
-  position: relative;
-  display: flex;
-  align-items: center;
+  /*flex: 1;*/
+  /*position: relative;*/
+  /*display: flex;*/
+  /*align-items: center;*/
 }
 
-.progress-bar-container progress {
-  width: 100%;
-  -webkit-appearance: none;
-  appearance: none;
-  height: 5px;
-  background-color: rgba(255, 255, 255, 0.2);
-}
+/*.progress-bar-container progress {*/
+/*  width: 100%;*/
+/*  -webkit-appearance: none;*/
+/*  appearance: none;*/
+/*  height: 5px;*/
+/*  background-color: rgba(255, 255, 255, 0.2);*/
+/*}*/
 
-.progress-bar-container progress[value]::-webkit-progress-bar {
-  width: 100%;
-  /*noinspection CssUnresolvedCustomProperty*/
-  background: var(--gradient);
-  border-radius: 2px;
-}
+/*.progress-bar-container progress[value]::-webkit-progress-bar {*/
+/*  width: 100%;*/
+/*  !*noinspection CssUnresolvedCustomProperty*!*/
+/*  background: var(--gradient);*/
+/*  border-radius: 2px;*/
+/*}*/
 
-.progress-bar-container progress[value]::-webkit-progress-value {
-  background-color: cornflowerblue;
-}
+/*.progress-bar-container progress[value]::-webkit-progress-value {*/
+/*  background-color: cornflowerblue;*/
+/*}*/
 
-.progress-bar-container input[type="range"] {
-  width: 100%;
-  position: absolute;
-  opacity: 0;
-  top: 0;
-  left: 0;
-  cursor: pointer;
-  --oversize: 3px;
-  height: calc(100% + var(--oversize) + var(--oversize));
-  margin: calc(-1 * var(--oversize)) 0;
-}
+/*.progress-bar-container input[type="range"] {*/
+/*  width: 100%;*/
+/*  position: absolute;*/
+/*  opacity: 0;*/
+/*  top: 0;*/
+/*  left: 0;*/
+/*  cursor: pointer;*/
+/*  --oversize: 3px;*/
+/*  height: calc(100% + var(--oversize) + var(--oversize));*/
+/*  margin: calc(-1 * var(--oversize)) 0;*/
+/*}*/
 
-.progress-bar-container input[type=range]:hover {
-  --oversize: 7px;
-}
+/*.progress-bar-container input[type=range]:hover {*/
+/*  --oversize: 7px;*/
+/*}*/
 
-.progress-bar-container input[type=range]::-webkit-slider-thumb {
-  visibility: hidden;
-}
+/*.progress-bar-container input[type=range]::-webkit-slider-thumb {*/
+/*  visibility: hidden;*/
+/*}*/
 
-.progress-bar-container input[type=range]::-webkit-slider-runnable-track {
-  visibility: hidden;
-}
+/*.progress-bar-container input[type=range]::-webkit-slider-runnable-track {*/
+/*  visibility: hidden;*/
+/*}*/
 
 .play-button {
   grid-area: play-button;

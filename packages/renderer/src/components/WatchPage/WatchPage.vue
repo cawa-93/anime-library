@@ -28,27 +28,27 @@
       <loading-spinner v-if="videos.length === 0" />
     </template>
 
-    <transition name="fade">
-      <header
-        v-if="isPlaylistButtonVisible"
-        class="position-absolute top-0 text-white w-100 p-3 d-flex align-items-start"
-      >
-        <h2
-          v-if="currentEpisode && currentEpisode.title"
-          class="h5 flex-fill m-0 fw-normal"
-        >
-          {{ currentEpisode.title }}
-        </h2>
-        <button
-          v-if="episodes.length > 1 || translations.length"
-          title="Выбор эпизода и перевода"
-          class="open-playlist btn btn-dark win-icon border-0 bg-transparent"
-          @click="isSidePanelOpened = !isSidePanelOpened"
-        >
-          &#xE8FD;
-        </button>
-      </header>
-    </transition>
+    <!--    <transition name="fade">-->
+    <!--      <header-->
+    <!--        v-if="isPlaylistButtonVisible"-->
+    <!--        class="position-absolute top-0 text-white w-100 p-3 d-flex align-items-start"-->
+    <!--      >-->
+    <!--        <h2-->
+    <!--          v-if="currentEpisode && currentEpisode.title"-->
+    <!--          class="h5 flex-fill m-0 fw-normal"-->
+    <!--        >-->
+    <!--          {{ currentEpisode.title }}-->
+    <!--        </h2>-->
+    <!--        <button-->
+    <!--          v-if="episodes.length > 1 || translations.length"-->
+    <!--          title="Выбор эпизода и перевода"-->
+    <!--          class="open-playlist btn btn-dark win-icon border-0 bg-transparent"-->
+    <!--          @click="isSidePanelOpened = !isSidePanelOpened"-->
+    <!--        >-->
+    <!--          &#xE8FD;-->
+    <!--        </button>-->
+    <!--      </header>-->
+    <!--    </transition>-->
 
     <side-panel
       v-if="isSidePanelOpened && isPlaylistButtonVisible && (episodes.length > 1 || translations.length)"

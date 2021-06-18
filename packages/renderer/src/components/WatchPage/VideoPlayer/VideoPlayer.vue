@@ -36,7 +36,6 @@
     />
     <transition name="fade">
       <control-panel
-        v-if="controlsVisible"
         v-model:playing="playing"
         v-model:current-time="currentTime"
         v-model:volume="volume"
@@ -69,6 +68,7 @@ import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 import {useMediaHotKeys} from '/@/use/useMediaHotKeys';
+import ProgressBar from '/@/components/WatchPage/VideoPlayer/ProgressBar.vue';
 
 
 const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/WatchPage/VideoPlayer/LibAssSubtitlesRenderer.vue'));
@@ -76,7 +76,7 @@ const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components
 
 export default defineComponent({
   name: 'VideoPlayer',
-  components: {LibAssSubtitlesRenderer, LoadingSpinner, ControlPanel},
+  components: {ProgressBar, LibAssSubtitlesRenderer, LoadingSpinner, ControlPanel},
   props: {
     startFrom: {
       type: Number,
