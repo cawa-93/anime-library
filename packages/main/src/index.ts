@@ -58,7 +58,7 @@ if (import.meta.env.MODE !== 'development') {
 }
 
 
-app.disableHardwareAcceleration();
+// app.disableHardwareAcceleration();
 
 // Install "Vue.js devtools"
 if (import.meta.env.MODE === 'development') {
