@@ -17,8 +17,6 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     release: 'v' + import.meta.env.VITE_APP_VERSION,
     environment: import.meta.env.MODE,
     integrations: [
-
-      // @ts-expect-error ...
       new RewriteFramesIntegration({
         iteratee: (frame) => {
           if (frame.filename) {
