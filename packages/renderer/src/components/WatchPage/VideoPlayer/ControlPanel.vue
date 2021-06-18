@@ -291,7 +291,7 @@ export default defineComponent({
   display: grid;
   bottom: 0;
   width: 100%;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8547619731486344) 0%, rgba(0, 0, 0, 0) 100%);
+  background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
   grid-template-columns: repeat(4, min-content) 1fr repeat(4, min-content);
   grid-template-rows: repeat(2, min-content);
   gap: 5px 10px;
