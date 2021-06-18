@@ -1,12 +1,5 @@
 <template>
-  <slot
-    name="activator"
-    :open="() => opened = true"
-    :close="() => opened = false"
-    :toggle="() => opened = !opened"
-  />
   <section
-    v-if="opened"
     ref="el"
   >
     <slot />
@@ -20,11 +13,21 @@ import {onClickOutside} from '@vueuse/core';
 
 export default defineComponent({
   name: 'SidePanel',
+  props: {
+    defaultState: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
+  emits: {
+    close: null,
+  },
 
-  setup() {
+  setup(props, {emit}) {
     const el = ref();
-    const opened = ref(false);
-    onClickOutside(el, () => opened.value = false);
+    const opened = ref(props.defaultState);
+    onClickOutside(el, () => emit('close'));
     return {el, opened};
   },
 });

@@ -23,27 +23,38 @@
         @goToNextEpisode="goToNextEpisode"
         @progress="videoProgressHandler"
         @source-error="onSourceError"
-        @controls-visibility-change="v => isPlaylistButtonVisible = v"
+        @controls-visibility-change="v => {isPlaylistButtonVisible = v; isSidePanelOpened = false}"
       />
       <loading-spinner v-if="videos.length === 0" />
     </template>
 
-    <side-panel
-      v-if="episodes.length > 1 || translations.length"
-    >
-      <template #activator="{toggle}">
-        <transition name="fade">
-          <button
-            v-if="isPlaylistButtonVisible"
-            title="Выбор эпизода и перевода"
-            class="open-playlist btn btn-dark win-icon border-0 p-0"
-            @click="toggle"
-          >
-            &#xE8FD;
-          </button>
-        </transition>
-      </template>
+    <transition name="fade">
+      <header
+        v-if="isPlaylistButtonVisible"
+        class="position-absolute top-0 text-white w-100 p-3 d-flex align-items-start"
+      >
+        <h2
+          v-if="currentEpisode && currentEpisode.title"
+          class="h5 flex-fill m-0 fw-normal"
+        >
+          {{ currentEpisode.title }}
+        </h2>
+        <button
+          v-if="episodes.length > 1 || translations.length"
+          title="Выбор эпизода и перевода"
+          class="open-playlist btn btn-dark win-icon border-0 bg-transparent"
+          @click="isSidePanelOpened = !isSidePanelOpened"
+        >
+          &#xE8FD;
+        </button>
+      </header>
+    </transition>
 
+    <side-panel
+      v-if="isSidePanelOpened && isPlaylistButtonVisible && (episodes.length > 1 || translations.length)"
+      :default-state="true"
+      @close="isSidePanelOpened = false"
+    >
       <tabs-section default-tab="translations">
         <template #tab-header="{tabName, isActive, select}">
           <input
@@ -132,6 +143,7 @@ export default defineComponent({
     },
   },
   setup(props) {
+    document.title = 'Просмотр аниме';
     const error = ref('');
     const reloadPage = () => {
       location.pathname = `/watch/${props.seriesId}`;
@@ -437,37 +449,11 @@ export default defineComponent({
      * Загрузка подробной информации об открытом Аниме
      * Необходимо для заголовка окна
      */
-    const seriesTitle = ref('');
     getSeries(Number(props.seriesId)).then(series => {
       if (series && series.title) {
-        seriesTitle.value = series.title;
+        document.title = series.title;
       }
     });
-
-
-    /**
-     * Формирование заголовка окна на основе названия аниме, серии и перевода
-     */
-    const pageTitle = computed(() => {
-      let title = '';
-
-      if (seriesTitle.value) {
-        title += `${title !== '' ? ', ' : ''}${seriesTitle.value}`;
-      }
-
-      if (currentEpisode.value?.title !== undefined) {
-        title += `${title !== '' ? ', ' : ''}${currentEpisode.value.title}`;
-      }
-
-
-      if (currentTranslation.value?.title !== undefined) {
-        title += `${title !== '' ? ', ' : ''}${currentTranslation.value.title}`;
-      }
-
-      return title;
-    });
-
-    watch(pageTitle, pageTitle => document.title = pageTitle);
 
 
     /**
@@ -476,7 +462,9 @@ export default defineComponent({
      */
     const isPlaylistButtonVisible = ref(true);
 
+    const isSidePanelOpened = ref(false);
     return {
+      isSidePanelOpened,
       error,
       reloadPage,
       episodes,
@@ -501,48 +489,29 @@ main {
   background-color: black;
 }
 
-#video-container {
-  width: 100%;
-  height: 100%;
+header {
+  --offset-top: 1rem;
+  --offset-right: 1rem;
+  background-image: linear-gradient(180deg, rgb(0 0 0 / 80%) 0%, rgba(0, 0, 0, 0) 83%);
+  padding: var(--offset-top) var(--offset-right) 100px var(--offset-right);
+  pointer-events: none;
+}
+
+header h2 {
+  text-shadow: 0px 0px 5px black;
+}
+
+header .btn {
+  pointer-events: auto;
   position: relative;
-  overflow: hidden;
-  background-color: black;
 }
 
-
-#video-container video {
-  width: 100%;
-  height: 100%;
-}
-
-.open-playlist.btn {
-  --offset-top: 0.3em;
-  --offset-right: 0.3em;
-  position: absolute;
-  top: var(--offset-top);
-  right: var(--offset-right);
-  mix-blend-mode: difference;
-  font-size: 18px;
-  width: 2em;
-  height: 2em;
-  line-height: 1;
-  z-index: 10;
-}
-
-.open-playlist.btn:before {
+header .btn:before {
   content: "";
   position: absolute;
   bottom: 0;
   left: 0;
   height: calc(100% + var(--offset-top));
   width: calc(100% + var(--offset-right));
-}
-
-.open-playlist.btn:not(:hover) {
-  background-color: transparent;
-}
-
-.btn-group input:not(:checked) + label:hover {
-  background-color: rgba(255, 255, 255, 0.3);
 }
 </style>
