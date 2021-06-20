@@ -127,7 +127,7 @@ export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
     .map(e => {
       const number = parseFloat(e.episodeInt);
       const malEpisode = titles.get(number);
-      const title = e.episodeTitle || (malEpisode ? `${number}. ${malEpisode.title}` : e.episodeFull);
+      const title = e.episodeTitle || (malEpisode && !/Episode [0-9]+/.test(malEpisode.title) ? `${number}. ${malEpisode.title}` : e.episodeFull);
       return {
         id: e.id,
         title,
