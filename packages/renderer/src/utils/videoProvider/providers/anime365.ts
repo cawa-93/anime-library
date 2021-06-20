@@ -108,34 +108,44 @@ export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
     return [];
   }
 
-  const titles = await getEpisodesTitles(myAnimeListId);
+  const malEpisodesPromise = getEpisodesTitles(myAnimeListId);
+  const episodes: Episode[] = [];
 
-  return targetSeries.episodes
-    .filter(e =>
-      e.isActive === 1
-      && parseFloat(e.episodeInt) >= 1
+  for (const episode of targetSeries.episodes) {
+    const number = Number.parseFloat(episode.episodeInt);
+    if (
+      episode.isActive !== 1
+      || !Number.isSafeInteger(number)
+      || number < 1
+      || episode.episodeType !== targetSeries.type
+      || (
+        // Удалять серии у которых number > Чем заявлено в сезоне
+        // Обычно такие серии залиты по ошибке
+        targetSeries.numberOfEpisodes !== 0 // `numberOfEpisodes` = 0 если количество эпизодов в сезоне не известно
+        && number > targetSeries.numberOfEpisodes
+      )
+    ) {
+      continue;
+    }
 
-      && e.episodeType === targetSeries.type
+    const malEpisode = (await malEpisodesPromise).get(number);
+    const title = episode.episodeTitle
+      || (
+        malEpisode && !/Episode [0-9]+/.test(malEpisode.title)
+          ? `${number}. ${malEpisode.title}`
+          : episode.episodeFull
+      );
 
-      // Удалять серии у которых number > Чем заявлено в сезоне
-      // Обычно такие серии залиты по ошибке
-      && (
-        targetSeries.numberOfEpisodes === 0
-        || targetSeries.numberOfEpisodes >= parseFloat(e.episodeInt)
-      ),
-    )
-    .map(e => {
-      const number = parseFloat(e.episodeInt);
-      const malEpisode = titles.get(number);
-      const title = e.episodeTitle || (malEpisode && !/Episode [0-9]+/.test(malEpisode.title) ? `${number}. ${malEpisode.title}` : e.episodeFull);
-      return {
-        id: e.id,
-        title,
-        number,
-        recap: malEpisode?.recap,
-        filler: malEpisode?.filler,
-      };
-    });
+    episodes.push({
+       id: episode.id,
+       title,
+       number,
+       recap: malEpisode?.recap,
+       filler: malEpisode?.filler,
+     });
+  }
+
+  return episodes;
 }
 
 interface MalEpisode {
