@@ -7,7 +7,6 @@
     <video
       ref="videoElement"
       preload="auto"
-      autoplay
       autopictureinpicture
       :class="{'controls-visible': controlsVisible}"
       crossorigin="anonymous"
@@ -36,6 +35,7 @@
     />
     <transition name="fade">
       <control-panel
+        v-if="controlsVisible"
         v-model:playing="playing"
         v-model:current-time="currentTime"
         v-model:volume="volume"
@@ -49,6 +49,7 @@
         :qualities="qualities"
         :has-next-episode="hasNextEpisode"
         :is-picture-in-picture="isPictureInPicture"
+        :frames="frames"
         @requestFullscreenToggle="toggleFullscreen"
         @requestPictureInPicture="togglePictureInPicture"
         @goToNextEpisode="$emit('go-to-next-episode')"
@@ -62,13 +63,15 @@
 
 <script lang="ts">
 import type {DeepReadonly, PropType} from 'vue';
-import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch} from 'vue';
+import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch, watchEffect} from 'vue';
 import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
 import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
 import ControlPanel from '/@/components/WatchPage/VideoPlayer/ControlPanel.vue';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 import {useMediaHotKeys} from '/@/use/useMediaHotKeys';
-import ProgressBar from '/@/components/WatchPage/VideoPlayer/ProgressBar.vue';
+import {HOUR} from '/@/utils/time';
+import {getFramesFromVideo} from '/@/components/WatchPage/VideoPlayer/getFramesFromVideo';
+import {trackTime} from '/@/utils/telemetry';
 
 
 const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/WatchPage/VideoPlayer/LibAssSubtitlesRenderer.vue'));
@@ -76,7 +79,7 @@ const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components
 
 export default defineComponent({
   name: 'VideoPlayer',
-  components: {ProgressBar, LibAssSubtitlesRenderer, LoadingSpinner, ControlPanel},
+  components: {LibAssSubtitlesRenderer, LoadingSpinner, ControlPanel},
   props: {
     startFrom: {
       type: Number,
@@ -251,6 +254,71 @@ export default defineComponent({
       }
     });
 
+    const frames = ref({
+      step: 0,
+      map: new Map<number, string>(),
+    });
+
+
+    const minimalQuality = computed(() => {
+      let min = props.videos[0];
+      for (const video of props.videos) {
+        if (video.quality < min.quality) {
+          min = video;
+        }
+      }
+
+      return min;
+    });
+
+    const loadFrames = async (times: number[], signal: AbortSignal, src: string) => {
+      const framesIterator = getFramesFromVideo(times, src);
+      for await (const {time, data} of framesIterator) {
+        if (signal.aborted) {
+          break;
+        }
+        frames.value.map.set(time, data);
+      }
+    };
+
+    let controller: AbortController;
+    onUnmounted(() => controller && !controller.signal.aborted && controller.abort());
+
+
+    watchEffect(() => {
+      if (controller) {
+        controller.abort();
+      }
+
+      if (!duration.value || !minimalQuality.value.sources[0].src) {
+        return;
+      }
+
+      const frameLoadingStart = performance.now();
+
+      frames.value.map.clear();
+      frames.value.step = duration.value >= HOUR ? 60 : 30;
+      const chunks = 3;
+
+      const totalSteps = duration.value / frames.value.step;
+      const stepPerChunk = totalSteps / chunks;
+      const timeChunks: number[][] = [];
+      for (let time = 0; time + frames.value.step / 2 < duration.value; time += frames.value.step) {
+        const chunkIndex = Math.floor((time / frames.value.step) / stepPerChunk);
+        if (!Array.isArray(timeChunks[chunkIndex])) {
+          timeChunks[chunkIndex] = [];
+        }
+        timeChunks[chunkIndex].push(Math.floor(time + frames.value.step / 2));
+      }
+
+      controller = new AbortController();
+
+      Promise.all(timeChunks.map((times) => loadFrames(times, controller.signal, minimalQuality.value.sources[0].src)))
+        .then(() => {
+          trackTime('Video timeline Frames', `Time to all frames loaded (chunks=${chunks} step=${frames.value.step})`, performance.now() - frameLoadingStart);
+          console.log('Все фреймы загружены', performance.now() - frameLoadingStart);
+        });
+    });
 
 
 
@@ -277,6 +345,7 @@ export default defineComponent({
       toggleFullscreen,
       isPictureInPicture,
       idle,
+      frames,
     };
   },
 });
@@ -294,19 +363,6 @@ video {
   min-width: 0;
   min-height: 0;
 }
-
-/*noinspection CssInvalidPseudoSelector*/
-video::-webkit-media-text-track-display {
-  transition: transform 0.5s;
-  will-change: transform;
-}
-
-/*noinspection CssInvalidPseudoSelector*/
-video.controls-visible::-webkit-media-text-track-display {
-  transform: translateY(-50px);
-}
-
-
 
 .hideCursor {
   cursor: none;

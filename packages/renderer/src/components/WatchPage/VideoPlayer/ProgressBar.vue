@@ -1,18 +1,29 @@
 <template>
   <div
     ref="bar"
-    class="progress-bar-container"
+    class="progress-bar-container position-relative"
     @mouseenter="isMouseIn = true"
     @mouseleave="isMouseIn = false"
   >
-    <span
+    <div
+      v-if="isMouseIn"
       ref="timeMark"
-      class="position-relative text-white tooltip-inner bs-tooltip-top"
+      class="position-absolute bottom-0 d-flex flex-column gap-2 align-items-center"
       role="tooltip"
-      :style="`left: ${timeMarkLeft}px`"
+      :style="timeMarkStyle"
     >
-      {{ formattedExpectedTime }}
-    </span>
+      <img
+        v-if="closestFrame"
+        :src="closestFrame"
+        class="border-3 border-white border rounded-1"
+        height="100"
+        alt=""
+      >
+
+      <span class="text-white tooltip-inner bs-tooltip-top">
+        {{ formattedExpectedTime }}
+      </span>
+    </div>
     <div
       class="bar-container"
       @mousedown="scrubbing = true"
@@ -54,6 +65,14 @@ export default defineComponent({
       required: false,
       default: () => ([]),
     },
+    frames: {
+      type: Object as PropType<{ step: number, map: Map<number, string> }>,
+      required: false,
+      default: () => ({
+        step: 0,
+        map: new Map,
+      }),
+    },
   },
 
   emits: {
@@ -68,11 +87,20 @@ export default defineComponent({
 
     const {elementX, elementWidth} = useMouseInElement(bar);
 
-    const timeMarkLeft = computed(() => {
-      const timeMarkWidth = (timeMark.value === undefined ? 0 : timeMark.value.offsetWidth);
-      const position = elementX.value - (timeMarkWidth / 2);
-
-      return Math.min(Math.max(10, position), elementWidth.value - timeMarkWidth - 10);
+    const timeMarkStyle = computed(() => {
+      const timeMarkWidth = (!timeMark.value ? 0 : timeMark.value.offsetWidth);
+      const minimalPadding = 10;
+      if (elementX.value <= elementWidth.value / 2) {
+        const position = Math.max(elementX.value - (timeMarkWidth / 2), minimalPadding);
+        return {
+          left: `${position}px`,
+        };
+      } else {
+        const position = Math.max(elementWidth.value - elementX.value - timeMarkWidth / 2, minimalPadding);
+        return {
+          right: `${position}px`,
+        };
+      }
     });
 
 
@@ -97,6 +125,13 @@ export default defineComponent({
     });
     const formattedExpectedTime = computed(() => getFormattedTime(expectedTime.value));
 
+    const closestFrame = computed(() => {
+      if (props.frames.step === 0) {
+        return;
+      }
+      const t = Math.floor(expectedTime.value / props.frames.step) * props.frames.step + props.frames.step / 2;
+      return props.frames.map.get(t);
+    });
 
 
     /**
@@ -142,7 +177,7 @@ export default defineComponent({
 
     return {
       bar,
-      timeMarkLeft,
+      timeMarkStyle,
       timeMark,
       formattedExpectedTime,
       bufferedIndicator,
@@ -150,6 +185,7 @@ export default defineComponent({
       currentTimePersint,
       scrubbing,
       isMouseIn,
+      closestFrame,
     };
   },
 });
@@ -176,50 +212,9 @@ export default defineComponent({
 }
 
 .progress-bar-container [role="tooltip"] {
-  pointer-events: none;
-  top: -10px;
-  opacity: 0;
+  pointer-events: none !important;
+  bottom: 10px;
+  width: min-content;
+  overflow-x: hidden;
 }
-.progress-bar-container:hover [role="tooltip"] {
-  opacity: 1;
-}
-
-/*input[type=range] {*/
-/*  --track-height: 8px;*/
-/*  -webkit-appearance: none; !* Hides the slider so that custom slider can be made *!*/
-/*  width: 100%; !* Specific width is required for Firefox. *!*/
-/*  background: transparent;*/
-/*  background: tomato; !* Otherwise white in Chrome *!*/
-/*}*/
-
-/*input[type=range]:focus {*/
-/*  outline: none; !* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. *!*/
-/*}*/
-
-/*input[type=range]::-ms-track {*/
-/*  width: 100%;*/
-/*  cursor: pointer;*/
-
-/*  !* Hides the slider so custom styles can be added *!*/
-/*  background: transparent;*/
-/*  border-color: transparent;*/
-/*  color: transparent;*/
-/*}*/
-
-/*input[type=range]::-webkit-slider-thumb {*/
-/*  -webkit-appearance: none;*/
-/*  !* border: 1px solid #000000; *!*/
-/*  height: 16px;*/
-/*  width: 16px;*/
-/*  border-radius: 50%;*/
-/*  background: #ffffff;*/
-/*  cursor: pointer;*/
-/*  !*margin-top: calc(-16px + var(--track-height));*!*/
-/*  !* box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d; *!*/
-/*  !*transform: translateY(calc((16px - var(--track-height)) / 2));*!*/
-/*}*/
-
-/*input[type=range]::-webkit-slider-runnable-track {*/
-/*  background-color: rgba(255, 255, 255, 0.25);*/
-/*}*/
 </style>

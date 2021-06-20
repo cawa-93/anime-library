@@ -28,27 +28,27 @@
       <loading-spinner v-if="videos.length === 0" />
     </template>
 
-    <!--    <transition name="fade">-->
-    <!--      <header-->
-    <!--        v-if="isPlaylistButtonVisible"-->
-    <!--        class="position-absolute top-0 text-white w-100 p-3 d-flex align-items-start"-->
-    <!--      >-->
-    <!--        <h2-->
-    <!--          v-if="currentEpisode && currentEpisode.title"-->
-    <!--          class="h5 flex-fill m-0 fw-normal"-->
-    <!--        >-->
-    <!--          {{ currentEpisode.title }}-->
-    <!--        </h2>-->
-    <!--        <button-->
-    <!--          v-if="episodes.length > 1 || translations.length"-->
-    <!--          title="Выбор эпизода и перевода"-->
-    <!--          class="open-playlist btn btn-dark win-icon border-0 bg-transparent"-->
-    <!--          @click="isSidePanelOpened = !isSidePanelOpened"-->
-    <!--        >-->
-    <!--          &#xE8FD;-->
-    <!--        </button>-->
-    <!--      </header>-->
-    <!--    </transition>-->
+    <transition name="fade">
+      <header
+        v-if="isPlaylistButtonVisible"
+        class="position-absolute top-0 text-white w-100 p-3 d-flex align-items-start"
+      >
+        <h2
+          v-if="currentEpisode && currentEpisode.title"
+          class="h5 flex-fill m-0 fw-normal"
+        >
+          {{ currentEpisode.title }}
+        </h2>
+        <button
+          v-if="episodes.length > 1 || translations.length"
+          title="Выбор эпизода и перевода"
+          class="open-playlist btn btn-dark win-icon border-0 bg-transparent"
+          @click="isSidePanelOpened = !isSidePanelOpened"
+        >
+          &#xE8FD;
+        </button>
+      </header>
+    </transition>
 
     <side-panel
       v-if="isSidePanelOpened && isPlaylistButtonVisible && (episodes.length > 1 || translations.length)"
@@ -492,13 +492,13 @@ main {
 header {
   --offset-top: 1rem;
   --offset-right: 1rem;
-  background-image: linear-gradient(180deg, rgb(0 0 0 / 80%) 0%, rgba(0, 0, 0, 0) 83%);
+  background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 83%);
   padding: var(--offset-top) var(--offset-right) 100px var(--offset-right);
   pointer-events: none;
 }
 
 header h2 {
-  text-shadow: 0px 0px 5px black;
+  text-shadow: 0 0 5px black;
 }
 
 header .btn {

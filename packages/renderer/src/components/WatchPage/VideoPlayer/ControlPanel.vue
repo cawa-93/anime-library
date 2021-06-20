@@ -17,6 +17,7 @@
 
     <progress-bar
       v-model:time="currentTimeState"
+      :frames="frames"
       class="progress-bar-container"
       :duration="duration"
       :buffered="buffered"
@@ -190,6 +191,14 @@ export default defineComponent({
     isFullscreen: {
       type: Boolean,
       require: true,
+    },
+    frames: {
+      type: Object as PropType<{ step: number, map: Map<number, string> }>,
+      required: false,
+      default: () => ({
+        step: 0,
+        map: new Map,
+      }),
     },
   },
 
