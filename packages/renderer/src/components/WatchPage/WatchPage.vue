@@ -165,21 +165,20 @@ export default defineComponent({
       episodes.value = [];
       currentEpisode.value = undefined;
 
-      getEpisodesList(seriesId, props.episodeNum === '' ? undefined : props.episodeNum).then(data => {
-        const {episodes: eps, startEpisode} = data;
+      getEpisodesList(seriesId, props.episodeNum === '' ? undefined : props.episodeNum)
+        .then(({startItem: startEpisode, items: eps}) => {
+          if (eps.length === 0) {
+            error.value = 'Не было найдено ни одной серии для выбранного аниме';
+            return;
+          }
 
-        if (eps.length === 0) {
-          error.value = 'Не было найдено ни одной серии для выбранного аниме';
-          return;
-        }
+          episodes.value = eps;
 
-        episodes.value = eps;
+          if (startEpisode !== undefined) {
+            currentEpisode.value = startEpisode;
+          }
 
-        if (startEpisode !== undefined) {
-          currentEpisode.value = startEpisode;
-        }
-
-      });
+        });
     }, {immediate: true});
 
 
@@ -203,19 +202,18 @@ export default defineComponent({
       }
 
 
-      getTranslationsList(currentEpisode.id, props.seriesId, !props.translationId ? undefined : props.translationId).then(data => {
-        const {translations: trs, startTranslation} = data;
+      getTranslationsList(currentEpisode.id, props.seriesId, !props.translationId ? undefined : props.translationId)
+        .then(({startItem: startTranslation, items: trs}) => {
+          if (trs.length === 0) {
+            error.value = 'Не найдено ни одного перевода для выбранной серии';
+            return;
+          }
 
-        if (trs.length === 0) {
-          error.value = 'Не найдено ни одного перевода для выбранной серии';
-          return;
-        }
+          translations.value = trs;
 
-        translations.value = trs;
-
-        if (startTranslation !== undefined) {
-          currentTranslation.value = startTranslation;
-        }
+          if (startTranslation !== undefined) {
+            currentTranslation.value = startTranslation;
+          }
       });
     }, {immediate: true});
 
@@ -339,12 +337,12 @@ export default defineComponent({
       };
 
       const {
-        translations,
-        startTranslation,
+        items: translations,
+        startItem: startTranslation,
       } = await getTranslationsList(nextEpisode.value.id, props.seriesId).catch(e => {
         console.error(e);
         nextEpisodeMetadata = null;
-        return {translations: [], startTranslation: undefined};
+        return {items: [], startItem: undefined};
       });
 
       if (!startTranslation) {

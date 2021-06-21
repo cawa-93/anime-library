@@ -17,8 +17,12 @@ function strToNum(str: number | string): number {
   return num;
 }
 
+interface List<T> {
+  startItem: T | undefined
+  items: T[]
+}
 
-export async function getEpisodesList(seriesIdRaw: number | string, episodeNumRaw?: number | string): Promise<{ startEpisode: undefined | Episode; episodes: Episode[] }> {
+export async function getEpisodesList(seriesIdRaw: number | string, episodeNumRaw?: number | string): Promise<List<Episode>> {
   const seriesId = strToNum(seriesIdRaw);
   let episodes: Episode[] = [];
   let startEpisode: Episode | undefined = undefined;
@@ -42,13 +46,13 @@ export async function getEpisodesList(seriesIdRaw: number | string, episodeNumRa
   }
 
   return {
-    episodes,
-    startEpisode,
+    items: episodes,
+    startItem: startEpisode,
   };
 }
 
 
-export async function getTranslationsList(episodeIdRaw: number | string, seriesIdRaw: number | string, startTranslationIdRaw?: number | string): Promise<{ translations: Translation[]; startTranslation: undefined | Translation }> {
+export async function getTranslationsList(episodeIdRaw: number | string, seriesIdRaw: number | string, startTranslationIdRaw?: number | string): Promise<List<Translation>> {
   const episodeId = strToNum(episodeIdRaw);
   let translations: Translation[] = [];
   let startTranslation: Translation | undefined = undefined;
@@ -71,7 +75,7 @@ export async function getTranslationsList(episodeIdRaw: number | string, seriesI
   }
 
   return {
-    translations,
-    startTranslation,
+    startItem: startTranslation,
+    items: translations,
   };
 }
