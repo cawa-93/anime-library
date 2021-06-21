@@ -32,6 +32,7 @@ function send(params: PageViewParams | ScreenViewParams | EventParams | TimingPa
   if (TRACKING_ENABLED) {
     fetch('https://google-analytics.com/collect', {
       method: 'POST',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       body: new URLSearchParams(params as Record<string, any>).toString(),
     }).catch(e => console.error(e));
   }

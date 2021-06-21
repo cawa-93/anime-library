@@ -18,37 +18,7 @@ function strToNum(str: number | string): number {
 }
 
 
-// export async function prepareWatchData(seriesIdRaw: number | `${number}`, episodeNumRaw?: number | `${number}` | false, translationIdRaw?: number | `${number}` | false, videos?: boolean) {
-//   const seriesId = strToNum(seriesIdRaw);
-//   const episodes: Episode[] = [];
-//   const selectedEpisode: Episode | undefined = undefined;
-//   const translations: Translation[] = [];
-//   const selectedTranslation: Translation | undefined = undefined;
-//   let videoSources: Video[] = [];
-//
-//   if (episodeNumRaw !== false) {
-//
-//   }
-//
-//   if (translationIdRaw !== false && selectedEpisode) {
-//
-//   }
-//
-//   if (videos && selectedTranslation) {
-//     videoSources = await getVideos(selectedTranslation.id);
-//   }
-//
-//   return {
-//     episodes,
-//     selectedEpisode,
-//     translations,
-//     selectedTranslation,
-//     videoSources,
-//   };
-// }
-
-
-export async function getEpisodesList(seriesIdRaw: number | string, episodeNumRaw?: number | string) {
+export async function getEpisodesList(seriesIdRaw: number | string, episodeNumRaw?: number | string): Promise<{ startEpisode: undefined | Episode; episodes: Episode[] }> {
   const seriesId = strToNum(seriesIdRaw);
   let episodes: Episode[] = [];
   let startEpisode: Episode | undefined = undefined;
@@ -78,7 +48,7 @@ export async function getEpisodesList(seriesIdRaw: number | string, episodeNumRa
 }
 
 
-export async function getTranslationsList(episodeIdRaw: number | string, seriesIdRaw: number | string, startTranslationIdRaw?: number | string) {
+export async function getTranslationsList(episodeIdRaw: number | string, seriesIdRaw: number | string, startTranslationIdRaw?: number | string): Promise<{ translations: Translation[]; startTranslation: undefined | Translation }> {
   const episodeId = strToNum(episodeIdRaw);
   let translations: Translation[] = [];
   let startTranslation: Translation | undefined = undefined;

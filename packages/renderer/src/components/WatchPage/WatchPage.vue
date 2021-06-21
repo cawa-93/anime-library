@@ -391,13 +391,13 @@ export default defineComponent({
         return;
       }
 
-      if (nextEpisodeMetadata && nextEpisodeMetadata.translations?.length && nextEpisodeMetadata.startTranslation) {
+      if (nextEpisodeMetadata?.translations?.length && nextEpisodeMetadata?.startTranslation) {
         doNotUpdateEpisodes(() => currentEpisode.value = nextEpisode.value);
 
         translations.value = nextEpisodeMetadata.translations;
 
         if (nextEpisodeMetadata.videos?.length) {
-          doNotUpdateVideos(() => currentTranslation.value = nextEpisodeMetadata!.startTranslation);
+          doNotUpdateVideos(() => currentTranslation.value = nextEpisodeMetadata?.startTranslation);
           videos.value = nextEpisodeMetadata.videos;
         } else {
           currentTranslation.value = nextEpisodeMetadata.startTranslation;
@@ -405,9 +405,6 @@ export default defineComponent({
       } else {
         currentEpisode.value = nextEpisode.value;
       }
-
-      // currentEpisode.value = nextEpisode.value;
-      // videos.value = nextEpisodeMetadata.videos;
     };
 
 
