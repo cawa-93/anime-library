@@ -309,7 +309,7 @@ export default defineComponent({
   width: 100%;
   background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
   grid-template-columns: repeat(4, min-content) 1fr repeat(4, min-content);
-  grid-template-rows: repeat(2, min-content);
+  grid-template-rows: 15px min-content;
   gap: 5px 10px;
   grid-template-areas:
     "progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar"

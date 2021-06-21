@@ -1,9 +1,7 @@
 <template>
   <div
     ref="bar"
-    class="progress-bar-container position-relative"
-    @mouseenter="isMouseIn = true"
-    @mouseleave="isMouseIn = false"
+    class="position-relative d-flex flex-column"
   >
     <div
       v-if="isMouseIn"
@@ -24,20 +22,19 @@
         {{ formattedExpectedTime }}
       </span>
     </div>
-    <div
-      class="bar-container"
+    <progress
+      class="w-100 h-100"
+      :max="duration"
+      :value="time"
+      :style="{
+        '--buffered-gradient':bufferedIndicator,
+        '--cursor-gradient': cursorGradient
+      }"
+      :aria-valuetext="formattedCurrentTime"
       @mousedown="scrubbing = true"
-    >
-      <div
-        class="bar"
-        :style="`background-image: ${bufferedIndicator} ${isMouseIn ? `, ${cursorGradient}` : ''};`"
-      >
-        <div
-          class="current-time"
-          :style="`width:${currentTimePersint * 100}%`"
-        />
-      </div>
-    </div>
+      @mouseenter="isMouseIn = true"
+      @mouseleave="isMouseIn = false"
+    />
   </div>
 </template>
 
@@ -47,6 +44,13 @@ import type {PropType} from 'vue';
 import {computed, defineComponent, ref, watch} from 'vue';
 import {useEventListener, useMouseInElement, useVModel} from '@vueuse/core';
 import {HOUR} from '/@/utils/time';
+
+declare module 'csstype' {
+  interface Properties {
+    '--buffered-gradient'?: string;
+    '--cursor-gradient'?: string;
+  }
+}
 
 
 export default defineComponent({
@@ -143,8 +147,8 @@ export default defineComponent({
 
     const bufferedIndicator = computed(() => {
       const regions = props.buffered.flatMap(([start, end]) => {
-        const startPercent = Math.floor(start) / props.duration * 100;
-        const endPercent = Math.round(end) / props.duration * 100;
+        const startPercent = Math.floor(start / props.duration * 100);
+        const endPercent = Math.floor(end / props.duration * 100);
 
         return [
           `${defaultColorIndicator} ${startPercent}%`,
@@ -160,7 +164,9 @@ export default defineComponent({
 
 
     const cursorGradient = computed(() => {
-      return isMouseIn.value ? `linear-gradient(90deg, ${bufferedColorIndicator} 0%, ${bufferedColorIndicator} ${elementX.value}px, ${defaultColorIndicator} ${elementX.value}px, ${defaultColorIndicator} 100%);` : '';
+      return isMouseIn.value
+        ? `linear-gradient(90deg, ${bufferedColorIndicator} 0%, ${bufferedColorIndicator} ${elementX.value}px, ${defaultColorIndicator} ${elementX.value}px, ${defaultColorIndicator} 100%)`
+        : '';
     });
 
 
@@ -175,6 +181,8 @@ export default defineComponent({
       }
     });
 
+    const formattedCurrentTime = computed(() => getFormattedTime(props.time));
+
     return {
       bar,
       timeMarkStyle,
@@ -186,34 +194,39 @@ export default defineComponent({
       scrubbing,
       isMouseIn,
       closestFrame,
+      formattedCurrentTime,
     };
   },
 });
 </script>
 
 <style scoped>
-.bar-container {
-  --overload: 0.5rem;
-  padding-top: var(--overload);
-  padding-bottom: var(--overload);
-  margin-top: calc(-1 * var(--overload));
-  margin-bottom: calc(-1 * var(--overload));
+progress {
+  appearance: none;
   cursor: pointer;
+  transition: padding-top 0.5s;
 }
 
-.bar {
-  background-color: rgba(255, 255, 255, 0.25);
-  height: 5px;
+progress:not(:hover) {
+  padding-top: 12px;
 }
 
-.bar .current-time {
-  background-color: white;
-  height: 100%;
+
+progress::-webkit-progress-bar {
+  border-radius: 2px;
+  overflow: hidden;
+  /*noinspection CssUnresolvedCustomProperty*/
+  background: var(--cursor-gradient, none), var(--buffered-gradient, none) rgba(255, 255, 255, 0.25);
 }
 
-.progress-bar-container [role="tooltip"] {
+
+progress::-webkit-progress-value {
+  background-color: var(--bs-red);
+}
+
+[role="tooltip"] {
   pointer-events: none !important;
-  bottom: 10px;
+  bottom: calc(100% + 10px);
   width: min-content;
   overflow-x: hidden;
 }
