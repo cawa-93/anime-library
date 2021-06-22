@@ -54,8 +54,7 @@ export default defineConfig({
         'semver',
 
         /**
-         * @sentry/electron не может быть обработан из-за ошибки
-         * https://github.com/vitejs/vite/issues/3701
+         * @sentry/electron не может быть обработан из-за того, что его исходники зависят от собственного `package.json`
          */
         '@sentry/electron/dist/main',
 
