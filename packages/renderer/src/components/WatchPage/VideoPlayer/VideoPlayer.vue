@@ -7,6 +7,7 @@
     <video
       ref="videoElement"
       preload="auto"
+      autoplay
       autopictureinpicture
       :class="{'controls-visible': controlsVisible}"
       crossorigin="anonymous"
