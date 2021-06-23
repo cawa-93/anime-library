@@ -1,8 +1,5 @@
 <template>
-  <header
-    id="title-bar"
-    :class="{maximized: isMaximized}"
-  >
+  <header>
     <div
       id="drag-region"
       class="d-flex"
@@ -26,7 +23,6 @@ import WindowTitle from './WindowTitle.vue';
 import MinimizeButton from '/@/components/AppWindowTitleBar/MinimizeButton.vue';
 import CloseButton from '/@/components/AppWindowTitleBar/CloseButton.vue';
 import MaximizeButton from '/@/components/AppWindowTitleBar/MaximizeButton.vue';
-import {isWindowMaximized} from '/@/use/isWindowMaximized';
 import HomeButton from '/@/components/AppWindowTitleBar/HomeButton.vue';
 import OptionsButton from '/@/components/AppWindowTitleBar/OptionsButton.vue';
 import FeedbackButton from '/@/components/AppWindowTitleBar/FeedbackButton.vue';
@@ -44,21 +40,13 @@ export default defineComponent({
     WindowTitle,
     BackButton,
   },
-  setup() {
-    const {isMaximized} = isWindowMaximized();
-    return {isMaximized};
-  },
 });
 </script>
 
 <style scoped>
-#title-bar {
+header {
   --padding: 5px;
   padding: var(--padding);
-}
-
-#title-bar.maximized {
-  --padding: 0px;
 }
 
 #back-button {
