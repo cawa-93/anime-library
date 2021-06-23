@@ -25,11 +25,12 @@ export function openTG(): Promise<void> {
 }
 
 
-export function openGitHub(): Promise<void> {
+export function openGitHub(subpage = ''): Promise<void> {
   trackEvent({
     ec: 'Social',
     ea: 'Click on social link',
     el: 'GitHub',
   });
-  return openURL('https://github.com/cawa-93/anime-library');
+
+  return openURL('https://github.com/cawa-93/anime-library' + (subpage.startsWith('/') ? subpage : '/' + subpage));
 }

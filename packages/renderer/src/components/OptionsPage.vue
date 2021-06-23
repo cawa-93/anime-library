@@ -14,7 +14,7 @@
           Исходный код на GitHub:
           <a
             href="#"
-            @click.prevent="openGitHub"
+            @click.prevent="openGitHub()"
           >cawa-93/anime-library</a>
           <br>
           Сообщество пользователей в
