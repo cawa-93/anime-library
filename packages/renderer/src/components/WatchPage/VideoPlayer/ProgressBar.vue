@@ -80,7 +80,7 @@ export default defineComponent({
   },
 
   emits: {
-    'update:time': null,
+    'update:time': (t: unknown) => typeof t === 'number',
   },
 
   setup(props, {emit}) {

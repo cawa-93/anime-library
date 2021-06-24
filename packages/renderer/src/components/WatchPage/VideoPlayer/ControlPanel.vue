@@ -1,11 +1,12 @@
 <template>
   <section class="control-panel">
     <progress-bar
-      v-model:time="currentTimeState"
+      :time="currentTime"
       :frames="frames"
       class="progress-bar-container"
       :duration="duration"
       :buffered="buffered"
+      @update:time="v => $emit('update:currentTime', v)"
     />
 
     <button
@@ -187,32 +188,6 @@ export default defineComponent({
 
   setup(props, {emit}) {
     /**
-     * Progress bar
-     */
-    const currentTimeState = useVModel(props, 'currentTime', emit);
-
-    const defaultColorIndicator = 'rgba(255,255,255,0)';
-    const bufferedColorIndicator = 'rgba(255,255,255,0.2)';
-
-    const bufferedIndicator = computed(() => {
-      const regions = props.buffered.flatMap(([start, end]) => {
-        const startPercent = Math.floor(start) / props.duration * 100;
-        const endPercent = Math.round(end) / props.duration * 100;
-
-        return [
-          `${defaultColorIndicator} ${startPercent}%`,
-          `${bufferedColorIndicator} ${startPercent}%`,
-          `${bufferedColorIndicator} ${endPercent}%`,
-          `${defaultColorIndicator} ${endPercent}%`,
-        ];
-      })
-        .join(', ');
-
-      return `linear-gradient(90deg, ${regions});`;
-    });
-
-
-    /**
      * Play Button
      */
     const playingState = useVModel(props, 'playing', emit);
@@ -241,8 +216,6 @@ export default defineComponent({
     const selectedQualityState = useVModel(props, 'selectedQuality', emit);
 
     return {
-      currentTimeState,
-      bufferedIndicator,
       playingState,
       formattedCurrentTime,
       formattedDuration,
