@@ -1,20 +1,5 @@
 <template>
   <section class="control-panel">
-    <!--    <div class="progress-bar-container">-->
-    <!--      <progress-->
-    <!--        :style="`&#45;&#45;gradient: ${bufferedIndicator}`"-->
-    <!--        :max="duration"-->
-    <!--        :value="currentTimeState"-->
-    <!--      />-->
-
-    <!--      <input-->
-    <!--        v-model.number="currentTimeState"-->
-    <!--        type="range"-->
-    <!--        min="0"-->
-    <!--        :max="duration"-->
-    <!--      >-->
-    <!--    </div>-->
-
     <progress-bar
       v-model:time="currentTimeState"
       :frames="frames"
@@ -65,7 +50,10 @@
         @input="mutedState = false"
       >
     </div>
-    <span class="time">
+    <span
+      v-if="duration > 0"
+      class="time"
+    >
       {{ formattedCurrentTime }} / {{ formattedDuration }}
     </span>
 
