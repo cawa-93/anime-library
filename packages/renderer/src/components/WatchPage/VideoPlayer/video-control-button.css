@@ -1,0 +1,49 @@
+
+button, a {
+  border: none;
+  padding: 0;
+  color: inherit;
+  background: transparent;
+  border-radius: 3px;
+  font-size: 18px;
+  width: 2em;
+  height: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  position: relative;
+}
+
+button:active, a:active {
+  align-items: flex-end;
+}
+
+button:before, a:before, select:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: calc(100% + var(--control-panel-bottom-padding));
+}
+
+button:first-of-type:before {
+  width: calc(100% + var(--control-panel-left-padding));
+}
+
+button:last-of-type:before {
+  width: calc(100% + var(--control-panel-right-padding));
+  left: 0;
+  right: auto;
+}
+
+
+button:not(:disabled):hover, a:not([aria-disabled="true"]):hover {
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+button:disabled, a[aria-disabled="true"] {
+  opacity: 0.3;
+}

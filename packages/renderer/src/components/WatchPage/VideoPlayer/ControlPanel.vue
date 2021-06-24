@@ -25,31 +25,13 @@
       &#xE893;
     </button>
 
-    <div class="volume-area">
-      <button
-        class="win-icon"
-        :title="mutedState ? 'Включить звук' : 'Отключение звука'"
-        @click="mutedState = !mutedState"
-      >
-        {{
-          volumeState === 0 ? '&#xE74F;'
-          : volumeState > 0.75 ? '&#xE995;'
-            : volumeState > 0.50 ? '&#xE994;'
-              : volumeState > 0.25 ? '&#xE993;'
-                : '&#xE992;'
-        }}
-      </button>
+    <volume-control
+      :muted="muted"
+      :volume="volume"
+      @update:volume="v => $emit('update:volume', v)"
+      @update:muted="v => $emit('update:muted', v)"
+    />
 
-      <input
-        v-model.number="volumeState"
-        :aria-valuetext="`${volumeState * 100}% громкость`"
-        type="range"
-        min="0"
-        max="1"
-        step="0.01"
-        @input="mutedState = false"
-      >
-    </div>
     <span
       v-if="duration > 0"
       class="time"
@@ -112,10 +94,11 @@ import {computed, defineComponent} from 'vue';
 import {useVModel} from '@vueuse/core';
 import type {VideoTrack} from '/@/utils/videoProvider';
 import ProgressBar from '/@/components/WatchPage/VideoPlayer/ProgressBar.vue';
+import VolumeControl from '/@/components/WatchPage/VideoPlayer/VolumeControl.vue';
 
 export default defineComponent({
   name: 'ControlPanel',
-  components: {ProgressBar},
+  components: {VolumeControl, ProgressBar},
   props: {
     buffered: {
       type: Array as PropType<[number, number][]>,
@@ -234,21 +217,6 @@ export default defineComponent({
      */
     const playingState = useVModel(props, 'playing', emit);
 
-
-    /**
-     * Volume Control
-     */
-    const mutedState = useVModel(props, 'muted', emit);
-    const volumeState = computed<number>({
-      get() {
-        return props.muted ? 0 : props.volume;
-      },
-      set(value) {
-        emit('update:muted', false);
-        emit('update:volume', value);
-      },
-    });
-
     /**
      * Timer
      */
@@ -276,8 +244,6 @@ export default defineComponent({
       currentTimeState,
       bufferedIndicator,
       playingState,
-      volumeState,
-      mutedState,
       formattedCurrentTime,
       formattedDuration,
       selectedQualityState,
@@ -287,6 +253,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
+@import "video-control-button.css";
+
 .control-panel {
   --control-panel-bottom-padding: 8px;
   --control-panel-left-padding: 10px;
@@ -306,105 +274,11 @@ export default defineComponent({
   padding: 0 var(--control-panel-right-padding) var(--control-panel-bottom-padding) var(--control-panel-left-padding);
 }
 
-.control-panel button, .control-panel a {
-  border: none;
-  padding: 0;
-  color: inherit;
-  background: transparent;
-  border-radius: 3px;
-  font-size: 18px;
-  width: 2em;
-  height: 2em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  position: relative;
-}
-
-.control-panel button:active, .control-panel a:active {
-  align-items: flex-end;
-}
-
-.control-panel button:before, .control-panel a:before, .control-panel select:before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 100%;
-  height: calc(100% + var(--control-panel-bottom-padding));
-}
-
-.control-panel button:first-of-type:before {
-  width: calc(100% + var(--control-panel-left-padding));
-}
-
-.control-panel button:last-of-type:before {
-  width: calc(100% + var(--control-panel-right-padding));
-  left: 0;
-  right: auto;
-}
-
-
-.control-panel button:not(:disabled):hover, .control-panel a:not([aria-disabled="true"]):hover {
-  background: rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-}
-
-.control-panel button:disabled, .control-panel a[aria-disabled="true"] {
-  opacity: 0.3;
-}
 
 .progress-bar-container {
   grid-area: progress-bar;
-  /*flex: 1;*/
-  /*position: relative;*/
-  /*display: flex;*/
-  /*align-items: center;*/
 }
 
-/*.progress-bar-container progress {*/
-/*  width: 100%;*/
-/*  -webkit-appearance: none;*/
-/*  appearance: none;*/
-/*  height: 5px;*/
-/*  background-color: rgba(255, 255, 255, 0.2);*/
-/*}*/
-
-/*.progress-bar-container progress[value]::-webkit-progress-bar {*/
-/*  width: 100%;*/
-/*  !*noinspection CssUnresolvedCustomProperty*!*/
-/*  background: var(--gradient);*/
-/*  border-radius: 2px;*/
-/*}*/
-
-/*.progress-bar-container progress[value]::-webkit-progress-value {*/
-/*  background-color: cornflowerblue;*/
-/*}*/
-
-/*.progress-bar-container input[type="range"] {*/
-/*  width: 100%;*/
-/*  position: absolute;*/
-/*  opacity: 0;*/
-/*  top: 0;*/
-/*  left: 0;*/
-/*  cursor: pointer;*/
-/*  --oversize: 3px;*/
-/*  height: calc(100% + var(--oversize) + var(--oversize));*/
-/*  margin: calc(-1 * var(--oversize)) 0;*/
-/*}*/
-
-/*.progress-bar-container input[type=range]:hover {*/
-/*  --oversize: 7px;*/
-/*}*/
-
-/*.progress-bar-container input[type=range]::-webkit-slider-thumb {*/
-/*  visibility: hidden;*/
-/*}*/
-
-/*.progress-bar-container input[type=range]::-webkit-slider-runnable-track {*/
-/*  visibility: hidden;*/
-/*}*/
 
 .play-button {
   grid-area: play-button;
@@ -414,40 +288,10 @@ export default defineComponent({
   grid-area: next-button;
 }
 
-.volume-area {
+volume-control {
   grid-area: volume-area;
-  display: flex;
-  gap: 5px 10px;
 }
 
-.volume-area input[type="range"] {
-  appearance: none;
-  background-color: transparent;
-  transition: width 200ms;
-  width: 0;
-  cursor: e-resize;
-}
-
-.volume-area:hover input[type="range"], .volume-area:focus-within input[type="range"] {
-  width: 150px;
-}
-
-.volume-area input[type='range']::-webkit-slider-runnable-track {
-  -webkit-appearance: none;
-  overflow: hidden;
-  height: 2px;
-  background: #ffffff3d;
-}
-
-.volume-area input[type='range']::-webkit-slider-thumb {
-  width: 10px;
-  -webkit-appearance: none;
-  height: 10px;
-  cursor: ew-resize;
-  background: white;
-  border-radius: 10px;
-  box-shadow: -80px 0 0 80px rgba(255, 255, 255, 0.8);
-}
 
 .toggle-fullscreen-button {
   grid-area: fullscreen;

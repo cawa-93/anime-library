@@ -202,8 +202,14 @@ export default defineComponent({
     useMediaHotKeys({
       playingToggle: () => playing.value = !playing.value,
       playingPause: () => playing.value = false,
-      volumeDown: e => volume.value = e.shiftKey ? 0 : Math.max(0, volume.value - 0.05),
-      volumeUp: e => volume.value = e.shiftKey ? 1 : Math.min(1, volume.value + 0.05),
+      volumeDown: e => {
+        volume.value = e.shiftKey ? 0 : Math.max(0, volume.value - 0.05);
+        muted.value = false;
+      },
+      volumeUp: e => {
+        volume.value = e.shiftKey ? 1 : Math.min(1, volume.value + 0.05);
+        muted.value = false;
+      },
       volumeMuteToggle: () => muted.value = !muted.value,
       fastForward: e => {
         const baseSpeed = DEFAULT_SEEK_SPEED * (e.code === 'KeyL' ? 2 : 1);
