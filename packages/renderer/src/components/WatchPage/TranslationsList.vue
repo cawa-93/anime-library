@@ -26,7 +26,6 @@ import {savePreferredTranslation} from '/@/utils/translationRecomendations';
 import {formatList} from '/@/utils/formatList';
 import type {PlayListItem} from '/@/components/WatchPage/PlayList.vue';
 import PlayList from '/@/components/WatchPage/PlayList.vue';
-import {trackEvent} from '/@/utils/telemetry';
 
 
 interface TranslationPlayListItem extends PlayListItem {
@@ -122,8 +121,6 @@ export default defineComponent({
       } else {
         console.warn('Невозможно сохранить выбранный перевод как предпочитаемый', {seriesId: props.seriesId});
       }
-
-      trackEvent({ec: 'PlayList Manual Select', ea: 'Translation Select'});
     };
 
 

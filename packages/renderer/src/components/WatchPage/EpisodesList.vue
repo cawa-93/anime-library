@@ -13,7 +13,6 @@ import {computed, defineComponent} from 'vue';
 import type {Episode} from '/@/utils/videoProvider';
 import type {PlayListItem} from '/@/components/WatchPage/PlayList.vue';
 import PlayList from '/@/components/WatchPage/PlayList.vue';
-import {trackEvent} from '/@/utils/telemetry';
 
 
 interface EpisodePlayListItem extends PlayListItem {
@@ -67,8 +66,6 @@ export default defineComponent({
 
     const onManualSelect = (item: EpisodePlayListItem) => {
       emit('update:currentEpisode', item.episode);
-
-      trackEvent({ec: 'PlayList Manual Select', ea: 'Episode Select'});
     };
 
     return {playListItems, onManualSelect};
