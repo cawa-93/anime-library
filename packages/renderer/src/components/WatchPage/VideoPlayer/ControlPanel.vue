@@ -29,15 +29,18 @@
     <volume-control
       :muted="muted"
       :volume="volume"
+      class="volume-control"
       @update:volume="v => $emit('update:volume', v)"
       @update:muted="v => $emit('update:muted', v)"
     />
 
     <span
       v-if="duration > 0"
-      class="time"
+      class="time d-flex gap-1 align-items-center text-nowrap pe-none"
     >
-      {{ formattedCurrentTime }} / {{ formattedDuration }}
+      <span aria-label="Текущее время">{{ formattedCurrentTime }}</span>
+      /
+      <span aria-label="Продолжительность эпизода">{{ formattedDuration }}</span>
     </span>
 
     <button
@@ -96,6 +99,7 @@ import {useVModel} from '@vueuse/core';
 import type {VideoTrack} from '/@/utils/videoProvider';
 import ProgressBar from '/@/components/WatchPage/VideoPlayer/ProgressBar.vue';
 import VolumeControl from '/@/components/WatchPage/VideoPlayer/VolumeControl.vue';
+import {getFormattedVideoTime} from '/@/utils/getFormattedVideoTime';
 
 export default defineComponent({
   name: 'ControlPanel',
@@ -195,19 +199,8 @@ export default defineComponent({
     /**
      * Timer
      */
-    const getFormattedTime = (sec: number) => {
-      const d = new Date(sec * 1000);
-
-      const options: Intl.DateTimeFormatOptions = {minute: 'numeric', second: 'numeric', timeZone: 'UTC'};
-      if (sec > 60 * 60) {
-        options.hour = 'numeric';
-      }
-
-      return new Intl.DateTimeFormat('ru', options).format(d);
-    };
-
-    const formattedDuration = computed(() => getFormattedTime(props.duration));
-    const formattedCurrentTime = computed(() => getFormattedTime(props.currentTime));
+    const formattedDuration = computed(() => getFormattedVideoTime(props.duration));
+    const formattedCurrentTime = computed(() => getFormattedVideoTime(props.currentTime));
 
 
     /**
@@ -261,7 +254,7 @@ export default defineComponent({
   grid-area: next-button;
 }
 
-volume-control {
+.volume-control {
   grid-area: volume-area;
 }
 
@@ -272,10 +265,6 @@ volume-control {
 
 .time {
   grid-area: time;
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-  pointer-events: none;
 }
 
 .settings {

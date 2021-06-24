@@ -43,7 +43,8 @@
 import type {PropType} from 'vue';
 import {computed, defineComponent, ref, watch} from 'vue';
 import {useEventListener, useMouseInElement, useVModel} from '@vueuse/core';
-import {HOUR} from '/@/utils/time';
+import {getFormattedVideoTime} from '/@/utils/getFormattedVideoTime';
+
 
 declare module 'csstype' {
   interface Properties {
@@ -107,19 +108,6 @@ export default defineComponent({
       }
     });
 
-
-
-    const getFormattedTime = (sec: number) => {
-      const d = new Date(sec * 1000);
-
-      const options: Intl.DateTimeFormatOptions = {minute: 'numeric', second: 'numeric', timeZone: 'UTC'};
-      if (sec > HOUR) {
-        options.hour = 'numeric';
-      }
-
-      return new Intl.DateTimeFormat('ru', options).format(d);
-    };
-
     const expectedTime = computed(() => {
       if (elementWidth.value) {
         return Math.max(0, Math.min(props.duration, (props.duration / elementWidth.value) * elementX.value));
@@ -127,7 +115,7 @@ export default defineComponent({
 
       return 0;
     });
-    const formattedExpectedTime = computed(() => getFormattedTime(expectedTime.value));
+    const formattedExpectedTime = computed(() => getFormattedVideoTime(expectedTime.value));
 
     const closestFrame = computed(() => {
       if (props.frames.step === 0) {
@@ -181,7 +169,7 @@ export default defineComponent({
       }
     });
 
-    const formattedCurrentTime = computed(() => getFormattedTime(props.time));
+    const formattedCurrentTime = computed(() => getFormattedVideoTime(props.time));
 
     return {
       bar,
