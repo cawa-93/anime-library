@@ -52,12 +52,10 @@ const keys = new Map<KeyboardEvent['code'], Action>([
   ['KeyM', {action: 'volumeMuteToggle'}],
 
 
-  ['AudioVolumeUp', {action: 'volumeUp'}],
   ['VolumeUp', {action: 'volumeUp'}],
   ['ArrowUp', {action: 'volumeUp', ignore: e => matchBySelector(e, 'input, textarea, select')}],
 
 
-  ['AudioVolumeDown', {action: 'volumeDown'}],
   ['VolumeDown', {action: 'volumeDown'}],
   ['ArrowDown', {action: 'volumeDown', ignore: e => matchBySelector(e, 'input, textarea, select')}],
 ]);
