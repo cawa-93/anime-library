@@ -229,7 +229,6 @@ export default defineComponent({
   display: grid;
   bottom: 0;
   width: 100%;
-  background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
   grid-template-columns: repeat(4, min-content) 1fr repeat(4, min-content);
   grid-template-rows: 15px min-content;
   gap: 5px 10px;
@@ -238,6 +237,28 @@ export default defineComponent({
     "play-button next-button volume-area time space subtitles settings picture-in-picture fullscreen";
   color: white;
   padding: 0 var(--control-panel-right-padding) var(--control-panel-bottom-padding) var(--control-panel-left-padding);
+  z-index: 1;
+}
+
+.control-panel, .control-panel > * {
+  text-shadow: 1px 1px 1px black;
+}
+
+
+.control-panel > * {
+  z-index: 1;
+}
+
+
+.control-panel:before {
+  background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.93) 10%, rgba(0,0,0,0.81) 20%, rgba(0,0,0,0.69) 30%, rgba(0,0,0,0.57) 40%, rgba(0,0,0,0.45) 50%, rgba(0,0,0,0.35) 60%, rgba(0,0,0,0.21) 70%, rgba(0,0,0,0.09) 80%, rgba(0,0,0,0.01) 90%, rgba(0,0,0,0) 100%);
+  bottom: 0;
+  content: "";
+  height: 200%;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 0;
 }
 
 
