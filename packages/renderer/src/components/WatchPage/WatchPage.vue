@@ -214,7 +214,7 @@ export default defineComponent({
           if (startTranslation !== undefined) {
             currentTranslation.value = startTranslation;
           }
-      });
+        });
     }, {immediate: true});
 
     /**
@@ -316,7 +316,10 @@ export default defineComponent({
     } | null = null;
 
     const updateNextEpisodeMetadata = async () => {
-      if (!nextEpisode.value?.id || !currentTranslation.value?.id) {
+      const nextEpisodeId = nextEpisode.value?.id;
+      const currentTranslationId = currentTranslation.value?.id;
+
+      if (!nextEpisodeId || !currentTranslationId) {
         return;
       }
 
@@ -324,63 +327,69 @@ export default defineComponent({
        * Если данные для целевой серии и перевода уже загружены не делать ничего
        */
       if (nextEpisodeMetadata !== null
-        && nextEpisodeMetadata.basedOn.episode === nextEpisode.value.id
-        && nextEpisodeMetadata.basedOn.translation === currentTranslation.value.id) {
+        && nextEpisodeMetadata.basedOn.episode === nextEpisodeId
+        && nextEpisodeMetadata.basedOn.translation === currentTranslationId) {
         return;
       }
 
       nextEpisodeMetadata = {
         basedOn: {
-          episode: nextEpisode.value.id,
-          translation: currentTranslation.value.id,
+          episode: nextEpisodeId,
+          translation: currentTranslationId,
         },
       };
 
       const {
         items: translations,
         startItem: startTranslation,
-      } = await getTranslationsList(nextEpisode.value.id, props.seriesId).catch(e => {
+      } = await getTranslationsList(nextEpisodeId, props.seriesId).catch(e => {
         console.error(e);
         nextEpisodeMetadata = null;
         return {items: [], startItem: undefined};
       });
 
-      if (!startTranslation) {
+      /**
+       * Необходимо заново проверить {@link nextEpisodeId} и {@link currentTranslationId}
+       * так как за время асинхронного запроса {@link nextEpisode} или {@link currentTranslation} могли изменится
+       */
+      if (!startTranslation || nextEpisodeId !== nextEpisode.value?.id || currentTranslationId !== currentTranslation.value?.id) {
         nextEpisodeMetadata = null;
         return;
       }
 
       nextEpisodeMetadata = {
         basedOn: {
-          episode: nextEpisode.value.id,
-          translation: currentTranslation.value.id,
+          episode: nextEpisodeId,
+          translation: currentTranslationId,
         },
         translations,
         startTranslation,
       };
 
       const videos = await getVideos(startTranslation.id);
-        if (videos.length) {
-          nextEpisodeMetadata.videos = videos;
 
-          // Нужно вставить тег `<video preload="metadata">` в документ, чтобы пред загрузить метаданные для видео следующей серии
-          // Это необходимо для быстрого переключения серий
-          // Для пред загрузки выбирается источник с максимальным качеством
-          let preloadMetadataTag = document.head.querySelector<HTMLVideoElement>('#preloadMetadataTag');
-          if (preloadMetadataTag === null) {
-            preloadMetadataTag = document.createElement('video');
-            preloadMetadataTag.id = 'preloadMetadataTag';
-            preloadMetadataTag.crossOrigin = 'anonymous';
-            preloadMetadataTag.preload = 'metadata';
-            document.head.appendChild(preloadMetadataTag);
-          }
+      /**
+       * Необходимо заново проверить {@link nextEpisodeId} и {@link currentTranslationId}
+       * так как за время асинхронного запроса {@link nextEpisode} или {@link currentTranslation} могли изменится
+       */
+      if (!videos.length || nextEpisodeId !== nextEpisode.value?.id || currentTranslationId !== currentTranslation.value?.id) {
+        return;
+      }
 
-          const maxQuality = videos.reduce((pv, cv) => cv.quality > pv.quality ? cv : pv, videos[0]);
-          preloadMetadataTag.onerror = () => {
-            if (nextEpisodeMetadata) delete nextEpisodeMetadata.videos;
-          };
-          preloadMetadataTag.src = maxQuality.sources[0].src;
-        }
+      nextEpisodeMetadata.videos = videos;
+      let preloadMetadataTag = document.head.querySelector<HTMLVideoElement>('#preloadMetadataTag');
+      if (preloadMetadataTag === null) {
+        preloadMetadataTag = document.createElement('video');
+        preloadMetadataTag.id = 'preloadMetadataTag';
+        preloadMetadataTag.crossOrigin = 'anonymous';
+        preloadMetadataTag.preload = 'metadata';
+        document.head.appendChild(preloadMetadataTag);
+      }
+      const maxQuality = videos.reduce((pv, cv) => cv.quality > pv.quality ? cv : pv, videos[0]);
+      preloadMetadataTag.onerror = () => {
+        if (nextEpisodeMetadata) delete nextEpisodeMetadata.videos;
+      };
+      preloadMetadataTag.src = maxQuality.sources[0].src;
     };
 
 
