@@ -1,31 +1,29 @@
 <template>
-  <div>
-    <template v-if="isLoading">
-      <div
-        v-for="i of 5"
-        :key="i"
-        class="card bg-gradient skeleton"
+  <template v-if="isLoading">
+    <div
+      v-for="i of 5"
+      :key="i"
+      class="card bg-gradient skeleton"
 
-        style="aspect-ratio: 	97/145"
-      />
-    </template>
-    <template v-else-if="searchResult.length">
-      <custom-list-single-card
-        v-for="anime of searchResult"
-        :key="anime.id"
-        :anime="anime"
-      />
-    </template>
-    <p
-      v-else
-      class="lead"
-      :class="{
-        'text-danger': errorText
-      }"
-    >
-      {{ errorText ? errorText : 'Ничего не найдено' }}
-    </p>
-  </div>
+      style="aspect-ratio: 	97/145"
+    />
+  </template>
+  <template v-else-if="searchResult.length">
+    <custom-list-single-card
+      v-for="anime of searchResult"
+      :key="anime.id"
+      :anime="anime"
+    />
+  </template>
+  <p
+    v-else
+    class="lead"
+    :class="{
+      'text-danger': errorText
+    }"
+  >
+    {{ errorText ? errorText : 'Ничего не найдено' }}
+  </p>
 </template>
 
 <script lang="ts">

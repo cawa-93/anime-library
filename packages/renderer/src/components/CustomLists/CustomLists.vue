@@ -27,11 +27,11 @@
     />
     <section
       :aria-label="data.title"
-      class="custom-list-wrapper px-3"
+      class="custom-list-wrapper d-flex gap-2"
       style="height: 300px"
     >
+      <!--        class="d-flex gap-2 custom-list h-100"-->
       <custom-list-single
-        class="d-flex gap-2 custom-list h-100"
         :request-params="data.requestParams"
       />
     </section>
@@ -94,14 +94,14 @@ export default defineComponent({
 
 <style scoped>
 .custom-list-wrapper {
-  width: 100%;
   overflow-x: auto;
+  padding: 0 1rem;
+  scroll-snap-type: inline mandatory;
+  scroll-padding-inline: 3rem;
+  scroll-behavior: smooth;
 }
 .custom-list-wrapper::-webkit-scrollbar {
   display: none;
 }
 
-.custom-list {
-  width: fit-content;
-}
 </style>

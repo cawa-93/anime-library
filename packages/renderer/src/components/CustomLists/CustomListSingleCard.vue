@@ -4,7 +4,7 @@
       name: 'Watch',
       params: {seriesId: anime.id}
     }"
-    class="card position-relative overflow-hidden"
+    class="h-100 card"
     :aria-label="anime.russian || anime.name"
     @click="openAnime($event, anime)"
     @auxclick="openAnime($event, anime)"
@@ -15,7 +15,7 @@
   >
     <img
       loading="lazy"
-      class="h-100 w-auto border-5 border border-bottom-0 border-start-0 border-end-0"
+      class="h-100 border-5 border border-bottom-0 border-start-0 border-end-0"
       :class="{
         'border-primary': anime.status === 'ongoing',
         'border-success': anime.status === 'released',
@@ -112,6 +112,10 @@ export default defineComponent({
   height: 0.5rem;
 }
 
+.card {
+  min-width: auto;
+  scroll-snap-align: start;
+}
 
 .card img {
   min-height: 0;
