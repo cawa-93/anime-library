@@ -6,13 +6,14 @@
     >
       <slot
         name="item"
-        v-bind="item"
+        :item="item"
       />
     </li>
   </ul>
 </template>
 
 <script lang="ts">
+import type {PropType} from 'vue';
 import {defineComponent} from 'vue';
 
 
@@ -20,7 +21,8 @@ export default defineComponent({
   name: 'HorizontalScroller',
   props: {
     items: {
-      type: Array,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      type: Array as PropType<any[]>,
       required: false,
       default: () => ([]),
     },
@@ -30,26 +32,23 @@ export default defineComponent({
 
 <style scoped>
 ul {
-  /*--size: 150px;*/
   --local-gap: var(--gap, 1rem);
-  /*display: grid;*/
-  /*grid-auto-flow: column;*/
-  display: flex;
+  display: grid;
+  grid-auto-flow: column;
   gap: calc(var(--local-gap) / 2); /* parent owned value for children to be relative to*/
   margin: 0;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
-
   padding-inline: var(--local-gap);
   scroll-padding-inline: var(--local-gap);
   padding-block: calc(var(--local-gap) / 2); /* make space for scrollbar and focus outline */
-  scroll-snap-type: inline mandatory;
-width: fit-content;
+  justify-content: flex-start;
 }
 
 li {
-  display: inline-block; /* removes the list-item bullet */
-  scroll-snap-align: start;
+  display: inline-block;
+  min-width: fit-content;
+  min-height: fit-content;
 }
 
 li:last-of-type {
@@ -59,19 +58,13 @@ li:last-of-type {
 li:last-of-type::after {
   content: "";
   position: absolute;
-
   inline-size: var(--local-gap);
   block-size: 100%;
-
   inset-block-start: 0;
   inset-inline-end: calc(var(--local-gap) * -1);
 }
 
-/*a {*/
-/*  width: var(--size);*/
-/*  aspect-ratio: 1;*/
-/*  display: block;*/
-/*  color: white;*/
-/*  background: #444488;*/
-/*}*/
+ul:not(:hover)::-webkit-scrollbar {
+  opacity: 0;
+}
 </style>

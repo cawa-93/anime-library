@@ -2,7 +2,7 @@ import type {DBSchema, IDBPDatabase} from 'idb';
 import {openDB} from 'idb';
 
 
-export interface CustomList {
+export interface AnimeCollection {
   title: string,
   requestParams: {
     status: string
@@ -14,12 +14,12 @@ export interface CustomList {
 }
 
 type DBItem = {
-  data: CustomList
+  data: AnimeCollection
   id: number
 }
 
 
-interface CustomListsDBSchema extends DBSchema {
+interface AnimeCollectionDBSchema extends DBSchema {
   ['custom-lists']: {
     value: DBItem,
     key: number
@@ -27,7 +27,7 @@ interface CustomListsDBSchema extends DBSchema {
 }
 
 
-type DB = IDBPDatabase<CustomListsDBSchema>
+type DB = IDBPDatabase<AnimeCollectionDBSchema>
 
 let dbPromise: Promise<DB> | null = null;
 
@@ -37,7 +37,7 @@ function getDB() {
     return dbPromise;
   }
 
-  dbPromise = openDB<CustomListsDBSchema>('user-custom-lists', 1, {
+  dbPromise = openDB<AnimeCollectionDBSchema>('user-custom-lists', 1, {
     upgrade(db, oldVersion) {
       if (oldVersion < 1) {
         db.createObjectStore('custom-lists', {keyPath: 'id', autoIncrement: true});
@@ -50,7 +50,7 @@ function getDB() {
 }
 
 
-export function putCustomList(data: CustomList, id?: number): Promise<number> {
+export function putCollection(data: AnimeCollection, id?: number): Promise<number> {
   return getDB().then(db => {
     if (id) {
       return db.put('custom-lists', {data, id});
@@ -60,10 +60,14 @@ export function putCustomList(data: CustomList, id?: number): Promise<number> {
   });
 }
 
-export function getAllCustomLists(): Promise<{data: CustomList, id: number}[]> {
+export function getAllCollections(): Promise<{data: AnimeCollection, id: number}[]> {
   return getDB().then(db => db.getAll('custom-lists'));
 }
 
-export function deleteCustomList(id: number): Promise<void> {
+export function deleteCollection(id: number): Promise<void> {
   return getDB().then(db => db.delete('custom-lists', id));
+}
+
+export function getCollectionById(id: number): Promise<DBItem | undefined> {
+  return getDB().then(db => db.get('custom-lists', id));
 }
