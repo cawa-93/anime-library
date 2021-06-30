@@ -6,6 +6,7 @@
     aria-labelledby="modal-title"
   >
     <form
+      method="dialog"
       class="card"
       @submit.prevent="onSave"
     >
@@ -37,6 +38,7 @@
             type="text"
             name="group-title"
             class="form-control mb-2"
+            autofocus
           >
 
           <label
@@ -380,7 +382,7 @@
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {defineComponent, ref} from 'vue';
+import {defineComponent, onMounted, ref} from 'vue';
 import type {AnimeCollection} from '/@/components/AnimeCollection/AnimeCollectionDB';
 import {onClickOutside} from '@vueuse/core';
 
@@ -389,7 +391,7 @@ export default defineComponent({
   name: 'AnimeCollectionEdit',
 
   props: {
-    header:{
+    header: {
       type: String,
       required: false,
       default: '',
@@ -422,10 +424,10 @@ export default defineComponent({
 
   emits: ['save', 'close', 'delete'],
   setup(props, {emit}) {
-    const root = ref();
+    const root = ref<HTMLElement>();
     onClickOutside(root, () => emit('close'));
 
-
+    onMounted(() => root.value?.querySelector<HTMLInputElement>('input[autofocus]')?.focus());
 
     const listTitle = ref(props.title);
     const listLimit = ref(props.requestParams.limit);
