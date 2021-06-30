@@ -4,7 +4,7 @@
       name: 'Watch',
       params: {seriesId: anime.id}
     }"
-    class="card position-relative overflow-hidden"
+    class="card position-relative h-100 d-block"
     :aria-label="anime.russian || anime.name"
     @click="openAnime($event, anime)"
     @auxclick="openAnime($event, anime)"
@@ -15,7 +15,7 @@
   >
     <img
       loading="lazy"
-      class="h-100 w-auto border-5 border border-bottom-0 border-start-0 border-end-0"
+      class="border-5 border border-bottom-0 border-start-0 border-end-0"
       :class="{
         'border-primary': anime.status === 'ongoing',
         'border-success': anime.status === 'released',
@@ -79,7 +79,7 @@
 <script lang="ts">
 import type {PropType} from 'vue';
 import {defineComponent, ref} from 'vue';
-import type {Anime} from '/@/components/CustomLists/Anime';
+import type {Anime} from '/@/components/AnimeCollection/Anime';
 import {useElectron} from '/@/use/electron';
 
 
@@ -112,9 +112,13 @@ export default defineComponent({
   height: 0.5rem;
 }
 
+.card {
+  min-width: auto;
+  scroll-snap-align: start;
+}
 
-.card img {
-  min-height: 0;
+img {
+  height: var(--size, 100%);
 }
 
 
@@ -129,11 +133,6 @@ export default defineComponent({
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 200ms ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 .anime-status:before {

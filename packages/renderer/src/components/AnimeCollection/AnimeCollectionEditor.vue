@@ -6,6 +6,7 @@
     aria-labelledby="modal-title"
   >
     <form
+      method="dialog"
       class="card"
       @submit.prevent="onSave"
     >
@@ -14,7 +15,7 @@
           id="modal-title"
           class="card-title flex-fill m-0"
         >
-          {{ isNewList ? 'Новый список' : 'Изменение списка' }}
+          {{ header }}
         </h5>
         <button
           type="button"
@@ -30,13 +31,14 @@
           <label
             for="group-title"
             class="form-label"
-          >Название списка</label>
+          >Название коллекции</label>
           <input
             id="group-title"
             v-model="listTitle"
             type="text"
             name="group-title"
-            class="form-control"
+            class="form-control mb-2"
+            autofocus
           >
 
           <label
@@ -45,7 +47,7 @@
           >Максимум результатов</label>
           <input
             id="limit"
-            v-model="listLimit"
+            v-model.number="listLimit"
             type="number"
             min="1"
             max="50"
@@ -234,7 +236,7 @@
         </fieldset>
 
         <fieldset class="mt-2">
-          <legend>Список</legend>
+          <legend>Мой Список Shikimori</legend>
 
           <div class="form-check">
             <input
@@ -359,10 +361,10 @@
       </div>
       <div class="card-footer d-flex align-items-center">
         <button
-          v-if="!isNewList"
+          v-if="onDelete"
           type="button"
           class="btn btn-outline-danger win-icon"
-          title="Удалить список"
+          title="Удалить коллекцию"
           @click="$emit('delete')"
         >
           &#xE74D;
@@ -371,7 +373,7 @@
           type="submit"
           class="btn btn-primary"
         >
-          {{ isNewList ? 'Создать' : 'Сохранить' }} список
+          Сохранить коллекцию
         </button>
       </div>
     </form>
@@ -380,17 +382,21 @@
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {defineComponent, ref} from 'vue';
-import type {CustomList} from '/@/components/CustomLists/CustomListsDB';
+import {defineComponent, onMounted, ref} from 'vue';
+import type {AnimeCollection} from '/@/components/AnimeCollection/AnimeCollectionDB';
 import {onClickOutside} from '@vueuse/core';
 
 
-const IS_DEFAULT_VALUE = Symbol('ads');
-
 export default defineComponent({
-  name: 'CustomListsAdd',
+  name: 'AnimeCollectionEdit',
 
   props: {
+    header: {
+      type: String,
+      required: false,
+      default: '',
+    },
+
     title: {
       type: String,
       required: false,
@@ -398,10 +404,9 @@ export default defineComponent({
     },
 
     requestParams: {
-      type: Object as PropType<CustomList['requestParams'] & {[IS_DEFAULT_VALUE]?: true}>,
+      type: Object as PropType<AnimeCollection['requestParams']>,
       required: false,
       default: () => ({
-        [IS_DEFAULT_VALUE]: true,
         limit: 10,
         status: '',
         kind: '',
@@ -409,15 +414,20 @@ export default defineComponent({
         mylist: '',
       }),
     },
+
+    onDelete: {
+      type: Function,
+      required: false,
+      default: undefined,
+    },
   },
 
-  emits: ['save', 'delete', 'close'],
-
+  emits: ['save', 'close', 'delete'],
   setup(props, {emit}) {
-    const root = ref();
+    const root = ref<HTMLElement>();
     onClickOutside(root, () => emit('close'));
 
-
+    onMounted(() => root.value?.querySelector<HTMLInputElement>('input[autofocus]')?.focus());
 
     const listTitle = ref(props.title);
     const listLimit = ref(props.requestParams.limit);
@@ -428,11 +438,8 @@ export default defineComponent({
     const myList = ref(props.requestParams.mylist.split(',').filter(s => !!s).map(s => s.startsWith('!') ? s.substring(1) : s));
     const myListType = ref(props.requestParams.mylist && !props.requestParams.mylist.startsWith('!') ? 'include' : 'exclude');
 
-    const isNewList = !!props.requestParams[IS_DEFAULT_VALUE];
-
-
     const onSave = () => {
-      const newList: CustomList = {
+      const newList: AnimeCollection = {
         title: listTitle.value,
         requestParams: {
           limit: listLimit.value,
@@ -448,8 +455,7 @@ export default defineComponent({
       emit('save', newList);
     };
 
-
-    return {onSave, status, kind, isNewList, root, order, myListType, myList, listTitle, listLimit};
+    return {onSave, status, kind, root, order, myListType, myList, listTitle, listLimit};
   },
 });
 </script>
@@ -461,7 +467,7 @@ dialog {
   top: 50%;
   max-height: 100vh;
   overflow-y: auto;
-  min-width: 20rem;
+  min-width: 25rem;
 }
 
 dialog::backdrop {
