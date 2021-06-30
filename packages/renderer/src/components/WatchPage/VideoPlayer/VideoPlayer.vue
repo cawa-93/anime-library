@@ -35,7 +35,10 @@
       :waiting="waiting"
     />
     <transition name="fade">
-      <section class="control-panel position-absolute d-grid bottom-0 w-100 text-white">
+      <section
+        v-if="controlsVisible"
+        class="control-panel position-absolute d-grid bottom-0 w-100 text-white"
+      >
         <progress-bar
           v-model:time="currentTime"
           :frames="frames"
