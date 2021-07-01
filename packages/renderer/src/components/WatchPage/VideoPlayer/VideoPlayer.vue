@@ -3,7 +3,7 @@
     class="component-root"
     :class="{hideCursor: isFullscreen && idle}"
   >
-    <loading-spinner v-if="waiting || !videoLoaded" />
+    <loading-spinner v-if="waiting || !isVideoLoaded" />
     <video
       ref="videoElement"
       preload="auto"
@@ -11,21 +11,13 @@
       autopictureinpicture
       :class="{'controls-visible': controlsVisible}"
       crossorigin="anonymous"
+      :src="videoSource"
       @click="playing = !playing"
       @dblclick="toggleFullscreen"
       @error="errorHandler"
       @progress="$emit('progress', {currentTime, duration})"
-      @loadeddata="onLoad"
       @ended="$emit('go-to-next-episode')"
-    >
-      <source
-        v-for="source of sources"
-        :key="source.src"
-        :src="source.src"
-        :type="source.type || ''"
-        @error="errorHandler"
-      >
-    </video>
+    />
     <lib-ass-subtitles-renderer
       v-if="tracks.length > 0 && isSubtitlesEnabled"
       :time="currentTime"
@@ -128,10 +120,10 @@
 </template>
 
 <script lang="ts">
-import type {DeepReadonly, PropType} from 'vue';
+import type {PropType} from 'vue';
 import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch, watchEffect} from 'vue';
 import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
-import type {Video, VideoSource, VideoTrack} from '/@/utils/videoProvider';
+import type {Video, VideoTrack} from '/@/utils/videoProvider';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 import {useMediaHotKeys} from '/@/use/useMediaHotKeys';
 import {HOUR} from '/@/utils/time';
@@ -141,6 +133,7 @@ import TimeCode from '/@/components/WatchPage/VideoPlayer/time-code.vue';
 import VolumeControl from '/@/components/WatchPage/VideoPlayer/VolumeControl.vue';
 import ProgressBar from '/@/components/WatchPage/VideoPlayer/ProgressBar.vue';
 import TogglePipButton from '/@/components/WatchPage/VideoPlayer/TogglePipButton.vue';
+import {isMediaMetadataLoaded} from '/@/use/isMediaMetadataLoaded';
 
 
 const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/WatchPage/VideoPlayer/LibAssSubtitlesRenderer.vue'));
@@ -155,8 +148,8 @@ export default defineComponent({
       require: false,
       default: 0,
     },
-    videos: {
-      type: Array as PropType<DeepReadonly<Video[]>>,
+    video: {
+      type: Object as PropType<Video>,
       required: true,
     },
     hasNextEpisode: {
@@ -176,54 +169,46 @@ export default defineComponent({
 
   setup: function (props, {emit}) {
 
-    // Список доступных вариантов качества видео
-    const qualities = computed(() =>
-      props.videos
-        .map(s => s.quality)
-        .sort((a, b) => b - a),
-    );
+    /**
+     * Массив доступных вариантов качества видео
+     */
+    const qualities = computed(() => [...props.video.qualities.keys()]);
 
 
-    // Выбор качества видео по умолчанию
-    const selectedQuality = ref(qualities.value[0]);
-    watch(qualities, () => selectedQuality.value = qualities.value[0]);
+    /**
+     * Выбранное качество видео
+     */
+    const selectedQuality = ref(Math.max(...qualities.value));
+
+    /**
+     * Автоматически переключатся на маскимальное качество при смене видео
+     */
+    watch(qualities, () => selectedQuality.value = Math.max(...qualities.value));
 
 
-    // Массив видео для выбранного качества
-    const selectedQualityVideo = computed(() => props.videos.find(s => s.quality === selectedQuality.value));
-
-
-    // Ссылки на видео-ресурсы для выбранного качества
-    const sources = ref<VideoSource[] | null>(null);
-    watch(selectedQualityVideo, (selectedQualityVideo) => {
-      sources.value = selectedQualityVideo ? selectedQualityVideo.sources.map(s => ({
-        ...s,
-        src: s.src + '#t=' + props.startFrom ?? 0,
-      })) : null;
-    }, {immediate: true});
-
-    const videoLoaded = ref(false);
-    const onLoad = () => videoLoaded.value = true;
+    /**
+     * Источник для видео выбранного качества
+     */
+    const videoSource = computed(() => props.video.qualities.get(selectedQuality.value) || props.video.qualities.get(qualities.value[0]) || '');
 
     // Выполнять загрузку видео при изменении ссылок на ресурсы
     const videoElement = ref<HTMLVideoElement>();
-    watch(sources, () => {
-      videoLoaded.value = false;
-      videoElement.value?.load();
-    });
+    const {isLoaded: isVideoLoaded} = isMediaMetadataLoaded(videoElement);
 
     // Передать ошибку родителю если не удалось загрузить видео
     const errorHandler = (event: Event) => {
-      emit('source-error', event);
+      emit('source-error', selectedQuality.value, event);
     };
 
 
-    // Ссылки на субтитры для выбранного качества
+    /**
+     * Массив треков для субтитров
+     */
     const tracks = computed<VideoTrack[]>(() => {
-      const allTracks = selectedQualityVideo.value?.tracks || [];
-      const map = new Map<string, VideoTrack>();
-      allTracks.forEach(item => map.set(item.src, item));
-      return [...map.values()];
+      if (!props.video.tracks || props.video.tracks.length === 0) {
+        return [];
+      }
+      return [...new Map(props.video.tracks.map(t => [t.src, t])).values()];
     });
 
     const isSubtitlesEnabled = ref(true);
@@ -301,21 +286,17 @@ export default defineComponent({
     );
 
     onMounted(() => {
-      if (navigator.mediaSession !== undefined) {
-        navigator.mediaSession.setActionHandler('play', () => playing.value = true);
-        navigator.mediaSession.setActionHandler('pause', () => playing.value = false);
-        navigator.mediaSession.setActionHandler('seekbackward', () => seek(-DEFAULT_SEEK_SPEED));
-        navigator.mediaSession.setActionHandler('seekforward', () => seek(DEFAULT_SEEK_SPEED));
-      }
+      navigator.mediaSession.setActionHandler('play', () => playing.value = true);
+      navigator.mediaSession.setActionHandler('pause', () => playing.value = false);
+      navigator.mediaSession.setActionHandler('seekbackward', () => seek(-DEFAULT_SEEK_SPEED));
+      navigator.mediaSession.setActionHandler('seekforward', () => seek(DEFAULT_SEEK_SPEED));
     });
 
     onUnmounted(() => {
-      if (navigator.mediaSession !== undefined) {
-        navigator.mediaSession.setActionHandler('play', null);
-        navigator.mediaSession.setActionHandler('pause', null);
-        navigator.mediaSession.setActionHandler('seekbackward', null);
-        navigator.mediaSession.setActionHandler('seekforward', null);
-      }
+      navigator.mediaSession.setActionHandler('play', null);
+      navigator.mediaSession.setActionHandler('pause', null);
+      navigator.mediaSession.setActionHandler('seekbackward', null);
+      navigator.mediaSession.setActionHandler('seekforward', null);
     });
 
     const frames = ref({
@@ -324,16 +305,7 @@ export default defineComponent({
     });
 
 
-    const minimalQuality = computed(() => {
-      let min = props.videos[0];
-      for (const video of props.videos) {
-        if (video.quality < min.quality) {
-          min = video;
-        }
-      }
-
-      return min;
-    });
+    const minimalQualityVideo = computed(() => props.video.qualities.get(Math.min(...props.video.qualities.keys())));
 
     const loadFrames = async (times: number[], signal: AbortSignal, src: string) => {
       const framesIterator = getFramesFromVideo(times, src);
@@ -354,7 +326,7 @@ export default defineComponent({
         controller.abort();
       }
 
-      if (!duration.value || !minimalQuality.value.sources[0].src) {
+      if (!duration.value || !minimalQualityVideo.value) {
         return;
       }
 
@@ -377,7 +349,9 @@ export default defineComponent({
 
       controller = new AbortController();
 
-      Promise.all(timeChunks.map((times) => loadFrames(times, controller.signal, minimalQuality.value.sources[0].src)))
+      Promise.all(
+        timeChunks.map(times => minimalQualityVideo.value ? loadFrames(times, controller.signal, minimalQualityVideo.value) : Promise.resolve()),
+      )
         .then(() => {
           trackTime('Video timeline Frames', `Time to all frames loaded (chunks=${chunks} step=${frames.value.step})`, performance.now() - frameLoadingStart);
           console.log('Все фреймы загружены', performance.now() - frameLoadingStart);
@@ -387,10 +361,9 @@ export default defineComponent({
 
 
     return {
-      onLoad,
-      videoLoaded,
+      isVideoLoaded,
       controlsVisible,
-      sources,
+      videoSource,
       tracks,
       isSubtitlesEnabled,
       errorHandler,

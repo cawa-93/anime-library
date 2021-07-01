@@ -65,7 +65,7 @@ import {
 } from '/@/utils/videoProvider/providers/anime365';
 import type {ApiResponse} from '/@/utils/videoProvider/providers/anime365-interfaces';
 import {showErrorMessage} from '/@/utils/dialogs';
-import {getVideos} from '/@/utils/videoProvider';
+import {getVideo} from '/@/utils/videoProvider';
 import {useElectron} from '/@/use/electron';
 
 
@@ -124,7 +124,12 @@ export default defineComponent({
         if (access_token !== null) {
           try {
             saveAccessToken(access_token);
-            await getVideos(2825677);
+            /**
+             * Чтобы проверить валидность access_token нужно попробовать загрузить видео для какого-то перевода
+             * Это ID такого тестового перевода
+             */
+            const TEST_TRANSLATION_ID = 2825677;
+            await getVideo(TEST_TRANSLATION_ID);
           } catch (e) {
             await showErrorMessage({
               title: 'Не удалось проверить валидность ключа',

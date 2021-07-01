@@ -12,6 +12,7 @@
 <script lang="ts">
 import {defineComponent, ref, toRef} from 'vue';
 import {useEventListener} from '@vueuse/core';
+import {isMediaMetadataLoaded} from '/@/use/isMediaMetadataLoaded';
 
 
 export default defineComponent({
@@ -25,12 +26,7 @@ export default defineComponent({
   },
   setup(props) {
     const video = toRef(props, 'video');
-
-
-    const isVideoMetadataLoaded = ref(video.value instanceof HTMLVideoElement && video.value.readyState > 0);
-    useEventListener(video, 'loadstart', () => isVideoMetadataLoaded.value = false);
-    useEventListener(video, 'loadedmetadata', () => isVideoMetadataLoaded.value = true);
-
+    const {isLoaded: isVideoMetadataLoaded} = isMediaMetadataLoaded(video);
 
     const isPipEnabled = ref(!!document.pictureInPictureElement);
     useEventListener(video, 'enterpictureinpicture', () => isPipEnabled.value = true);
