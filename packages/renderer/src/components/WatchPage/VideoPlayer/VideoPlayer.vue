@@ -189,7 +189,11 @@ export default defineComponent({
     /**
      * Источник для видео выбранного качества
      */
-    const videoSource = computed(() => props.video.qualities.get(selectedQuality.value) || props.video.qualities.get(qualities.value[0]) || '');
+    const videoSource = computed(() =>
+      props.video.qualities.get(selectedQuality.value)
+      || props.video.qualities.get(qualities.value[0])
+      || '',
+    );
 
     // Выполнять загрузку видео при изменении ссылок на ресурсы
     const videoElement = ref<HTMLVideoElement>();
@@ -282,7 +286,7 @@ export default defineComponent({
 
     watch(
       () => props.hasNextEpisode,
-      () => navigator.mediaSession && navigator.mediaSession.setActionHandler('nexttrack', props.hasNextEpisode ? () => emit('go-to-next-episode') : null),
+      () => navigator.mediaSession.setActionHandler('nexttrack', props.hasNextEpisode ? () => emit('go-to-next-episode') : null),
     );
 
     onMounted(() => {
@@ -353,7 +357,11 @@ export default defineComponent({
         timeChunks.map(times => minimalQualityVideo.value ? loadFrames(times, controller.signal, minimalQualityVideo.value) : Promise.resolve()),
       )
         .then(() => {
-          trackTime('Video timeline Frames', `Time to all frames loaded (chunks=${chunks} step=${frames.value.step})`, performance.now() - frameLoadingStart);
+          trackTime(
+            'Video timeline Frames',
+            `Time to all frames loaded (chunks=${chunks} step=${frames.value.step})`,
+            performance.now() - frameLoadingStart,
+          );
           console.log('Все фреймы загружены', performance.now() - frameLoadingStart);
         });
     });
@@ -435,7 +443,20 @@ video {
 
 
 .control-panel:before {
-  background: linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.93) 10%, rgba(0, 0, 0, 0.81) 20%, rgba(0, 0, 0, 0.69) 30%, rgba(0, 0, 0, 0.57) 40%, rgba(0, 0, 0, 0.45) 50%, rgba(0, 0, 0, 0.35) 60%, rgba(0, 0, 0, 0.21) 70%, rgba(0, 0, 0, 0.09) 80%, rgba(0, 0, 0, 0.01) 90%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 0.93) 10%,
+    rgba(0, 0, 0, 0.81) 20%,
+    rgba(0, 0, 0, 0.69) 30%,
+    rgba(0, 0, 0, 0.57) 40%,
+    rgba(0, 0, 0, 0.45) 50%,
+    rgba(0, 0, 0, 0.35) 60%,
+    rgba(0, 0, 0, 0.21) 70%,
+    rgba(0, 0, 0, 0.09) 80%,
+    rgba(0, 0, 0, 0.01) 90%,
+    rgba(0, 0, 0, 0) 100%
+  );
   bottom: 0;
   content: "";
   height: 200%;
