@@ -251,7 +251,7 @@ export async function getTranslations(episodeId: number): Promise<Translation[]>
 }
 
 
-export async function getStream(translationId: number): Promise<Video[]> {
+export async function getStream(translationId: number): Promise<Video | undefined> {
   type ExpectedResponse = sm.Video
 
   const requestURL = new URL(`translations/embed/${translationId}`, API_BASE);
@@ -264,6 +264,10 @@ export async function getStream(translationId: number): Promise<Video[]> {
   }
 
   const {stream, subtitlesUrl} = apiResponse.data;
+
+  if (stream.length === 0) {
+    return undefined;
+  }
 
   const tracks: VideoTrack[] = [];
 
@@ -283,11 +287,10 @@ export async function getStream(translationId: number): Promise<Video[]> {
     });
   }
 
-  return stream.map(s => ({
-    quality: s.height,
-    sources: s.urls.map(u => ({src: u})),
+  return {
+    qualities: new Map(stream.map(s => [s.height, s.urls[0]])),
     tracks,
-  }));
+  };
 }
 
 

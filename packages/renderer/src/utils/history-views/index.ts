@@ -77,8 +77,10 @@ function saveHistoryItemToDB(item: HistoryViewsItem): Promise<number> {
 
 
 
-
-
+/**
+ * Сохраняет серию и прогресс просмотра в локальную базу данных и на Шикимори
+ * @param item
+ */
 export async function putHistoryItem(item: HistoryViewsItem): Promise<void> {
   const savedItem = await getViewHistoryItem(item.seriesId);
 

@@ -42,11 +42,6 @@ export interface Translation extends HasID, HasTitle {
   censored: boolean
 }
 
-export interface VideoSource {
-  src: string,
-  type?: string
-}
-
 export interface VideoTrack {
   src: string,
   srcLang: string,
@@ -56,8 +51,7 @@ export interface VideoTrack {
 }
 
 export interface Video {
-  quality: number,
-  sources: VideoSource[]
+  qualities: Map<number, string>,
   tracks?: VideoTrack[]
 }
 
@@ -105,7 +99,7 @@ export function getTranslations(providerEpisodeId: number): Promise<Translation[
 /**
  * Возвращает массив видео для конкретного перевода
  */
-export function getVideos(providerTranslationId: number): Promise<Video[]> {
+export function getVideo(providerTranslationId: number): Promise<Video | undefined> {
   return deDuplicatedRequest(
     `videos-${providerTranslationId}`,
     () => provider.getStream(providerTranslationId),
