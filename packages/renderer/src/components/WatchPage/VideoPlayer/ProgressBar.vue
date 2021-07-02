@@ -134,6 +134,9 @@ export default defineComponent({
     const bufferedColorIndicator = 'rgba(255,255,255,0.25)';
 
     const bufferedIndicator = computed(() => {
+      if (props.buffered.length === 0) {
+        return '';
+      }
       const regions = props.buffered.flatMap(([start, end]) => {
         const startPercent = Math.floor(start / props.duration * 100);
         const endPercent = Math.floor(end / props.duration * 100);
