@@ -11,13 +11,16 @@
       autopictureinpicture
       :class="{'controls-visible': controlsVisible}"
       crossorigin="anonymous"
-      :src="videoSource"
       @click="playing = !playing"
       @dblclick="toggleFullscreen"
-      @error="errorHandler"
       @progress="$emit('progress', {currentTime, duration})"
       @ended="$emit('go-to-next-episode')"
-    />
+    >
+      <source
+        :src="videoSource"
+        @error="errorHandler"
+      >
+    </video>
     <lib-ass-subtitles-renderer
       v-if="tracks.length > 0 && isSubtitlesEnabled"
       :time="currentTime"
@@ -174,30 +177,46 @@ export default defineComponent({
      */
     const qualities = computed(() => [...props.video.qualities.keys()]);
 
-
+    const maxQuality = computed(() => Math.max(...qualities.value));
     /**
      * Выбранное качество видео
      */
-    const selectedQuality = ref(Math.max(...qualities.value));
+    const selectedQuality = ref(maxQuality.value);
 
     /**
      * Автоматически переключатся на маскимальное качество при смене видео
      */
-    watch(qualities, () => selectedQuality.value = Math.max(...qualities.value));
+    watch(qualities, () => selectedQuality.value = maxQuality.value);
 
 
     /**
      * Источник для видео выбранного качества
      */
     const videoSource = computed(() =>
-      props.video.qualities.get(selectedQuality.value)
-      || props.video.qualities.get(qualities.value[0])
-      || '',
+      (
+        props.video.qualities.get(selectedQuality.value)
+        || props.video.qualities.get(maxQuality.value)
+      )
+      +
+      '#t=' + Math.floor(props.startFrom),
     );
 
-    // Выполнять загрузку видео при изменении ссылок на ресурсы
+
+
     const videoElement = ref<HTMLVideoElement>();
     const {isLoaded: isVideoLoaded} = isMediaMetadataLoaded(videoElement);
+
+    /**
+     * Выполнять загрузку видео при изменении ссылок на ресурсы
+     */
+    watch(videoSource, (newSrc, oldSrc) => {
+      const newSrcWithoutFragment = newSrc.split('#')[0];
+      const oldSrcWithoutFragment = oldSrc.split('#')[0];
+
+      if (newSrcWithoutFragment.toLowerCase() !== oldSrcWithoutFragment.toLowerCase()) {
+        videoElement.value?.load();
+      }
+    });
 
     // Передать ошибку родителю если не удалось загрузить видео
     const errorHandler = (event: Event) => {

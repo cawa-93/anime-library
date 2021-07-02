@@ -116,10 +116,11 @@ import {getEpisodesList, getTranslationsList} from '/@/utils/prepareWatchData';
 import TabsSection from '/@/components/TabsSection.vue';
 import type {HistoryViewsItem} from '/@/utils/history-views';
 import {getViewHistoryItem, putHistoryItem} from '/@/utils/history-views';
-import {ignorableWatch} from '@vueuse/core';
+import {ignorableWatch, useDebounceFn} from '@vueuse/core';
 import {showErrorMessage} from '/@/utils/dialogs';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
+import {SECOND_MS} from '/@/utils/time';
 
 
 
@@ -438,7 +439,7 @@ export default defineComponent({
     /**
      * Сохраняет серию и прогресс просмотр серии
      */
-    const videoProgressHandler = ({duration, currentTime}: { duration?: number, currentTime?: number } = {}) => {
+    const videoProgressHandler = useDebounceFn(({duration, currentTime}: { duration?: number, currentTime?: number } = {}) => {
       if (!duration || !currentTime || !currentEpisode.value) {
         return;
       }
@@ -457,7 +458,7 @@ export default defineComponent({
       if (isEpisodeCompleted(currentTime, duration)) {
         updateNextEpisodeMetadata();
       }
-    };
+    }, SECOND_MS);
 
 
     /**
