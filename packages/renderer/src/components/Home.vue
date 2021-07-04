@@ -1,5 +1,6 @@
 <template>
   <main>
+    <user-rating />
     <div class="p-3 container-fluid">
       <home-search />
     </div>
@@ -39,11 +40,12 @@ import type {AnimeCollection as AnimeCollectionType} from '/@/components/AnimeCo
 import {getAllCollections, getCollectionById} from '/@/components/AnimeCollection/AnimeCollectionDB';
 import AnimeCollection from '/@/components/AnimeCollection/AnimeCollection.vue';
 import AnimeCollectionCreate from '/@/components/AnimeCollection/AnimeCollectionCreate.vue';
+import UserRating from '/@/components/UserRating.vue';
 
 
 export default defineComponent({
   name: 'Home',
-  components: {AnimeCollectionCreate, AnimeCollection, HomeFooter, HomeSearch},
+  components: {UserRating, AnimeCollectionCreate, AnimeCollection, HomeFooter, HomeSearch},
   setup() {
 
     //
