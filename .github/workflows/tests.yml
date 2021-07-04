@@ -32,10 +32,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16 # Need for npm >=7.7
-
-      - name: Get npm cache directory
-        id: npm-cache-dir
-        run: echo "::set-output name=dir::$(npm config get cache)"
+          cache: 'npm'
 
       - uses: actions/cache@v2
         id: npm-cache # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
