@@ -38,7 +38,7 @@ interface UserStats {
 export default defineComponent({
   name: 'UserRating',
   setup() {
-    const uuid = '48d6715d-c9d7-4a65-8e4f-3d7c12a352bc'; //localStorage.getItem('uuid');
+    const uuid = localStorage.getItem('uuid');
     const top = ref(0);
     const visible = ref(false);
 
@@ -49,23 +49,45 @@ export default defineComponent({
       return '👍';
     });
 
-    let localUpdatedAt = 0;
+    let _localUpdatedAt = 0;
     if (uuid) {
+
+      /**
+       * Временная отметка последнего проверенного отчета
+       */
       const lastCheckAt = localStorage.getItem(LOCAL_STORAGE_LAST_UPDATED_AT_KEY) || 0;
       fetch(RATING_SOURCE).then<UserStats>(r => r.json()).then(({rating, updated_at}) => {
+
+        /**
+         * Если время сохдания загруженного меньше чем время последнего проверенного - не делать ничего
+         */
         if (updated_at <= lastCheckAt) {
           return;
         }
 
+        /**
+         * Позиция текущего пользователя в рейтинге
+         * 0 -- если текущего пользователя нет в рейтинге
+         */
         top.value = rating.findIndex(([id]) => id === uuid) + 1;
-        visible.value = true;
-        localUpdatedAt = updated_at;
-      });
+
+        if (top.value > 0) {
+          visible.value = true;
+        }
+
+        /**
+         * Сохранить время отчета во временную переменную
+         * Она необзодимо в момент закрытия уведомления
+         */
+        _localUpdatedAt = updated_at;
+      }).catch(e => console.error(e));
     }
 
     const close = () => {
       visible.value = false;
-      localStorage.setItem(LOCAL_STORAGE_LAST_UPDATED_AT_KEY, String(localUpdatedAt || 0));
+      if (_localUpdatedAt) {
+        localStorage.setItem(LOCAL_STORAGE_LAST_UPDATED_AT_KEY, String(_localUpdatedAt));
+      }
     };
 
     return {top, close, emoji, visible};
