@@ -12,6 +12,9 @@ function getBaseParams() {
     localStorage.setItem('uuid', cid);
   }
 
+  const isNewSession = sessionStorage.getItem('_ga_session_started') === null;
+  sessionStorage.setItem('_ga_session_started', String(Date.now()));
+
   return {
     v: '1',
     ds: 'app',
@@ -20,6 +23,7 @@ function getBaseParams() {
     vp: `${window.innerWidth}x${window.innerHeight}`,
     ul: navigator.language,
     cid,
+    sc: isNewSession ? 'start' : undefined,
     tid: import.meta.env.VITE_UA_TRACK_ID,
     an: 'Anime Library',
     aid: 'com.lib.anime',
@@ -30,7 +34,8 @@ function getBaseParams() {
 
 function send(params: PageViewParams | ScreenViewParams | EventParams | TimingParams): void {
   if (TRACKING_ENABLED) {
-    navigator.sendBeacon('https://google-analytics.com/collect', new URLSearchParams(params as Record<string, any>).toString());
+    const payload = new URLSearchParams(Object.entries(params).filter(([,v]) => v !== undefined && v !== '')).toString();
+    navigator.sendBeacon('https://google-analytics.com/collect', payload);
   }
 }
 
