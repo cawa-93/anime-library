@@ -109,7 +109,7 @@ function parseAuthor(summary: string): TranslationAuthor {
     }
   }
 
-  if (!baseAuthor) {
+  if (!baseAuthor && authorChunks.length > 0) {
     baseAuthor = {
       team: authorChunks[0],
       members: authorChunks.slice(1),
