@@ -4,6 +4,7 @@ import router from '/@/router';
 import * as Sentry from '@sentry/browser';
 import {RewriteFrames as RewriteFramesIntegration, Vue as VueIntegration} from '@sentry/integrations';
 import './styles/index.scss';
+import {trackEvent} from '/@/utils/telemetry';
 
 
 const app = createApp(App)
@@ -34,3 +35,17 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 }
 
 app.mount('#app-root');
+
+
+/**
+ * Отслеживание момента когда пользователь сворачивает или закрывает приложение.
+ * Необходимо чтобы считывать длительность сесии.
+ */
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    trackEvent({
+      ec: 'user_activity',
+      ea: 'app_state_hidden',
+    });
+  }
+});
