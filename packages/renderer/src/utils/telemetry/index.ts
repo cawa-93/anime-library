@@ -30,11 +30,7 @@ function getBaseParams() {
 
 function send(params: PageViewParams | ScreenViewParams | EventParams | TimingParams): void {
   if (TRACKING_ENABLED) {
-    fetch('https://google-analytics.com/collect', {
-      method: 'POST',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      body: new URLSearchParams(params as Record<string, any>).toString(),
-    }).catch(e => console.error(e));
+    navigator.sendBeacon('https://google-analytics.com/collect', new URLSearchParams(params as Record<string, any>).toString());
   }
 }
 
