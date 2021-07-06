@@ -20,13 +20,17 @@
         <button
           type="button"
           class="btn btn-light win-icon"
-          aria-label="Close"
+          title="Отменить изменения"
+          aria-label="Отменить изменения"
           @click="$emit('close')"
         >
           &#xE8BB;
         </button>
       </div>
       <div class="card-body">
+        <p class="form-text mt-0">
+          Укажите критерии для коллекции. Все аниме будут автоматически собираться по этим критериям и обновляться раз в несколько дней.
+        </p>
         <fieldset>
           <label
             for="group-title"
@@ -468,7 +472,7 @@ dialog {
   top: 50%;
   max-height: 100vh;
   overflow-y: auto;
-  min-width: 25rem;
+  width: 25rem;
 }
 
 dialog::backdrop {

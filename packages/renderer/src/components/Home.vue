@@ -21,7 +21,7 @@
           class="btn btn-lg btn-outline-info d-block m-auto mt-4"
           @click="openModal"
         >
-          Создать новый список
+          Добавить коллекцию аниме
         </button>
       </template>
     </anime-collection-create>
