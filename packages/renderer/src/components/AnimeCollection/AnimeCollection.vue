@@ -12,6 +12,7 @@
       :request-params="localSearchParams"
       header="Редактирование коллекции"
       :title="localTitle"
+      :aria-label="localTitle"
       @save="updateCollection"
       @close="isEditorOpened = false"
       @delete="deleteCollection"
@@ -22,6 +23,7 @@
       type="button"
       class="btn btn-lg win-icon"
       title="Изменить коллекцию"
+      aria-label="Изменить коллекцию"
       @click="isEditorOpened = true"
     >
       &#xE713;

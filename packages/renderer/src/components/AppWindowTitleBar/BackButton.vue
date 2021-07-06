@@ -2,6 +2,7 @@
   <button
     :disabled="isDisabled"
     title="Вернутся назад"
+    aria-label="Вернутся назад"
     class="btn win-icon rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
     @click="goBack"
   >

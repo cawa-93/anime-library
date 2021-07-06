@@ -2,6 +2,7 @@
   <button
     :disabled="video === null || isVideoMetadataLoaded === false"
     title="Картинка-в-картинке"
+    aria-label="Картинка-в-картинке"
     class="win-icon"
     @click="togglePictureInPicture"
   >

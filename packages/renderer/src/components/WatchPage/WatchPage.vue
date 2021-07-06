@@ -42,6 +42,7 @@
         <button
           v-if="episodes.length > 1 || translations.length"
           title="Выбор эпизода и перевода"
+          aria-label="Выбор эпизода и перевода"
           class="open-playlist btn btn-dark win-icon border-0 bg-transparent"
           @click="isSidePanelOpened = !isSidePanelOpened"
         >

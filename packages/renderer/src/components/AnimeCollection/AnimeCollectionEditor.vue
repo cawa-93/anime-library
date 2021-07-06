@@ -365,6 +365,7 @@
           type="button"
           class="btn btn-outline-danger win-icon"
           title="Удалить коллекцию"
+          aria-label="Удалить коллекцию"
           @click="$emit('delete')"
         >
           &#xE74D;

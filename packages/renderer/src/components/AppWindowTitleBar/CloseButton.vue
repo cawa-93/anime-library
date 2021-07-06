@@ -2,6 +2,7 @@
   <button
     class="btn win-icon rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
     title="Закрыть"
+    aria-label="Закрыть"
     type="button"
     @click="close"
   >

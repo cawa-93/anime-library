@@ -6,6 +6,7 @@
     <button
       class="win-icon"
       :title="muted ? 'Включить звук' : 'Отключение звука'"
+      :aria-label="muted ? 'Включить звук' : 'Отключение звука'"
       @click="$emit('update:muted', !muted)"
     >
       {{

@@ -45,6 +45,7 @@
         <button
           class="play-button win-icon"
           :title="`${playing ? 'Пауза' : 'Смотреть'} (k)`"
+          :aria-label="`${playing ? 'Пауза' : 'Смотреть'} (k)`"
           @click="playing = !playing"
         >
           {{ playing ? '&#xE769;' : '&#xE768;' }}
@@ -54,6 +55,7 @@
           :disabled="!hasNextEpisode"
           class="next-button win-icon"
           title="Следующий эпизод"
+          aria-label="Следующий эпизод"
           @click="$emit('go-to-next-episode')"
         >
           &#xE893;
@@ -74,6 +76,7 @@
         <button
           v-if="tracks.length > 0"
           title="Субтитры"
+          aria-label="Субтитры"
           class="subtitles"
           @click="isSubtitlesEnabled = !isSubtitlesEnabled"
         >
@@ -89,7 +92,8 @@
         <select
           v-if="qualities.length > 0"
           v-model="selectedQuality"
-          title="Качество"
+          title="Качество видео"
+          aria-label="Качество видео"
           class="settings"
         >
           <option
@@ -109,6 +113,7 @@
 
         <button
           :title="`${isFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
+          :aria-label="`${isFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
           class="toggle-fullscreen-button win-icon"
           @click="toggleFullscreen"
         >

@@ -43,6 +43,7 @@
           class="btn btn-outline-secondary win-icon"
           type="submit"
           title="Найти"
+          aria-label="Найти"
         >
           &#xF78B;
         </button>
