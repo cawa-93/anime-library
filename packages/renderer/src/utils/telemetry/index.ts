@@ -34,7 +34,7 @@ function getBaseParams() {
 
 function send(params: PageViewParams | ScreenViewParams | EventParams | TimingParams): void {
   if (TRACKING_ENABLED) {
-    const payload = new URLSearchParams(Object.entries(params).filter(([,v]) => v !== undefined && v !== '')).toString();
+    const payload = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== '')).toString();
     navigator.sendBeacon('https://google-analytics.com/collect', payload);
   }
 }
@@ -83,5 +83,17 @@ export function trackTime(category: string, variable: string, time: number, labe
     };
 
     send(payload);
+  }
+}
+
+
+export function startTrackingWindowVisibility(targetVisibilityState?: VisibilityState): void {
+  if (TRACKING_ENABLED) {
+    document.addEventListener('visibilitychange', () => {
+      console.log(document.visibilityState);
+      if (!targetVisibilityState || document.visibilityState === targetVisibilityState) {
+        trackEvent('main_window_visibility', `window_${document.visibilityState}`);
+      }
+    });
   }
 }
