@@ -55,12 +55,15 @@ export function trackPageView(options: { uri?: string, name?: string } = {}): vo
 }
 
 
-export function trackEvent(event: Partial<EventParams>): void {
+export function trackEvent(category: string, action: string, label?: string, value?: number): void {
   if (TRACKING_ENABLED) {
     const payload: EventParams = {
       ...getBaseParams(),
       t: 'event',
-      ...event,
+      ec: category,
+      ea: action,
+      el: label,
+      ev: value,
     };
 
     send(payload);

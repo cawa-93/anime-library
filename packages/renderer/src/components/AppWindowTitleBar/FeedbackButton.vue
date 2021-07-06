@@ -77,11 +77,7 @@ export default defineComponent({
       // чтобы при повторном выборе того же элемента сработало событие `input`
       select.value = '';
 
-      trackEvent({
-        ec: 'New Issue',
-        ea: 'Click Title bar link',
-        el: selectedVariant,
-      });
+      trackEvent('New Issue', 'Click Title bar link', selectedVariant);
     };
 
     return {onSelected, selectedVariant, SELECT_OPTIONS};

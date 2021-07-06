@@ -92,18 +92,12 @@ export default defineComponent({
 
     const liked = () => {
       state.value = STATES.LIKED;
-      trackEvent({
-        ec: 'UserSatisfactionSurvey',
-        ea: 'Satisfied',
-      });
+      trackEvent('UserSatisfactionSurvey', 'Satisfied');
     };
 
     const disliked = () => {
       state.value = STATES.DISLIKED;
-      trackEvent({
-        ec: 'UserSatisfactionSurvey',
-        ea: 'NotSatisfied',
-      });
+      trackEvent('UserSatisfactionSurvey', 'NotSatisfied');
     };
 
     return {state, liked, disliked, STATES, openVK, openTG};

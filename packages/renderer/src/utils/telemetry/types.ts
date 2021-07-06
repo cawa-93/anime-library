@@ -192,7 +192,7 @@ export interface EventParams extends HitParams {
    *
    * Example value: `Category`
    */
-  ec?: string;
+  ec: string;
   /**
    * Event Action
    *
@@ -204,7 +204,7 @@ export interface EventParams extends HitParams {
    *
    * Example value: `Action`
    */
-  ea?: string;
+  ea: string;
   /**
    * Event Label
    *

@@ -6,31 +6,19 @@ const {openURL} = useElectron();
 
 
 export function openVK(): Promise<void> {
-  trackEvent({
-    ec: 'Social',
-    ea: 'Click on social link',
-    el: 'VK',
-  });
+  trackEvent('Social', 'Click on social link', 'VK');
   return openURL('https://vk.com/playshikionline');
 }
 
 
 export function openTG(): Promise<void> {
-  trackEvent({
-    ec: 'Social',
-    ea: 'Click on social link',
-    el: 'TG',
-  });
+  trackEvent('Social', 'Click on social link', 'TG');
   return openURL('https://t.me/playshikionline');
 }
 
 
 export function openGitHub(subpage = ''): Promise<void> {
-  trackEvent({
-    ec: 'Social',
-    ea: 'Click on social link',
-    el: 'GitHub',
-  });
+  trackEvent('Social', 'Click on social link', 'GitHub');
 
   return openURL('https://github.com/cawa-93/anime-library' + (subpage.startsWith('/') ? subpage : '/' + subpage));
 }

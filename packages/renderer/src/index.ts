@@ -43,9 +43,6 @@ app.mount('#app-root');
  */
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') {
-    trackEvent({
-      ec: 'user_activity',
-      ea: 'app_state_hidden',
-    });
+    trackEvent('user_activity', 'app_state_hidden');
   }
 });
