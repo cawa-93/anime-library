@@ -9,6 +9,7 @@ import {URL} from 'url';
 import DialogsHost from '/@/ipc/DialogsHost';
 import {init} from '@sentry/electron/dist/main';
 import {RewriteFrames as RewriteFramesIntegration} from '@sentry/integrations';
+import {getSync as getUserSetting} from './userSettingController';
 
 
 if (import.meta.env.VITE_SENTRY_DSN) {
@@ -55,8 +56,10 @@ if (import.meta.env.MODE !== 'development') {
   app.setAsDefaultProtocolClient(PROTOCOL);
 }
 
+if (!getUserSetting('enable_hardware_acceleration')) {
+  app.disableHardwareAcceleration();
+}
 
-app.disableHardwareAcceleration();
 
 // Install "Vue.js devtools"
 if (import.meta.env.MODE === 'development') {
@@ -69,9 +72,6 @@ if (import.meta.env.MODE === 'development') {
     }))
     .catch(e => console.error('Failed install extension:', e));
 }
-
-
-
 
 
 
