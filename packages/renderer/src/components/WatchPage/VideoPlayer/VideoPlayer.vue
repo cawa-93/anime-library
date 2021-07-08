@@ -129,14 +129,14 @@
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch, watchEffect} from 'vue';
+import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch} from 'vue';
 import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
 import type {Video, VideoTrack} from '/@/utils/videoProvider';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 import {useMediaHotKeys} from '/@/use/useMediaHotKeys';
-import {HOUR} from '/@/utils/time';
-import {getFramesFromVideo} from '/@/components/WatchPage/VideoPlayer/getFramesFromVideo';
-import {trackTime} from '/@/utils/telemetry';
+// import {HOUR} from '/@/utils/time';
+// import {getFramesFromVideo} from '/@/components/WatchPage/VideoPlayer/getFramesFromVideo';
+// import {trackTime} from '/@/utils/telemetry';
 import TimeCode from '/@/components/WatchPage/VideoPlayer/time-code.vue';
 import VolumeControl from '/@/components/WatchPage/VideoPlayer/VolumeControl.vue';
 import ProgressBar from '/@/components/WatchPage/VideoPlayer/ProgressBar.vue';
@@ -333,9 +333,14 @@ export default defineComponent({
     });
 
 
-    const minimalQualityVideo = computed(() => props.video.qualities.get(Math.min(...props.video.qualities.keys())));
+    /**
+     * Загрузка превью для таймлайна отключена пока не будет решена проблема
+     * @see https://github.com/cawa-93/anime-library/issues/84
+     *
 
-    const loadFrames = async (times: number[], signal: AbortSignal, src: string) => {
+     const minimalQualityVideo = computed(() => props.video.qualities.get(Math.min(...props.video.qualities.keys())));
+
+     const loadFrames = async (times: number[], signal: AbortSignal, src: string) => {
       const framesIterator = getFramesFromVideo(times, src);
       for await (const {time, data} of framesIterator) {
         if (signal.aborted) {
@@ -345,11 +350,11 @@ export default defineComponent({
       }
     };
 
-    let controller: AbortController;
-    onUnmounted(() => controller && !controller.signal.aborted && controller.abort());
+     let controller: AbortController;
+     onUnmounted(() => controller && !controller.signal.aborted && controller.abort());
 
 
-    watchEffect(() => {
+     watchEffect(() => {
       if (controller) {
         controller.abort();
       }
@@ -389,6 +394,8 @@ export default defineComponent({
           console.log('Все фреймы загружены', performance.now() - frameLoadingStart);
         });
     });
+
+     */
 
 
 
