@@ -6,6 +6,14 @@
 
       <section class="card mt-5">
         <p class="card-header">
+          Настройки видеоплеера
+        </p>
+        <p class="card-body mb-0">
+          <timeline-thumbnails />
+        </p>
+      </section>
+      <section class="card mt-5">
+        <p class="card-header">
           О приложении
         </p>
         <p class="card-body mb-0">
@@ -39,11 +47,12 @@ import {getAccessToken, saveAccessToken} from '/@/utils/videoProvider/providers/
 import ShikiOauth from '/@/components/ShikiOauth.vue';
 import OptionAnime365 from '/@/components/OptionAnime365.vue';
 import {openGitHub, openTG, openVK} from '/@/use/socialLinks';
+import TimelineThumbnails from '/@/components/Options/TimelineThumbnails.vue';
 
 
 export default defineComponent({
   name: 'OptionsPage',
-  components: {OptionAnime365, ShikiOauth},
+  components: {TimelineThumbnails, OptionAnime365, ShikiOauth},
   setup() {
     //
     // Заголовок страницы
@@ -61,18 +70,6 @@ export default defineComponent({
         helpDialog.value.open = true;
       }
     };
-    // const openExternal = (event: MouseEvent) => {
-    //   if (!event.target) {
-    //     return;
-    //   }
-    //
-    //   const target = event.target as HTMLAnchorElement;
-    //   if (!target.href) {
-    //     return;
-    //   }
-    //
-    //   openURL(target.href);
-    // };
 
     const jsonData = ref('');
     const parsedAccessToken = computed(() => {

@@ -9,7 +9,7 @@ import {URL} from 'url';
 import DialogsHost from '/@/ipc/DialogsHost';
 import {init} from '@sentry/electron/dist/main';
 import {RewriteFrames as RewriteFramesIntegration} from '@sentry/integrations';
-import {getSync as getUserSetting} from './userSettingController';
+import * as UserSettings from './userSettingController';
 
 
 if (import.meta.env.VITE_SENTRY_DSN) {
@@ -56,7 +56,7 @@ if (import.meta.env.MODE !== 'development') {
   app.setAsDefaultProtocolClient(PROTOCOL);
 }
 
-if (!getUserSetting('enable_hardware_acceleration')) {
+if (!UserSettings.getSync('enable_hardware_acceleration')) {
   app.disableHardwareAcceleration();
 }
 
@@ -232,6 +232,10 @@ app.whenReady()
 
     registerIpcHost('WindowControllers', WindowControllersHost);
     registerIpcHost('DialogsControllers', DialogsHost);
+    registerIpcHost('UserSettingsController', {
+      get: UserSettings.get,
+      set: UserSettings.set,
+    });
 
     return createWindow();
   })
