@@ -30,13 +30,15 @@ import {createIpcClient} from '/@/ipc';
 
 const LOCALSTORAGE_KEY = 'enable_timeline_thumbnails';
 
+export const isEnabled = (): boolean => localStorage.getItem(LOCALSTORAGE_KEY) === 'true';
+
 export default defineComponent({
   name: 'TimelineThumbnails',
   components: {EnableHardwareAcceleration},
   setup() {
     const userSettings = createIpcClient('UserSettingsController');
 
-    const _enable = ref(localStorage.getItem(LOCALSTORAGE_KEY) === 'true');
+    const _enable = ref(isEnabled());
     const enable = computed({
       get() {
         return _enable.value;

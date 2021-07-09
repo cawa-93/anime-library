@@ -134,9 +134,6 @@ import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, use
 import type {Video, VideoTrack} from '/@/utils/videoProvider';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 import {useMediaHotKeys} from '/@/use/useMediaHotKeys';
-// import {HOUR} from '/@/utils/time';
-// import {getFramesFromVideo} from '/@/components/WatchPage/VideoPlayer/getFramesFromVideo';
-// import {trackTime} from '/@/utils/telemetry';
 import TimeCode from '/@/components/WatchPage/VideoPlayer/time-code.vue';
 import VolumeControl from '/@/components/WatchPage/VideoPlayer/VolumeControl.vue';
 import ProgressBar from '/@/components/WatchPage/VideoPlayer/ProgressBar.vue';
@@ -145,6 +142,7 @@ import {isMediaMetadataLoaded} from '/@/use/isMediaMetadataLoaded';
 import {getFramesFromVideo} from '/@/components/WatchPage/VideoPlayer/getFramesFromVideo';
 import {HOUR} from '/@/utils/time';
 import {trackTime} from '/@/utils/telemetry';
+import {isEnabled as isTimelineThumbnailsEnabled} from '/@/components/Options/TimelineThumbnails.vue';
 
 
 const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/WatchPage/VideoPlayer/LibAssSubtitlesRenderer.vue'));
@@ -330,12 +328,12 @@ export default defineComponent({
       navigator.mediaSession.setActionHandler('seekforward', null);
     });
 
-    const frames = ref({
+
+    let frames = ref({
       step: 0,
       map: new Map<number, string>(),
     });
-
-    if (localStorage.getItem('enable_timeline_thumbnails') === 'true') {
+    if (isTimelineThumbnailsEnabled()) {
       const minimalQualityVideo = computed(() => props.video.qualities.get(Math.min(...props.video.qualities.keys())));
 
       const loadFrames = async (times: number[], signal: AbortSignal, src: string) => {
