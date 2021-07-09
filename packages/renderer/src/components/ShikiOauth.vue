@@ -5,38 +5,35 @@
       синхронизироваться с вашими списками на Шикимори
     </p>
     <p class="d-flex flex-row-reverse gap-2 align-items-center">
-      <template v-if="isLoading">
+      <template v-if="profile">
+        <button
+          class="btn btn-danger"
+          @click="logOut"
+        >
+          Отключить
+        </button>
+        <span>
+          Подключенный аккаунт Шикимори:
+          <strong><a
+            :href="profile.url"
+            @click.prevent="() => profile && profile.url && openURL(profile.url)"
+          >{{ profile.nickname }}</a></strong>
+        </span>
+      </template>
+      <button
+        v-else
+        class="btn btn-dark"
+        :disabled="isLoading"
+        @click="login"
+      >
         <span
           v-if="isLoading"
           class="spinner-border spinner-border-sm"
           role="status"
           aria-hidden="true"
         />
-      </template>
-      <template v-else>
-        <template v-if="profile">
-          <button
-            class="btn btn-danger"
-            @click="logOut"
-          >
-            Отключить
-          </button>
-          <span>
-            Подключенный аккаунт Шикимори:
-            <strong><a
-              :href="profile.url"
-              @click.prevent="() => profile && profile.url && openURL(profile.url)"
-            >{{ profile.nickname }}</a></strong>
-          </span>
-        </template>
-        <button
-          v-else
-          class="btn btn-dark"
-          @click="login"
-        >
-          Подключить аккаунт Шикимори
-        </button>
-      </template>
+        Подключить аккаунт Шикимори
+      </button>
     </p>
   </section>
 </template>
