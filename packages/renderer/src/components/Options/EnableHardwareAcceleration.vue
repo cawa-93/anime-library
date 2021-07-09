@@ -33,11 +33,12 @@
 import {computed, defineComponent, ref} from 'vue';
 import {createIpcClient} from '/@/ipc';
 
+const userSettings = createIpcClient('UserSettingsController');
+export const isEnabled = (): Promise<boolean> => userSettings.get('enable_hardware_acceleration').then(v => !!v);
 
 export default defineComponent({
   name: 'EnableHardwareAcceleration',
   setup() {
-    const userSettings = createIpcClient('UserSettingsController');
 
     const _enable = ref(false);
     const enable = computed({
@@ -52,9 +53,9 @@ export default defineComponent({
 
     let origValue = ref();
 
-    userSettings.get('enable_hardware_acceleration').then(value => {
-      origValue.value = !!value;
-      _enable.value = !!value;
+    isEnabled().then(value => {
+      origValue.value = value;
+      _enable.value = value;
     });
 
     const showNotice = computed(() => {

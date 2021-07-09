@@ -1,8 +1,18 @@
 import {useElectron} from '/@/use/electron';
 import type {EventParams, PageViewParams, ScreenViewParams, TimingParams} from '/@/utils/telemetry/types';
-
+import {isLoggedIn} from '/@/utils/shikimori-api';
+import {isEnabled as isTimelineThumbnailsEnabled} from '/@/components/Options/TimelineThumbnails.vue';
+import {isEnabled as isEnableHardwareAccelerationEnabled} from '/@/components/Options/EnableHardwareAcceleration.vue';
 
 const TRACKING_ENABLED = !!import.meta.env.VITE_UA_TRACK_ID;
+
+/**
+ * Сохранённое состояние параметра isEnableHardwareAccelerationEnabled
+ * Необходимо заранее загрузить его значение, чтобы в дальнейшем использовать в синхронных функциях
+ * Параметр не изменяется без перезагрузки страницы
+ */
+let _isEnableHardwareAccelerationEnabled: boolean | undefined = undefined;
+isEnableHardwareAccelerationEnabled().then(v => _isEnableHardwareAccelerationEnabled = v);
 
 
 function getBaseParams() {
@@ -28,6 +38,9 @@ function getBaseParams() {
     an: 'Anime Library',
     aid: 'com.lib.anime',
     av: import.meta.env.VITE_APP_VERSION,
+    cd1: isLoggedIn() ? 'connected' : 'not-connected',
+    cd2: isTimelineThumbnailsEnabled() ? 'enabled' : 'disabled',
+    cd3: _isEnableHardwareAccelerationEnabled === undefined ? undefined : _isEnableHardwareAccelerationEnabled ? 'enabled' : 'disabled',
   } as const;
 }
 
@@ -90,7 +103,6 @@ export function trackTime(category: string, variable: string, time: number, labe
 export function startTrackingWindowVisibility(targetVisibilityState?: VisibilityState): void {
   if (TRACKING_ENABLED) {
     document.addEventListener('visibilitychange', () => {
-      console.log(document.visibilityState);
       if (!targetVisibilityState || document.visibilityState === targetVisibilityState) {
         trackEvent('main_window_visibility', `window_${document.visibilityState}`);
       }

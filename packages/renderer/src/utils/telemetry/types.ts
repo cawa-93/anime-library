@@ -85,6 +85,24 @@ interface HitParams extends SystemInfoParams, TrafficSourcesParams, SessionParam
    * Specifies that a hit be considered non-interactive.
    */
   ni?: boolean
+
+  /**
+   * Custom dimension
+   * shiki_account_state
+   */
+  cd1?: string
+
+  /**
+   * Custom dimension
+   * video_thumbnails_state
+   */
+  cd2?: string
+
+  /**
+   * Custom dimension
+   * hardware_acceleration_state
+   */
+  cd3?: string
 }
 
 export interface PageViewParams extends HitParams {
