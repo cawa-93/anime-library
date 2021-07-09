@@ -1,9 +1,13 @@
 import type {DeepReadonly} from 'vue';
 
 
-export type Promisified<T> = {
-  readonly [P in keyof T]: T[P] extends Fn ? (...a: Parameters<T[P]>) => Promise<ReturnType<T[P]>> : Promise<T[P]>;
-}
+  export type Promisified<T> = {
+    readonly [P in keyof T]: T[P] extends Fn
+      ? (...a: Parameters<T[P]>) => ReturnType<T[P]> extends Promise<unknown>
+        ? ReturnType<T[P]>
+        : Promise<ReturnType<T[P]>>
+      : Promise<T[P]>;
+  }
 
 /**
  * NonUndefined

@@ -129,7 +129,7 @@
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch} from 'vue';
+import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch, watchEffect} from 'vue';
 import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
 import type {Video, VideoTrack} from '/@/utils/videoProvider';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
@@ -142,6 +142,9 @@ import VolumeControl from '/@/components/WatchPage/VideoPlayer/VolumeControl.vue
 import ProgressBar from '/@/components/WatchPage/VideoPlayer/ProgressBar.vue';
 import TogglePipButton from '/@/components/WatchPage/VideoPlayer/TogglePipButton.vue';
 import {isMediaMetadataLoaded} from '/@/use/isMediaMetadataLoaded';
+import {getFramesFromVideo} from '/@/components/WatchPage/VideoPlayer/getFramesFromVideo';
+import {HOUR} from '/@/utils/time';
+import {trackTime} from '/@/utils/telemetry';
 
 
 const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/WatchPage/VideoPlayer/LibAssSubtitlesRenderer.vue'));
@@ -332,70 +335,64 @@ export default defineComponent({
       map: new Map<number, string>(),
     });
 
+    if (localStorage.getItem('enable_timeline_thumbnails') === 'true') {
+      const minimalQualityVideo = computed(() => props.video.qualities.get(Math.min(...props.video.qualities.keys())));
 
-    /**
-     * Загрузка превью для таймлайна отключена пока не будет решена проблема
-     * @see https://github.com/cawa-93/anime-library/issues/84
-     *
-
-     const minimalQualityVideo = computed(() => props.video.qualities.get(Math.min(...props.video.qualities.keys())));
-
-     const loadFrames = async (times: number[], signal: AbortSignal, src: string) => {
-      const framesIterator = getFramesFromVideo(times, src);
-      for await (const {time, data} of framesIterator) {
-        if (signal.aborted) {
-          break;
+      const loadFrames = async (times: number[], signal: AbortSignal, src: string) => {
+        const framesIterator = getFramesFromVideo(times, src);
+        for await (const {time, data} of framesIterator) {
+          if (signal.aborted) {
+            break;
+          }
+          frames.value.map.set(time, data);
         }
-        frames.value.map.set(time, data);
-      }
-    };
+      };
 
-     let controller: AbortController;
-     onUnmounted(() => controller && !controller.signal.aborted && controller.abort());
+      let controller: AbortController;
+      onUnmounted(() => controller && !controller.signal.aborted && controller.abort());
 
 
-     watchEffect(() => {
-      if (controller) {
-        controller.abort();
-      }
-
-      if (!duration.value || !minimalQualityVideo.value) {
-        return;
-      }
-
-      const frameLoadingStart = performance.now();
-
-      frames.value.map.clear();
-      frames.value.step = duration.value >= HOUR ? 60 : 30;
-      const chunks = 3;
-
-      const totalSteps = duration.value / frames.value.step;
-      const stepPerChunk = totalSteps / chunks;
-      const timeChunks: number[][] = [];
-      for (let time = 0; time + frames.value.step / 2 < duration.value; time += frames.value.step) {
-        const chunkIndex = Math.floor((time / frames.value.step) / stepPerChunk);
-        if (!Array.isArray(timeChunks[chunkIndex])) {
-          timeChunks[chunkIndex] = [];
+      watchEffect(() => {
+        if (controller) {
+          controller.abort();
         }
-        timeChunks[chunkIndex].push(Math.floor(time + frames.value.step / 2));
-      }
 
-      controller = new AbortController();
+        if (!duration.value || !minimalQualityVideo.value) {
+          return;
+        }
 
-      Promise.all(
-        timeChunks.map(times => minimalQualityVideo.value ? loadFrames(times, controller.signal, minimalQualityVideo.value) : Promise.resolve()),
-      )
-        .then(() => {
-          trackTime(
-            'Video timeline Frames',
-            `Time to all frames loaded (chunks=${chunks} step=${frames.value.step})`,
-            performance.now() - frameLoadingStart,
-          );
-          console.log('Все фреймы загружены', performance.now() - frameLoadingStart);
-        });
-    });
+        const frameLoadingStart = performance.now();
 
-     */
+        frames.value.map.clear();
+        frames.value.step = duration.value >= HOUR ? 60 : 30;
+        const chunks = 3;
+
+        const totalSteps = duration.value / frames.value.step;
+        const stepPerChunk = totalSteps / chunks;
+        const timeChunks: number[][] = [];
+        for (let time = 0; time + frames.value.step / 2 < duration.value; time += frames.value.step) {
+          const chunkIndex = Math.floor((time / frames.value.step) / stepPerChunk);
+          if (!Array.isArray(timeChunks[chunkIndex])) {
+            timeChunks[chunkIndex] = [];
+          }
+          timeChunks[chunkIndex].push(Math.floor(time + frames.value.step / 2));
+        }
+
+        controller = new AbortController();
+
+        Promise.all(
+          timeChunks.map(times => minimalQualityVideo.value ? loadFrames(times, controller.signal, minimalQualityVideo.value) : Promise.resolve()),
+        )
+          .then(() => {
+            trackTime(
+              'Video timeline Frames',
+              `Time to all frames loaded (chunks=${chunks} step=${frames.value.step})`,
+              performance.now() - frameLoadingStart,
+            );
+            console.log('Все фреймы загружены', performance.now() - frameLoadingStart);
+          });
+      });
+    }
 
 
 
