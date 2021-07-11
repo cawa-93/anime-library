@@ -53,6 +53,7 @@
 
     <side-panel
       v-if="isSidePanelOpened && isPlaylistButtonVisible && (episodes.length > 1 || translations.length)"
+      class="playlist-side-panel"
       :default-state="true"
       @close="isSidePanelOpened = false"
     >
@@ -530,5 +531,9 @@ header .btn:before {
   left: 0;
   height: calc(100% + var(--offset-top));
   width: calc(100% + var(--offset-right));
+}
+
+.playlist-side-panel {
+  -webkit-app-region: no-drag;
 }
 </style>
