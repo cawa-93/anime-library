@@ -68,6 +68,19 @@ export default defineComponent({
 
         let badges: PlayListItem['badges'] = [];
 
+        /**
+         * Бейдж Украинского языка
+         */
+        if (navigator.language === 'uk' && (/^укр/i.test(t.title) || /^ua/i.test(t.title) || /^uk/i.test(t.title))) {
+          badges.push({
+            style: 'light',
+            text: '🇺🇦',
+          });
+        }
+
+        /**
+         * Бейдж качества видео
+         */
         if (t.qualityType !== 'tv') {
           badges.push({
             style: 'success',
@@ -75,6 +88,9 @@ export default defineComponent({
           });
         }
 
+        /**
+         * Бейдж "Без цензуры"
+         */
         if (!t.censored) {
           badges.push({
             style: 'danger',
