@@ -103,6 +103,12 @@ interface HitParams extends SystemInfoParams, TrafficSourcesParams, SessionParam
    * hardware_acceleration_state
    */
   cd3?: string
+
+  /**
+   * Custom dimension
+   * color_scheme
+   */
+  cd4?: string
 }
 
 export interface PageViewParams extends HitParams {

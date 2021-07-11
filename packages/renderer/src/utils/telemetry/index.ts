@@ -41,6 +41,7 @@ function getBaseParams() {
     cd1: isLoggedIn() ? 'connected' : 'not-connected',
     cd2: isTimelineThumbnailsEnabled() ? 'enabled' : 'disabled',
     cd3: _isEnableHardwareAccelerationEnabled === undefined ? undefined : _isEnableHardwareAccelerationEnabled ? 'enabled' : 'disabled',
+    cd4: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
   } as const;
 }
 
