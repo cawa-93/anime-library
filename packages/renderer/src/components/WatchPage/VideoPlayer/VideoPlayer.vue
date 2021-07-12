@@ -312,7 +312,7 @@ export default defineComponent({
     watch(
       () => props.hasNextEpisode,
       () => navigator.mediaSession.setActionHandler('nexttrack', props.hasNextEpisode ? () => emit('go-to-next-episode') : null),
-    );
+      {immediate: true});
 
     onMounted(() => {
       navigator.mediaSession.setActionHandler('play', () => playing.value = true);

@@ -107,7 +107,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, toRaw, watch} from 'vue';
+import {computed, defineComponent, onUnmounted, ref, toRaw, watch} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
 import {clearVideosCache, getSeries, getVideo} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/SidePanel.vue';
@@ -441,7 +441,10 @@ export default defineComponent({
     /**
      * Сохраняет серию и прогресс просмотр серии
      */
-    const videoProgressHandler = useDebounceFn(({duration, currentTime}: { duration?: number, currentTime?: number } = {}) => {
+    const videoProgressHandler = useDebounceFn(({
+                                                  duration,
+                                                  currentTime,
+                                                }: { duration?: number, currentTime?: number } = {}) => {
       if (!duration || !currentTime || !currentEpisode.value) {
         return;
       }
@@ -470,9 +473,27 @@ export default defineComponent({
     getSeries(Number(props.seriesId)).then(series => {
       if (series && series.title) {
         document.title = series.title;
-      }
-    });
 
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: currentEpisode.value?.title || '',
+          artist: series.title,
+          album: series.title,
+          artwork: [
+            {src: series.poster || ''},
+          ],
+        });
+
+        watch(currentEpisode, currentEpisode => {
+          if (navigator.mediaSession.metadata) {
+            navigator.mediaSession.metadata.title = currentEpisode?.title || '';
+          }
+        }, {immediate: true});
+      } else {
+        navigator.mediaSession.metadata = null;
+      }
+
+      onUnmounted(() => navigator.mediaSession.metadata = null);
+    });
 
     /**
      * Отвечает за видимость кнопки плейлистов
