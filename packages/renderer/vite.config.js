@@ -90,12 +90,50 @@ export default defineConfig({
     vue(),
 
     VitePWA({
-      mode: 'production',
+      strategies: 'generateSW',
+      mode: 'development',
       injectRegister: 'script',
       manifest: false,
+      debug: true,
       workbox: {
         globPatterns: [],
         runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/smotret-anime\.online\/api\/series.*episodes/,
+            handler: 'CacheFirst',
+            options: {
+              plugins: [waitOnlinePlugin],
+              cacheName: 'sm-episodes',
+              expiration: {
+                maxAgeSeconds: 24 * 60 * 60,
+              },
+            },
+          },
+
+          {
+            urlPattern: /^https:\/\/smotret-anime\.online\/api\/series.*/,
+            handler: 'CacheFirst',
+            options: {
+              plugins: [waitOnlinePlugin],
+              cacheName: 'sm-series',
+              expiration: {
+                maxEntries: 1000,
+              },
+            },
+          },
+
+          {
+            urlPattern: /^https:\/\/smotret-anime\.online\/api\/translations\/embed\/.*access_token/,
+            handler: 'CacheFirst',
+            options: {
+              plugins: [waitOnlinePlugin],
+              cacheName: 'sm-embeds',
+              expiration: {
+                maxAgeSeconds: 24 * 60 * 60,
+              },
+            },
+          },
+
           {
             urlPattern: /^https:\/\/smotret-anime\.online\/api\/.*/,
             handler: 'CacheFirst',
@@ -103,7 +141,7 @@ export default defineConfig({
               plugins: [waitOnlinePlugin],
               cacheName: 'sm-api-calls',
               expiration: {
-                maxAgeSeconds: 60 * 60,
+                maxAgeSeconds: 12 * 60 * 60, // 12 часов
               },
             },
           },
