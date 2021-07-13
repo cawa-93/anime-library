@@ -263,7 +263,12 @@ app.whenReady()
 if (import.meta.env.PROD) {
   app.whenReady()
     .then(() => import('electron-updater'))
-    .then(({autoUpdater}) => autoUpdater.checkForUpdatesAndNotify())
+    .then(({autoUpdater}) =>
+      autoUpdater.checkForUpdatesAndNotify({
+        title: 'Новая версия готова к установке',
+        body: 'Обновление приложения будет автоматически установлено после того как вы его закроете',
+      }),
+    )
     .catch((e) => {
       e.name = 'Auto-update error';
       console.error(e);
