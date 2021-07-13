@@ -13,96 +13,91 @@
         Повторить попытку
       </button>
     </p>
-    <template v-else>
-      <video-player
-        v-if="video"
-        id="video-container"
-        :video="video"
-        :has-next-episode="!!nextEpisode"
-        :start-from="historyItem ? (historyItem.episode.time && historyItem.episode.number === currentEpisode?.number ? historyItem.episode.time : 0) : 0"
-        @goToNextEpisode="goToNextEpisode"
-        @progress="videoProgressHandler"
-        @source-error="onSourceError"
-        @controls-visibility-change="v => {isPlaylistButtonVisible = v; isSidePanelOpened = false}"
-      />
-      <loading-spinner v-else />
-    </template>
-
-    <transition name="fade">
-      <header
-        v-if="isPlaylistButtonVisible"
-        class="position-absolute top-0 text-white w-100 p-3 d-flex align-items-start"
-      >
-        <h2
-          v-if="currentEpisode && currentEpisode.title"
-          class="h5 flex-fill m-0 fw-normal"
-        >
-          {{ currentEpisode.title }}
-        </h2>
-        <button
-          v-if="episodes.length > 1 || translations.length"
-          title="Выбор эпизода и перевода"
-          aria-label="Выбор эпизода и перевода"
-          class="open-playlist btn btn-dark win-icon border-0 bg-transparent"
-          @click="isSidePanelOpened = !isSidePanelOpened"
-        >
-          &#xE8FD;
-        </button>
-      </header>
-    </transition>
-
-    <side-panel
-      v-if="isSidePanelOpened && isPlaylistButtonVisible && (episodes.length > 1 || translations.length)"
-      class="playlist-side-panel"
-      :default-state="true"
-      @close="isSidePanelOpened = false"
+    <video-player
+      v-else
+      id="video-container"
+      :video="video"
+      :has-next-episode="!!nextEpisode"
+      :start-from="historyItem ? (historyItem.episode.time && historyItem.episode.number === currentEpisode?.number ? historyItem.episode.time : 0) : 0"
+      @goToNextEpisode="goToNextEpisode"
+      @progress="videoProgressHandler"
+      @source-error="onSourceError"
     >
-      <tabs-section default-tab="translations">
-        <template #tab-header="{tabName, isActive, select}">
-          <input
-            :id="`${tabName}-tab-header`"
-            value="episodes"
-            type="radio"
-            class="btn-check"
-            name="active-tab"
-            autocomplete="off"
-            :checked="isActive"
-            @input="select"
+      <template #header>
+        <header class="position-absolute top-0 text-white w-100 p-3 d-flex align-items-start">
+          <h2
+            v-if="currentEpisode && currentEpisode.title"
+            class="h5 flex-fill m-0 fw-normal"
           >
-          <label
-            class="btn rounded-0"
-            :for="`${tabName}-tab-header`"
+            {{ currentEpisode.title }}
+          </h2>
+          <button
+            v-if="episodes.length > 1 || translations.length"
+            title="Выбор эпизода и перевода"
+            aria-label="Выбор эпизода и перевода"
+            class="open-playlist btn btn-dark win-icon border-0 bg-transparent"
+            @click="isSidePanelOpened = !isSidePanelOpened"
           >
-            <span
-              class="border-dark px-2 pb-2"
-              :class="{'border-bottom': isActive}"
-            >
-              {{ tabName === 'episodes' ? 'Эпизоды' : tabName === 'translations' ? 'Переводы' : tabName }}
-            </span>
-          </label>
-        </template>
-        <template
-          v-if="episodes.length > 1"
-          #episodes
-        >
-          <episodes-list
-            v-model:currentEpisode="currentEpisode"
-            :episodes="episodes"
-          />
-        </template>
+            &#xE8FD;
+          </button>
+        </header>
+      </template>
 
-        <template
-          v-if="translations.length && currentEpisode !== undefined"
-          #translations
+      <template #default>
+        <side-panel
+          v-if="isSidePanelOpened && (episodes.length > 1 || translations.length)"
+          class="playlist-side-panel"
+          :default-state="true"
+          @close="isSidePanelOpened = false"
         >
-          <translations-list
-            v-model:currentTranslation="currentTranslation"
-            :series-id="Number(seriesId)"
-            :translations="translations"
-          />
-        </template>
-      </tabs-section>
-    </side-panel>
+          <tabs-section default-tab="translations">
+            <template #tab-header="{tabName, isActive, select}">
+              <input
+                :id="`${tabName}-tab-header`"
+                value="episodes"
+                type="radio"
+                class="btn-check"
+                name="active-tab"
+                autocomplete="off"
+                :checked="isActive"
+                @input="select"
+              >
+              <label
+                class="btn rounded-0"
+                :for="`${tabName}-tab-header`"
+              >
+                <span
+                  class="border-dark px-2 pb-2"
+                  :class="{'border-bottom': isActive}"
+                >
+                  {{ tabName === 'episodes' ? 'Эпизоды' : tabName === 'translations' ? 'Переводы' : tabName }}
+                </span>
+              </label>
+            </template>
+            <template
+              v-if="episodes.length > 1"
+              #episodes
+            >
+              <episodes-list
+                v-model:currentEpisode="currentEpisode"
+                :episodes="episodes"
+              />
+            </template>
+
+            <template
+              v-if="translations.length && currentEpisode !== undefined"
+              #translations
+            >
+              <translations-list
+                v-model:currentTranslation="currentTranslation"
+                :series-id="Number(seriesId)"
+                :translations="translations"
+              />
+            </template>
+          </tabs-section>
+        </side-panel>
+      </template>
+    </video-player>
   </main>
 </template>
 
@@ -120,14 +115,13 @@ import type {HistoryViewsItem} from '/@/utils/history-views';
 import {getViewHistoryItem, putHistoryItem} from '/@/utils/history-views';
 import {ignorableWatch, useDebounceFn} from '@vueuse/core';
 import {showErrorMessage} from '/@/utils/dialogs';
-import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
 import {SECOND_MS} from '/@/utils/time';
 
 
 
 export default defineComponent({
-  components: {LoadingSpinner, TabsSection, VideoPlayer, TranslationsList, EpisodesList, SidePanel},
+  components: {TabsSection, VideoPlayer, TranslationsList, EpisodesList, SidePanel},
   props: {
     seriesId: {
       type: [String, Number],
@@ -222,7 +216,7 @@ export default defineComponent({
     /**
      * Загрузка видео
      */
-    const video = ref<Video | null>(null);
+    const video = ref<Video>();
 
     const loadVideoSources = async (selectedTranslationId: number, clearCache = false, quality = 0) => {
       error.value = '';
@@ -269,7 +263,7 @@ export default defineComponent({
         return;
       }
 
-      video.value = null;
+      video.value = undefined;
 
       if (!currentTranslation) {
         return;
@@ -499,7 +493,6 @@ export default defineComponent({
      * Отвечает за видимость кнопки плейлистов
      * Синхронизируется с состоянием видимости панели управления видео
      */
-    const isPlaylistButtonVisible = ref(true);
 
     const isSidePanelOpened = ref(false);
     return {
@@ -516,7 +509,6 @@ export default defineComponent({
       historyItem,
       videoProgressHandler,
       onSourceError,
-      isPlaylistButtonVisible,
     };
   },
 });
@@ -532,12 +524,13 @@ header {
   --offset-top: 1rem;
   --offset-right: 1rem;
   background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 83%);
-  padding: var(--offset-top) var(--offset-right) 100px var(--offset-right);
   pointer-events: none;
+  z-index: 10;
 }
 
 header h2 {
   text-shadow: 0 0 5px black;
+  pointer-events: none;
 }
 
 header .btn {

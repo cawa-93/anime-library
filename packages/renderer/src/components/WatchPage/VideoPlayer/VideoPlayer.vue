@@ -1,14 +1,20 @@
 <template>
   <div
+    ref="videoPlayerRoot"
     class="component-root"
     :class="{hideCursor: isFullscreen && idle}"
   >
+    <transition name="fade">
+      <slot
+        v-if="controlsVisible"
+        name="header"
+      />
+    </transition>
     <loading-spinner v-if="waiting || !isVideoLoaded" />
     <video
       ref="videoElement"
       preload="auto"
       autoplay
-      autopictureinpicture
       :class="{'controls-visible': controlsVisible}"
       crossorigin="anonymous"
       @click="playing = !playing"
@@ -121,9 +127,7 @@
         </button>
       </section>
     </transition>
-    <transition name="fade">
-      <slot v-if="controlsVisible" />
-    </transition>
+    <slot v-if="controlsVisible" />
   </div>
 </template>
 
@@ -140,9 +144,11 @@ import ProgressBar from '/@/components/WatchPage/VideoPlayer/ProgressBar.vue';
 import TogglePipButton from '/@/components/WatchPage/VideoPlayer/TogglePipButton.vue';
 import {isMediaMetadataLoaded} from '/@/use/isMediaMetadataLoaded';
 import {getFramesFromVideo} from '/@/components/WatchPage/VideoPlayer/getFramesFromVideo';
-import {HOUR} from '/@/utils/time';
+import {HOUR, SECOND_MS} from '/@/utils/time';
 import {trackTime} from '/@/utils/telemetry';
 import {isEnabled as isTimelineThumbnailsEnabled} from '/@/components/Options/TimelineThumbnails.vue';
+import type {ActionsHandlers as UseMediaSessionHandlers} from '/@/components/WatchPage/VideoPlayer/useMediaSession';
+import {useMediaSessionActionsHandlers} from '/@/components/WatchPage/VideoPlayer/useMediaSession';
 
 
 const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/WatchPage/VideoPlayer/LibAssSubtitlesRenderer.vue'));
@@ -159,7 +165,8 @@ export default defineComponent({
     },
     video: {
       type: Object as PropType<Video>,
-      required: true,
+      required: false,
+      default: undefined,
     },
     hasNextEpisode: {
       type: Boolean,
@@ -171,9 +178,7 @@ export default defineComponent({
   emits: [
     'source-error',
     'progress',
-    'durationchange',
     'go-to-next-episode',
-    'controls-visibility-change',
   ],
 
   setup: function (props, {emit}) {
@@ -181,7 +186,7 @@ export default defineComponent({
     /**
      * Массив доступных вариантов качества видео
      */
-    const qualities = computed(() => [...props.video.qualities.keys()]);
+    const qualities = computed(() => props.video ? [...props.video.qualities.keys()] : []);
 
     const maxQuality = computed(() => Math.max(...qualities.value));
     /**
@@ -199,12 +204,14 @@ export default defineComponent({
      * Источник для видео выбранного качества
      */
     const videoSource = computed(() =>
-      (
-        props.video.qualities.get(selectedQuality.value)
-        || props.video.qualities.get(maxQuality.value)
-      )
-      +
-      '#t=' + Math.floor(props.startFrom),
+      props.video
+        ? ((
+          props.video.qualities.get(selectedQuality.value)
+          || props.video.qualities.get(maxQuality.value)
+        )
+        +
+        '#t=' + Math.floor(props.startFrom))
+        : '',
     );
 
 
@@ -234,7 +241,7 @@ export default defineComponent({
      * Массив треков для субтитров
      */
     const tracks = computed<VideoTrack[]>(() => {
-      if (!props.video.tracks || props.video.tracks.length === 0) {
+      if (!props.video?.tracks || props.video.tracks.length === 0) {
         return [];
       }
       return [...new Map(props.video.tracks.map(t => [t.src, t])).values()];
@@ -262,8 +269,8 @@ export default defineComponent({
 
     //
     // переключение полноэкранного режима
-    const pageRoot = document.querySelector('main');
-    const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(pageRoot);
+    const videoPlayerRoot = ref();
+    const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(videoPlayerRoot);
 
 
     //
@@ -305,36 +312,34 @@ export default defineComponent({
 
     //
     // Показывать/скрывать контрол бар в зависимости от активности пользователя
-    const {idle} = useIdle(1000 * 3);
+    const {idle} = useIdle(3 * SECOND_MS);
     const controlsVisible = computed(() => !playing.value || !idle.value);
-    watch(controlsVisible, controlsVisible => emit('controls-visibility-change', controlsVisible));
 
-    watch(
-      () => props.hasNextEpisode,
-      () => navigator.mediaSession.setActionHandler('nexttrack', props.hasNextEpisode ? () => emit('go-to-next-episode') : null),
-      {immediate: true});
 
-    onMounted(() => {
-      navigator.mediaSession.setActionHandler('play', () => playing.value = true);
-      navigator.mediaSession.setActionHandler('pause', () => playing.value = false);
-      navigator.mediaSession.setActionHandler('seekbackward', () => seek(-DEFAULT_SEEK_SPEED));
-      navigator.mediaSession.setActionHandler('seekforward', () => seek(DEFAULT_SEEK_SPEED));
-    });
-
-    onUnmounted(() => {
-      navigator.mediaSession.setActionHandler('play', null);
-      navigator.mediaSession.setActionHandler('pause', null);
-      navigator.mediaSession.setActionHandler('seekbackward', null);
-      navigator.mediaSession.setActionHandler('seekforward', null);
-    });
-
+    /**
+     * Media Session Actions
+     */
+    useMediaSessionActionsHandlers(
+      computed<UseMediaSessionHandlers>(() => ({
+        play: () => playing.value = true,
+        seekto: (details => console.log({details})),
+        pause: () => playing.value = false,
+        seekbackward: () => seek(-DEFAULT_SEEK_SPEED),
+        seekforward: () => seek(DEFAULT_SEEK_SPEED),
+        nexttrack: props.hasNextEpisode ? () => emit('go-to-next-episode') : undefined,
+      })),
+    );
 
     let frames = ref({
       step: 0,
       map: new Map<number, string>(),
     });
     if (isTimelineThumbnailsEnabled()) {
-      const minimalQualityVideo = computed(() => props.video.qualities.get(Math.min(...props.video.qualities.keys())));
+      const minimalQualityVideo = computed(() =>
+        props.video
+          ? props.video.qualities.get(Math.min(...props.video.qualities.keys()))
+          : undefined,
+      );
 
       const loadFrames = async (times: number[], signal: AbortSignal, src: string) => {
         const framesIterator = getFramesFromVideo(times, src);
@@ -392,8 +397,6 @@ export default defineComponent({
       });
     }
 
-
-
     return {
       isVideoLoaded,
       controlsVisible,
@@ -415,6 +418,7 @@ export default defineComponent({
       toggleFullscreen,
       idle,
       frames,
+      videoPlayerRoot,
     };
   },
 });
