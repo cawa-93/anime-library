@@ -15,7 +15,6 @@
       ref="videoElement"
       preload="auto"
       autoplay
-      :class="{'controls-visible': controlsVisible}"
       crossorigin="anonymous"
       @click="playing = !playing"
       @dblclick="toggleFullscreen"

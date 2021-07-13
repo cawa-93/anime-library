@@ -102,7 +102,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onUnmounted, ref, toRaw, watch} from 'vue';
+import {computed, defineComponent, ref, toRaw, watch} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
 import {clearVideosCache, getSeries, getVideo} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/SidePanel.vue';
@@ -113,12 +113,14 @@ import {getEpisodesList, getTranslationsList} from '/@/utils/prepareWatchData';
 import TabsSection from '/@/components/TabsSection.vue';
 import type {HistoryViewsItem} from '/@/utils/history-views';
 import {getViewHistoryItem, putHistoryItem} from '/@/utils/history-views';
-import {ignorableWatch, useDebounceFn} from '@vueuse/core';
+import {asyncComputed, ignorableWatch, useDebounceFn, useTitle} from '@vueuse/core';
 import {showErrorMessage} from '/@/utils/dialogs';
 import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
 import {SECOND_MS} from '/@/utils/time';
+import {useMediaSessionMetadata} from '/@/components/WatchPage/VideoPlayer/useMediaSession';
 
 
+const DEFAULT_PAGE_TITLE = 'Просмотр аниме';
 
 export default defineComponent({
   components: {TabsSection, VideoPlayer, TranslationsList, EpisodesList, SidePanel},
@@ -139,7 +141,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    document.title = 'Просмотр аниме';
+    document.title = DEFAULT_PAGE_TITLE;
     const error = ref('');
     const reloadPage = () => {
       location.pathname = `/watch/${props.seriesId}/`;
@@ -462,38 +464,31 @@ export default defineComponent({
 
     /**
      * Загрузка подробной информации об открытом Аниме
-     * Необходимо для заголовка окна
      */
-    getSeries(Number(props.seriesId)).then(series => {
-      if (series && series.title) {
-        document.title = series.title;
+    const series = asyncComputed(() => getSeries(Number(props.seriesId)));
 
-        navigator.mediaSession.metadata = new MediaMetadata({
-          title: currentEpisode.value?.title || '',
-          artist: series.title,
-          album: series.title,
-          artwork: [
-            {src: series.poster || ''},
-          ],
-        });
+    /**
+     * Изменение заголовка страниц
+     */
+    useTitle(computed(() => series.value?.title || DEFAULT_PAGE_TITLE));
 
-        watch(currentEpisode, currentEpisode => {
-          if (navigator.mediaSession.metadata) {
-            navigator.mediaSession.metadata.title = currentEpisode?.title || '';
-          }
-        }, {immediate: true});
-      } else {
-        navigator.mediaSession.metadata = null;
-      }
+    /**
+     * Media Session Metadata
+     */
+    useMediaSessionMetadata(computed(() => {
+      return series.value && currentEpisode.value
+        ? {
+          title: currentEpisode.value?.title,
+          artist: series.value.title,
+          artwork: series.value.poster ? [{src: series.value.poster}] : [],
+        }
+        : null;
+    }));
 
-      onUnmounted(() => navigator.mediaSession.metadata = null);
-    });
 
     /**
      * Отвечает за видимость кнопки плейлистов
-     * Синхронизируется с состоянием видимости панели управления видео
      */
-
     const isSidePanelOpened = ref(false);
     return {
       isSidePanelOpened,
