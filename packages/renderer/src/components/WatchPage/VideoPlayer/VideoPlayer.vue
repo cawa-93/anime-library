@@ -132,7 +132,17 @@
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {computed, defineAsyncComponent, defineComponent, onMounted, onUnmounted, ref, watch, watchEffect} from 'vue';
+import {
+  computed,
+  defineAsyncComponent,
+  defineComponent,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+  watchEffect,
+} from 'vue';
 import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
 import type {Video, VideoTrack} from '/@/utils/videoProvider';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
@@ -395,6 +405,27 @@ export default defineComponent({
           });
       });
     }
+
+    /**
+     * Перед закрытием плеера необходимо:
+     * - Остановить воспроизведение
+     * - Выйти из режима картинка в картинке
+     * - Выйти из полноэкранного режима
+     * - Удалить служебные теги созданные для кэша
+     */
+    onBeforeUnmount(() => {
+      videoElement.value?.pause();
+
+      if (document.pictureInPictureElement) {
+        document.exitPictureInPicture();
+      }
+
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      }
+
+      document.head.querySelectorAll('video').forEach(e => e.remove());
+    });
 
     return {
       isVideoLoaded,
