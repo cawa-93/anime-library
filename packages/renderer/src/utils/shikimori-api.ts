@@ -239,3 +239,15 @@ export async function saveUserRate(seriesId: number, episodes: number): Promise<
     savedUserRatesCache.set(seriesId, episodes);
   });
 }
+
+export interface Genre {
+  id: number
+  name: string
+  russian: string
+  kind: 'manga' | 'anime'
+}
+export function getGenres(): Promise<Genre[]> {
+  return apiFetch<Genre[]>('genres', {
+    cache: 'force-cache',
+  }).then(genres => genres.filter(g => g.kind === 'anime'));
+}

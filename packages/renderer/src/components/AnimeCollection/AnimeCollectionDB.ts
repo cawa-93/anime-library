@@ -10,6 +10,7 @@ export interface AnimeCollection {
     order: string
     limit: number
     mylist: string
+    genre: string
   }
 }
 
