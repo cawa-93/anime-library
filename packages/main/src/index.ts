@@ -1,4 +1,4 @@
-import {app, BrowserWindow, protocol, session} from 'electron';
+import {app, BrowserWindow, nativeTheme, protocol, session} from 'electron';
 import {join, basename} from 'path';
 import {createProtocol} from '/@/createCustomProtocol';
 import windowStateKeeper from 'electron-window-state';
@@ -11,6 +11,8 @@ import {init} from '@sentry/electron/dist/main';
 import {RewriteFrames as RewriteFramesIntegration} from '@sentry/integrations';
 import * as UserSettings from './userSettingController';
 
+
+nativeTheme.themeSource = 'dark';
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   init({

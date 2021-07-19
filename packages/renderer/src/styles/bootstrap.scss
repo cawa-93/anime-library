@@ -1,12 +1,48 @@
 $enable-important-utilities: false !default;
 //@import "../../../../node_modules/bootstrap/scss/bootstrap";
 
+:root {
+  --gray-900: #212529;
+
+  --body-bg: #fff;
+  --body-color: var(--gray-900);
+
+  --border-color: #dee2e6;
+
+  --input-bg: #fff;
+  --input-border-color: #ced4da;
+  --input-placeholder-color: #6c757d;
+
+  --card-bg: #fff;
+  --card-cap-bg: rgba(0, 0, 0, 0.03);
+  --card-border-color: rgba(0,0,0, .125);
+}
+
+$body-bg: var(--body-bg);
+$body-color: var(--body-color);
+$border-color: var(--border-color);
+
+
+$input-bg: var(--input-bg);
+$input-border-color: var(--input-border-color);
+$input-placeholder-color: var(--input-placeholder-color);
+
+$card-bg: var(--card-bg);
+$card-cap-bg: var(--card-cap-bg);
+$card-border-color: var(--card-border-color);
+
+
+$list-group-color: var(--list-group-color);
+
 // scss-docs-start import-stack
 // Configuration
 @import "../../../../node_modules/bootstrap/scss/functions";
 @import "../../../../node_modules/bootstrap/scss/variables";
 @import "../../../../node_modules/bootstrap/scss/mixins";
 @import "../../../../node_modules/bootstrap/scss/utilities";
+
+
+
 
 // Layout & components
 @import "../../../../node_modules/bootstrap/scss/root";
@@ -21,8 +57,8 @@ $enable-important-utilities: false !default;
 //@import "../../../../node_modules/bootstrap/scss/transitions";
 //@import "../../../../node_modules/bootstrap/scss/dropdown";
 @import "../../../../node_modules/bootstrap/scss/button-group";
-@import "../../../../node_modules/bootstrap/scss/nav";
-@import "../../../../node_modules/bootstrap/scss/navbar";
+//@import "../../../../node_modules/bootstrap/scss/nav";
+//@import "../../../../node_modules/bootstrap/scss/navbar";
 @import "../../../../node_modules/bootstrap/scss/card";
 //@import "../../../../node_modules/bootstrap/scss/accordion";
 //@import "../../../../node_modules/bootstrap/scss/breadcrumb";
@@ -46,3 +82,56 @@ $enable-important-utilities: false !default;
 // Utilities
 @import "../../../../node_modules/bootstrap/scss/utilities/api";
 // scss-docs-end import-stack
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bs-primary: #{darken($primary, 10%)};
+
+    --bs-light: #{$gray-900};
+    --bs-gray-dark: #{$gray-100};
+    --bs-white: var(--gray-900);
+    --bs-dark: #fff;
+
+    --body-bg: #1b1d1f;
+    --body-color: #{$gray-400};
+
+    --border-color: #{$gray-700};
+    --border-dark: #{$gray-200};
+
+    --input-bg: #{$gray-800};
+    --input-border-color: #{$gray-700};
+    --input-placeholder-color: #{$gray-500};
+
+    --card-bg: var(--gray-900);
+    --card-cap-bg: rgba(255, 255, 255, 0.05);
+    --card-border-color: rgba(255,255,255, .125);
+
+  }
+
+  .btn-light:not(.ignore-prefers-color-scheme) {
+    @include button-variant($gray-900, $gray-900);
+  }
+
+  .btn-dark:not(.ignore-prefers-color-scheme) {
+    @include button-variant($gray-200, $gray-200);
+  }
+
+  .btn-outline-dark:not(.ignore-prefers-color-scheme) {
+    @include button-outline-variant($gray-200);
+  }
+
+
+
+  .border-primary, .btn-primary, .list-group-item.active {
+    border-color: var(--bs-primary);
+  }
+
+  .bg-primary, .btn-primary, .list-group-item.active {
+    background-color: var(--bs-primary);
+  }
+
+  .border-dark {
+    border-color: var(--border-dark, #212529);
+  }
+
+}

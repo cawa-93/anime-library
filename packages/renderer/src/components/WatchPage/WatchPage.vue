@@ -35,7 +35,7 @@
             v-if="episodes.length > 1 || translations.length"
             title="Выбор эпизода и перевода"
             aria-label="Выбор эпизода и перевода"
-            class="open-playlist btn btn-dark win-icon border-0 bg-transparent"
+            class="open-playlist btn btn-dark ignore-prefers-color-scheme win-icon border-0 bg-transparent"
             @click="isSidePanelOpened = !isSidePanelOpened"
           >
             &#xE8FD;
@@ -67,7 +67,7 @@
                 :for="`${tabName}-tab-header`"
               >
                 <span
-                  class="border-dark px-2 pb-2"
+                  class="border-initial px-2 pb-2"
                   :class="{'border-bottom': isActive}"
                 >
                   {{ tabName === 'episodes' ? 'Эпизоды' : tabName === 'translations' ? 'Переводы' : tabName }}
@@ -544,5 +544,9 @@ header .btn:before {
 
 .playlist-side-panel {
   -webkit-app-region: no-drag;
+}
+
+.border-initial {
+  border-color: initial;
 }
 </style>

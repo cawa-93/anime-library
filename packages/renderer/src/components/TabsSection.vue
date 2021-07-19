@@ -45,4 +45,10 @@ export default defineComponent({
   background-color: rgb(193,193,193);
   z-index: 3;
 }
+
+@media (prefers-color-scheme: dark) {
+  .position-sticky {
+    background-color: black;
+  }
+}
 </style>

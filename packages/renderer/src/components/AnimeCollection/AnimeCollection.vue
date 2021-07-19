@@ -168,7 +168,7 @@ export default defineComponent({
 
 <style scoped>
 .skeleton {
-  background-color: #efefef;
+  background-color: var(--bs-light);
   cursor: wait;
 }
 

@@ -91,6 +91,8 @@ export default defineComponent({
 select {
   opacity: 0;
   cursor: pointer;
+  color: inherit;
+  background: var(--body-bg);
 }
 
 .btn:focus-within {
