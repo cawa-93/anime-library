@@ -16,6 +16,18 @@
   background: rgba(0, 0, 0, 0.1);
 }
 
+@media (prefers-color-scheme: dark) {
+  .btn:not(:disabled):hover {
+    background: rgba(255,255,255, 0.1);
+  }
+}
+
 .btn:not(:disabled):active {
   background: rgba(0, 0, 0, 0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn:not(:disabled):active {
+    background: rgba(255,255,255, 0.2);
+  }
 }
