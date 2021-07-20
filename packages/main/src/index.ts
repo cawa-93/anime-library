@@ -10,9 +10,8 @@ import DialogsHost from '/@/ipc/DialogsHost';
 import {init} from '@sentry/electron/dist/main';
 import {RewriteFrames as RewriteFramesIntegration} from '@sentry/integrations';
 import * as UserSettings from './userSettingController';
+import ColorSchemeHost from '/@/ipc/ColorSchemeHost';
 
-
-nativeTheme.themeSource = 'dark';
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   init({
@@ -58,9 +57,15 @@ if (import.meta.env.MODE !== 'development') {
   app.setAsDefaultProtocolClient(PROTOCOL);
 }
 
+
+/**
+ * Загрузка настроек приложения
+ */
 if (!UserSettings.getSync('enable_hardware_acceleration')) {
   app.disableHardwareAcceleration();
 }
+
+nativeTheme.themeSource = UserSettings.getSync('color_scheme') || 'system';
 
 
 // Install "Vue.js devtools"
@@ -234,6 +239,7 @@ app.whenReady()
 
     registerIpcHost('WindowControllers', WindowControllersHost);
     registerIpcHost('DialogsControllers', DialogsHost);
+    registerIpcHost('ColorSchemeController', ColorSchemeHost);
     registerIpcHost('UserSettingsController', {
       get: UserSettings.get,
       set: UserSettings.set,

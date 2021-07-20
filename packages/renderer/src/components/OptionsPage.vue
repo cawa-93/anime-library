@@ -12,6 +12,17 @@
           <timeline-thumbnails />
         </p>
       </section>
+
+      <section class="card mt-5">
+        <p class="card-header">
+          Тема приложения
+        </p>
+        <p class="card-body mb-0">
+          <color-scheme />
+        </p>
+      </section>
+
+
       <section class="card mt-5">
         <p class="card-header">
           О приложении
@@ -48,11 +59,12 @@ import ShikiOauth from '/@/components/ShikiOauth.vue';
 import OptionAnime365 from '/@/components/OptionAnime365.vue';
 import {openGitHub, openTG, openVK} from '/@/use/socialLinks';
 import TimelineThumbnails from '/@/components/Options/TimelineThumbnails.vue';
+import ColorScheme from '/@/components/Options/ColorScheme.vue';
 
 
 export default defineComponent({
   name: 'OptionsPage',
-  components: {TimelineThumbnails, OptionAnime365, ShikiOauth},
+  components: {ColorScheme, TimelineThumbnails, OptionAnime365, ShikiOauth},
   setup() {
     //
     // Заголовок страницы
