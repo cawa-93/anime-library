@@ -3,6 +3,9 @@ $enable-important-utilities: false !default;
 
 :root {
   --gray-900: #212529;
+  --gray-600: #6c757d;
+  --gray-500: #adb5bd;
+  --gray-400: #ced4da;
 
   --body-bg: #fff;
   --body-color: var(--gray-900);
@@ -10,8 +13,8 @@ $enable-important-utilities: false !default;
   --border-color: #dee2e6;
 
   --input-bg: #fff;
-  --input-border-color: #ced4da;
-  --input-placeholder-color: #6c757d;
+  --input-border-color: var(--gray-400);
+  --input-placeholder-color: var(--gray-600);
 
   --card-bg: #fff;
   --card-cap-bg: rgba(0, 0, 0, 0.03);
@@ -20,6 +23,8 @@ $enable-important-utilities: false !default;
   --list-group-color: var(--gray-900);
   --list-group-bg: #fff;
   --list-group-border-color: rgba(0,0,0, .125);
+
+  --text-muted: var(--gray-600);
 }
 
 $body-bg: var(--body-bg);
@@ -40,6 +45,9 @@ $list-group-color: var(--list-group-color);
 $list-group-bg: var(--list-group-bg);
 $list-group-border-color: var(--list-group-border-color);
 
+$text-muted: var(--text-muted);
+
+$form-check-input-border: 1px solid $input-border-color;
 
 // scss-docs-start import-stack
 // Configuration
@@ -94,13 +102,13 @@ $list-group-border-color: var(--list-group-border-color);
   :root {
     --bs-primary: #{darken($primary, 10%)};
 
-    --bs-light: #{$gray-900};
+    --bs-light: var(--gray-900);
     --bs-gray-dark: #{$gray-100};
     --bs-white: var(--gray-900);
     --bs-dark: #fff;
 
     --body-bg: #1b1d1f;
-    --body-color: #{$gray-400};
+    --body-color: #{$gray-300};
 
     --border-color: #{$gray-700};
     --border-dark: #{$gray-200};
@@ -117,6 +125,7 @@ $list-group-border-color: var(--list-group-border-color);
     --list-group-bg: var(--gray-900);
     --list-group-border-color: rgba(255,255,255, .125);
 
+    --text-muted: var(--gray-500);
   }
 
   .btn-light:not(.ignore-prefers-color-scheme) {
