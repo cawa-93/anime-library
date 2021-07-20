@@ -16,6 +16,10 @@ $enable-important-utilities: false !default;
   --card-bg: #fff;
   --card-cap-bg: rgba(0, 0, 0, 0.03);
   --card-border-color: rgba(0,0,0, .125);
+
+  --list-group-color: var(--gray-900);
+  --list-group-bg: #fff;
+  --list-group-border-color: rgba(0,0,0, .125);
 }
 
 $body-bg: var(--body-bg);
@@ -33,6 +37,9 @@ $card-border-color: var(--card-border-color);
 
 
 $list-group-color: var(--list-group-color);
+$list-group-bg: var(--list-group-bg);
+$list-group-border-color: var(--list-group-border-color);
+
 
 // scss-docs-start import-stack
 // Configuration
@@ -105,6 +112,10 @@ $list-group-color: var(--list-group-color);
     --card-bg: var(--gray-900);
     --card-cap-bg: rgba(255, 255, 255, 0.05);
     --card-border-color: rgba(255,255,255, .125);
+
+    --list-group-color: #{$gray-400};
+    --list-group-bg: var(--gray-900);
+    --list-group-border-color: rgba(255,255,255, .125);
 
   }
 
