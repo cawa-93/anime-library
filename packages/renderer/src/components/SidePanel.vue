@@ -44,8 +44,16 @@ section {
   min-width: 250px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.75);
+  --background-color: 255,255,255;
+  --background-opacity: 0.75;
+  background-color: rgba(var(--background-color), var(--background-opacity));
   height: 100%;
   overflow-y: auto;
+}
+
+@media (prefers-color-scheme: dark) {
+  section {
+    --background-color: 0,0,0;
+  }
 }
 </style>

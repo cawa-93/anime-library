@@ -5,17 +5,24 @@
   transition-duration: 100ms;
   transition-timing-function: linear;
   color: inherit;
+  --highlight-bg: 0,0,0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn {
+    --highlight-bg: 255,255,255;
+  }
+}
+
+.btn:not(:disabled):hover {
+  background: rgba(var(--highlight-bg), 0.1);
+}
+
+.btn:not(:disabled):active {
+  background: rgba(var(--highlight-bg), 0.2);
 }
 
 .btn:focus:not(:focus-visible) {
   outline: none;
   box-shadow: none;
-}
-
-.btn:not(:disabled):hover {
-  background: rgba(0, 0, 0, 0.1);
-}
-
-.btn:not(:disabled):active {
-  background: rgba(0, 0, 0, 0.2);
 }

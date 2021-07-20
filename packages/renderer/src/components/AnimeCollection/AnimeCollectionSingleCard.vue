@@ -126,7 +126,12 @@ img {
   position: absolute;
   top: 0;
   left: 0;
-  background-color: white;
+  background-color: var(--card-bg, #fff);
+}
+
+.list-group-item {
+  background: none;
+  color: var(--body-color);
 }
 
 

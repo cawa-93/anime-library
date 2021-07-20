@@ -3,11 +3,10 @@
     <button-switcher
       v-for="genre of genres"
       :key="genre.id"
-      class="genre alert m-0"
+      class="genre m-0"
       :class="{
-        'alert-danger text-decoration-line-through': selectedGenres.get(genre.id) === 'exclude',
-        'alert-success': selectedGenres.get(genre.id) === 'include',
-        'alert-secondary': selectedGenres.get(genre.id) === undefined,
+        'exclude text-decoration-line-through': selectedGenres.get(genre.id) === 'exclude',
+        'include': selectedGenres.get(genre.id) === 'include',
       }"
       :states="['', 'include', 'exclude']"
       :model-value="selectedGenres.get(genre.id) || ''"
@@ -71,12 +70,44 @@ section {
 
 .genre {
   padding: 0.3rem 0.7rem;
-  border-width: 2px;
   flex-grow: 1;
   text-align: center;
+  background-color: var(--genre-bg, #e8e8e8);
+  color: var(--genre-color);
+  border-radius: .25rem;
 }
 
-.genre:not(:hover) {
-  border-color: transparent;
+.genre:hover {
+  box-shadow: 0 0 0 1px var(--genre-color, var(--body-color)) inset;
 }
+
+
+.genre.exclude {
+  --genre-bg: #f8d7da;
+  --genre-color: #842029;
+}
+
+.genre.include {
+  --genre-bg: #d1e7dd;
+  --genre-color: #0f5132;
+}
+
+@media (prefers-color-scheme: dark) {
+  .genre {
+    --genre-bg: var(--input-bg);
+    --genre-color: var(--body-color);
+  }
+
+  .genre.exclude {
+    --genre-color: #f8d7da;
+    --genre-bg: #842029;
+  }
+
+  .genre.include {
+    --genre-color: #d1e7dd;
+    --genre-bg: #0f5132;
+  }
+}
+
+
 </style>

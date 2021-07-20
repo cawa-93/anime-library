@@ -2,11 +2,14 @@ import type {DeepReadonly} from 'vue';
 
 
   export type Promisified<T> = {
-    readonly [P in keyof T]: T[P] extends Fn
-      ? (...a: Parameters<T[P]>) => ReturnType<T[P]> extends Promise<unknown>
-        ? ReturnType<T[P]>
-        : Promise<ReturnType<T[P]>>
-      : Promise<T[P]>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    readonly [P in keyof T]: T[P] extends (...a: any[]) => Promise<any>
+      ? T[P]
+      : T[P] extends Fn
+        ? (...a: Parameters<T[P]>) => ReturnType<T[P]> extends Promise<unknown>
+          ? ReturnType<T[P]>
+          : Promise<ReturnType<T[P]>>
+        : Promise<T[P]>;
   }
 
 /**

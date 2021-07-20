@@ -494,7 +494,9 @@ dialog {
   max-height: 100vh;
   overflow-y: auto;
   width: 100%;
-  max-width: 750px;
+  max-width: 630px;
+  color: inherit;
+  background: transparent;
 }
 
 dialog::backdrop {
