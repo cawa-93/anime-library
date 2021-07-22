@@ -3,8 +3,8 @@ import type {MaybeReadonly} from '/@shared/types/utils';
 import {knownAuthors} from '/@/utils/videoProvider/providers/knownAuthors';
 
 
-const qualitiesRegexps = [/tv/, /bd/, /hd/, /sd/, /dvd/, /blu-?ray/, /(?:720|1080)[pр]?/];
-const stopWords = [/by/, /feat/, /studio/, /студия/, /voice/, /sub/, /телеканал/, /chan+el/, /group/, /project/];
+const qualitiesRegexps = [/tv/, /bd/, /hd/, /sd/, /dvd/, /blu-?ray/, /(?:720|1080)[pр]?/]; // pр -- буквы кирилицей и латиницей
+const stopWords = [/by/, /feat/, /studio/, /студия/, /voice/, /sub/, /телеканал/, /chan+el/, /group/, /project/, /club/i];
 
 const FALLBACK_AUTHOR: TranslationAuthor = {
   id: null,

@@ -114,15 +114,21 @@ export const knownAuthors: knownAuthor[] = [
     },
   },
   {
-    regexp: /Cactus(?: |_)*(?:Team)?/i,
+    regexp: /Cactus[ _]*(?:Team)?/i,
     author: {
       team: 'Cactus Team',
     },
   },
   {
-    regexp: /Amazing(?: |_)*Dubbing/i,
+    regexp: /Amazing[ _]*Dubbing/i,
     author: {
       team: 'Amazing Dubbing',
+    },
+  },
+  {
+    regexp: /JAM[ _]*CLUB/i,
+    author: {
+      team: 'JAM CLUB',
     },
   },
 ];
