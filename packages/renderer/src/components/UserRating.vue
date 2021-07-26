@@ -105,6 +105,13 @@ export default defineComponent({
   width: fit-content;
   max-width: 100%;
   border-left-width: 5px;
+  border-color: initial;
+}
+
+@media (prefers-color-scheme: dark) {
+  .bg-body {
+    background-color: var(--input-bg);
+  }
 }
 
 .slide-enter-active, .slide-leave-active {
