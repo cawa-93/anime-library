@@ -48,13 +48,10 @@ const keys = new Map<KeyboardEvent['code'], Action>([
   ['ArrowRight', {action: 'fastForward', ignore: e => matchBySelector(e, 'input, textarea, select')}],
   ['KeyL', {action: 'fastForward'}],
 
-  ['AudioVolumeMute', {action: 'volumeMuteToggle'}],
   ['KeyM', {action: 'volumeMuteToggle'}],
-
 
   ['VolumeUp', {action: 'volumeUp'}],
   ['ArrowUp', {action: 'volumeUp', ignore: e => matchBySelector(e, 'input, textarea, select')}],
-
 
   ['VolumeDown', {action: 'volumeDown'}],
   ['ArrowDown', {action: 'volumeDown', ignore: e => matchBySelector(e, 'input, textarea, select')}],
