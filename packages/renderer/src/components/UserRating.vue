@@ -40,7 +40,7 @@ export default defineComponent({
   setup() {
     const uuid = localStorage.getItem('uuid');
     const top = ref(0);
-    const visible = ref(!false);
+    const visible = ref(false);
 
     const emoji = computed(() => {
       if (top.value === 0) return '';
