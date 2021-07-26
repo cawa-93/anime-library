@@ -155,7 +155,8 @@ $form-check-input-border: 1px solid $input-border-color;
   }
 
   .alert-success {
-    color: lighten($success, 10%);
+    color: lighten($success, 55%);
+    border-color: $success;
   }
 
 }

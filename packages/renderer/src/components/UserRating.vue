@@ -40,7 +40,7 @@ export default defineComponent({
   setup() {
     const uuid = localStorage.getItem('uuid');
     const top = ref(0);
-    const visible = ref(false);
+    const visible = ref(!false);
 
     const emoji = computed(() => {
       if (top.value === 0) return '';
@@ -105,7 +105,6 @@ export default defineComponent({
   width: fit-content;
   max-width: 100%;
   border-left-width: 5px;
-  border-color: initial;
 }
 
 @media (prefers-color-scheme: dark) {
