@@ -1,17 +1,16 @@
-import type {Translation, TranslationAuthor} from '/@/utils/videoProvider';
+import type {Translation, TranslationAuthor, TranslationType} from '/@/utils/videoProvider';
 import type {DBSchema, IDBPDatabase} from 'idb';
 import {openDB} from 'idb';
 import type {IndexKey} from 'idb/build/esm/entry';
-import {isAuthorsEqual} from '/@/utils/videoProvider/providers/anime365-authors';
 import type {MaybeReadonly} from '/@shared/types/utils';
 import {trackTime} from '/@/utils/telemetry';
 import type {MaybeRef} from '@vueuse/core';
-import { toRaw } from 'vue';
+import {toRaw} from 'vue';
 
 
 interface TranslationRecommendations extends DBSchema {
   preferences: {
-    value: Translation & { seriesId: number };
+    value: { seriesId: number, type: TranslationType, author: string[] };
     key: number;
     indexes: {
       'by-type': 'sub' | 'voice'
@@ -27,11 +26,32 @@ function getDB() {
     return dbPromise;
   }
 
-  dbPromise = openDB<TranslationRecommendations>('translation-recommendations', 1, {
-    upgrade(db: IDBPDatabase<TranslationRecommendations>, oldVersion: number) {
+  dbPromise = openDB<TranslationRecommendations>('translation-recommendations', 2, {
+    async upgrade(db: IDBPDatabase<TranslationRecommendations>, oldVersion, _, transaction) {
       if (oldVersion < 1) {
         const preferencesStore = db.createObjectStore('preferences', {keyPath: 'seriesId'});
         preferencesStore.createIndex('by-type', 'type');
+      }
+
+      if (oldVersion < 2) {
+        const preferencesStore = transaction.objectStore('preferences');
+        let cursor = await preferencesStore.openCursor();
+
+
+        while (cursor) {
+          // @ts-expect-error Ранее author сохранялся с типом TranslationAuthor но после этой миграции должен храниться как string[]
+          const author = cursor.value.author as TranslationAuthor;
+          if (author.id) {
+            cursor.update({
+              type: cursor.value.type,
+              seriesId: cursor.value.seriesId,
+              author: [author.id],
+            });
+          } else {
+            cursor.delete();
+          }
+          cursor = await cursor.continue();
+        }
       }
     },
   });
@@ -40,9 +60,36 @@ function getDB() {
 }
 
 
-export async function savePreferredTranslation(seriesId: number, translation: MaybeRef<Translation>): Promise<number> {
-  const t = toRaw(translation) as Translation;
-  return getDB().then(db => db.put('preferences', {...t, seriesId}));
+/**
+ * Для каждого аниме в базе данных хранится массив предпочитаемых авторов
+ * Этота константа ограничивает количество сохранённых авторов на один сериал
+ * Необходимо для экономии памяти в хранилище
+ */
+const PREFERRED_AUTHORS_PER_SERIES_LIMIT = 5;
+
+export async function savePreferredTranslation(seriesId: number, translationRef: MaybeRef<Translation>): Promise<number> {
+  const translation = toRaw(translationRef) as Translation;
+  const authorId = translation.author.id;
+  if (!authorId) {
+    return -1;
+  }
+
+  const db = await getDB();
+  const tx = db.transaction('preferences', 'readwrite');
+  const savedTranslation = await tx.store.get(seriesId);
+  const savedAuthors = savedTranslation?.type === translation.type
+    ? savedTranslation?.author || []
+    : [];
+
+  const authorsToSave = [authorId, ...savedAuthors.filter(id => id !== authorId)].slice(0, PREFERRED_AUTHORS_PER_SERIES_LIMIT);
+
+  return getDB().then(db => db.put(
+    'preferences',
+    {
+      type: translation.type,
+      seriesId,
+      author: authorsToSave,
+    }));
 }
 
 
@@ -54,60 +101,29 @@ function getPreferredTranslationType(): Promise<'sub' | 'voice'> {
 }
 
 
-//
-// async function keyCount<IndexName extends IndexNames<TranslationRecommendations, 'preferences'>>(indexName: IndexName) {
-//   const db = await getDB();
-//   const transaction = db.transaction('preferences', 'readonly');
-//   const index = transaction.objectStore('preferences').index(indexName);
-//
-//   const countMap = new Map<IndexKey<TranslationRecommendations, 'preferences', IndexName>, number>();
-//
-//   let cursor = await index.openKeyCursor();
-//   while (cursor) {
-//     const key = cursor.key as IndexKey<TranslationRecommendations, 'preferences', IndexName>;
-//     const value = countMap.get(key) || 0;
-//     countMap.set(key, value + 1);
-//     cursor = await cursor.continue();
-//   }
-//
-//   await transaction.done;
-//
-//   return countMap;
-// }
-
-
 /**
  * Возвращает массив авторов, отсортированный по приоритету для пользователя
  */
-async function getPreferredTranslationAuthorsByType(preferredType: IndexKey<TranslationRecommendations, 'preferences', 'by-type'>): Promise<TranslationAuthor[]> {
-  const all = await getDB().then(db => db.getAllFromIndex('preferences', 'by-type', preferredType));
-  if (all.length === 0) {
+async function getPreferredTranslationAuthorsByType(preferredType: IndexKey<TranslationRecommendations, 'preferences', 'by-type'>): Promise<string[]> {
+  const translations = await getDB().then(db => db.getAllFromIndex('preferences', 'by-type', preferredType));
+  if (translations.length === 0) {
     return [];
   }
 
-  if (all.length === 1) {
-    return [all[0].author];
+  if (translations.length === 1) {
+    return translations[0].author;
   }
 
-  const map = new Map<TranslationAuthor['id'], { author: TranslationAuthor, count: number }>();
+  const map = new Map<string, number>();
 
-  all.forEach(({author}) => {
-    let saved = map.get(author.id);
-    if (!saved) {
-      saved = {
-        author,
-        count: 0,
-      };
-    }
+  translations.forEach(({author}) =>
+    author.forEach(id => map.set(id, (map.get(id) || 0) + 1)),
+  );
 
-    saved.count += 1;
-    map.set(author.id, saved);
-  });
-
-  return Array.from(map.values())
-    .filter(s => s.count > 1)
-    .sort((a, b) => b.count - a.count)
-    .map(s => s.author);
+  return Array.from(map.entries())
+    .filter(([id, count]) => id && count >= 1)
+    .sort(([, a], [, b]) => b - a)
+    .map(([id]) => id);
 }
 
 
@@ -126,7 +142,12 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
 
   // Попытка быстро вернуть перевод, если сразу найдётся совпадение по автору и типу
   if (reference) {
-    const preferredTranslation = translations.find(t => t.type === reference.type && isAuthorsEqual(t.author, reference.author));
+    const preferredTranslation = translations
+      .find(t =>
+        t.type === reference.type
+        && t.author.id
+        && reference.author.includes(t.author.id),
+      );
     if (preferredTranslation) {
       track(performance.now() - start, 'by-reference');
       return preferredTranslation;
@@ -156,7 +177,6 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
   }
 
   const preferredAuthors = await getPreferredTranslationAuthorsByType(preferredType);
-
   // Если нет предпочитаемых авторов -- вернуть первый подходящий перевод
   if (preferredAuthors.length === 0) {
     track(performance.now() - start, 'has-no-preferred-authors');
@@ -165,7 +185,7 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
 
   // Попытка найти среди доступных перевод от одного из предпочитаемых авторов по порядку их приоритета
   for (const preferredAuthor of preferredAuthors) {
-    const preferredTranslation = translations.find(t => isAuthorsEqual(t.author, preferredAuthor));
+    const preferredTranslation = translations.find(t => t.author.id === preferredAuthor);
     if (preferredTranslation) {
       track(performance.now() - start, 'by-preferred-authors');
       return preferredTranslation;
@@ -176,6 +196,7 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
   track(performance.now() - start, 'fallback');
   return typedTranslations[0];
 }
+
 
 function track(time: number, label?: string) {
   return trackTime('Translation Recommendations', 'Search Preferred Translation', time, label);
