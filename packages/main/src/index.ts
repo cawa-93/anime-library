@@ -68,7 +68,9 @@ if (!UserSettings.getSync('enable_hardware_acceleration')) {
 nativeTheme.themeSource = UserSettings.getSync('color_scheme') || 'system';
 
 
-// Install "Vue.js devtools"
+/**
+ * Install "Vue.js devtools"
+ */
 if (import.meta.env.MODE === 'development') {
   app.whenReady()
     .then(() => import('electron-devtools-installer'))

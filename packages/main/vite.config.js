@@ -48,10 +48,10 @@ export default defineConfig({
         'electron',
 
         /**
-         * semver не может быть обработан из-за ошибки
-         * https://github.com/npm/node-semver/issues/381
+         * electron-devtools-installer не может быть обработан из-за ошибки
+         * https://github.com/cawa-93/vite-electron-builder/issues/346
          */
-        'semver',
+        'electron-devtools-installer',
 
         /**
          * @sentry/electron не может быть обработан из-за того, что его исходники зависят от собственного `package.json`
