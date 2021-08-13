@@ -111,6 +111,20 @@ export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
   const malEpisodesPromise = getEpisodesTitles(myAnimeListId);
   const episodes: Episode[] = [];
 
+  /**
+   * Некоторые аниме имеют не ккоррекный тип. Например
+   * Сериал имеет тип `tv` а ВСЕ серии тип `ona`.
+   * Серии чей тип не соответствует типу сериала будут отфильтрованы,
+   * поэтому для случаев когда ВСЕ серии не соответствуют типу сериала я предполагаю, что не правильный тип именно у сериала
+   * и изменяю его на тип взятый с первой серии
+   */
+  {
+    const firstEpisodeType = targetSeries.episodes[0].episodeType;
+    if (targetSeries.episodes.every(e => e.episodeType === firstEpisodeType && e.episodeType !== targetSeries.type)) {
+      targetSeries.type = firstEpisodeType;
+    }
+  }
+
   for (const episode of targetSeries.episodes) {
     const number = Number.parseFloat(episode.episodeInt);
     if (
@@ -137,16 +151,17 @@ export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
       );
 
     episodes.push({
-       id: episode.id,
-       title,
-       number,
-       recap: malEpisode?.recap,
-       filler: malEpisode?.filler,
-     });
+      id: episode.id,
+      title,
+      number,
+      recap: malEpisode?.recap,
+      filler: malEpisode?.filler,
+    });
   }
 
   return episodes;
 }
+
 
 interface MalEpisode {
   episode_id: number
@@ -155,9 +170,10 @@ interface MalEpisode {
   recap: boolean,
 }
 
+
 interface MalResponse {
-  episodes_last_page?: number
-  episodes?: MalEpisode[]
+  episodes_last_page?: number;
+  episodes?: MalEpisode[];
 }
 
 
