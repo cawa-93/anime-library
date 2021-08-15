@@ -5,18 +5,11 @@ import {join} from 'path';
 import {builtinModules} from 'module';
 import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
-import {loadAndSetEnv} from '../../scripts/loadAndSetEnv.mjs';
 import copy from 'rollup-plugin-copy';
 import {VitePWA} from 'vite-plugin-pwa';
 
 const PACKAGE_ROOT = __dirname;
 
-
-/**
- * Vite looks for `.env.[mode]` files only in `PACKAGE_ROOT` directory.
- * Therefore, you must manually load and set the environment variables from the root directory above
- */
-loadAndSetEnv(process.env.MODE, process.cwd());
 
 const waitOnlinePlugin = {
   requestWillFetch: ({request}) => {
@@ -41,6 +34,7 @@ const waitOnlinePlugin = {
 export default defineConfig({
   mode: process.env.MODE,
   root: PACKAGE_ROOT,
+  envDir: process.cwd(),
   logLevel: 'warn',
   resolve: {
     alias: {
