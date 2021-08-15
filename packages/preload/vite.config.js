@@ -1,14 +1,14 @@
 import {chrome} from '../../electron-vendors.config.json';
 import {join} from 'path';
 import {builtinModules} from 'module';
-import {defineConfig} from 'vite';
 
 const PACKAGE_ROOT = __dirname;
 
 /**
+ * @type {import('vite').UserConfig}
  * @see https://vitejs.dev/config/
  */
-export default defineConfig({
+const config = {
   mode: process.env.MODE,
   root: PACKAGE_ROOT,
   envDir: process.cwd(),
@@ -47,4 +47,6 @@ export default defineConfig({
     },
     emptyOutDir: true,
   },
-});
+};
+
+export default config;

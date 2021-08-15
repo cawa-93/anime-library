@@ -3,7 +3,6 @@
 import {chrome} from '../../electron-vendors.config.json';
 import {join} from 'path';
 import {builtinModules} from 'module';
-import {defineConfig} from 'vite';
 import vue from '@vitejs/plugin-vue';
 import copy from 'rollup-plugin-copy';
 import {VitePWA} from 'vite-plugin-pwa';
@@ -29,9 +28,10 @@ const waitOnlinePlugin = {
 };
 
 /**
+ * @type {import('vite').UserConfig}
  * @see https://vitejs.dev/config/
  */
-export default defineConfig({
+const config = {
   mode: process.env.MODE,
   root: PACKAGE_ROOT,
   envDir: process.cwd(),
@@ -182,4 +182,6 @@ export default defineConfig({
       }],
     }),
   ],
-});
+};
+
+export default config;
