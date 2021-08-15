@@ -14,9 +14,35 @@ interface Credentials {
 const REDIRECT_URI = 'anime-lib://./options/';
 
 
+/**
+ * @returns {{client_id: string; client_secret: string}}
+ */
+function getApp() {
+  const client_id = import.meta.env.VITE_SHIKI_CLIENT_ID;
+
+  if (typeof client_id !== 'string') {
+    throw new Error(`Expected VITE_SHIKI_CLIENT_ID as string but got ${JSON.stringify(import.meta.env.VITE_SHIKI_CLIENT_ID)}.`);
+  }
+
+  const client_secret = import.meta.env.VITE_SHIKI_CLIENT_SECRET;
+
+  if (typeof client_secret !== 'string') {
+    throw new Error(`Expected VITE_SHIKI_CLIENT_SECRET as string but got is ${JSON.stringify(import.meta.env.VITE_SHIKI_CLIENT_SECRET)}.`);
+  }
+
+  return {client_id, client_secret};
+}
+
+
+/**
+ *
+ * @param {string} client_id
+ */
 export function getAuthUrl(): string {
+  const {client_id} = getApp();
+
   const authURL = new URL('https://shikimori.one/oauth/authorize');
-  authURL.searchParams.set('client_id', import.meta.env.VITE_SHIKI_CLIENT_ID);
+  authURL.searchParams.set('client_id', client_id);
   authURL.searchParams.set('redirect_uri', REDIRECT_URI);
   authURL.searchParams.set('response_type', 'code');
   authURL.searchParams.set('scope', 'user_rates');
@@ -25,9 +51,10 @@ export function getAuthUrl(): string {
 
 
 export function refreshCredentials(request: { type: 'authorization_code', code: string } | { type: 'refresh_token', refresh_token: string }): Promise<Credentials> {
+  const {client_id, client_secret} = getApp();
   const body: Record<string, string> = {
-    client_id: import.meta.env.VITE_SHIKI_CLIENT_ID,
-    client_secret: import.meta.env.VITE_SHIKI_CLIENT_SECRET,
+    client_id,
+    client_secret,
     grant_type: request.type,
   };
 
@@ -69,9 +96,11 @@ function isValidCredentials(data: unknown): data is Credentials {
     && 'created_at' in data;
 }
 
+
 export function clearCredentials(): void {
   return localStorage.removeItem('shiki-token');
 }
+
 
 function saveCredentials(credentials: unknown): void {
   if (!isValidCredentials(credentials)) {
@@ -147,19 +176,21 @@ export async function apiFetch<T>(input: RequestInfo, init: RequestInit = {}): P
 
 
 interface ShikiUserRate {
-  created_at: string
-  episodes: number
-  id: number
-  rewatches: number
-  score?: number
-  status: 'planned' | 'watching' | 'rewatching' | 'completed' | 'on_hold' | 'dropped'
-  updated_at: string
+  created_at: string;
+  episodes: number;
+  id: number;
+  rewatches: number;
+  score?: number;
+  status: 'planned' | 'watching' | 'rewatching' | 'completed' | 'on_hold' | 'dropped';
+  updated_at: string;
 }
+
 
 /**
  * Кэш последних сохранений в историю просмотров Шики
  */
 const savedUserRatesCache = new Map<number, number>();
+
 
 export function getUserRate(seriesId: number): Promise<ShikiUserRate | null> {
   return apiFetch<{ user_rate: ShikiUserRate | null }>(`animes/${seriesId}`).then(({user_rate}) => {
@@ -240,12 +271,15 @@ export async function saveUserRate(seriesId: number, episodes: number): Promise<
   });
 }
 
+
 export interface Genre {
-  id: number
-  name: string
-  russian: string
-  kind: 'manga' | 'anime'
+  id: number;
+  name: string;
+  russian: string;
+  kind: 'manga' | 'anime';
 }
+
+
 export function getGenres(): Promise<Genre[]> {
   return apiFetch<Genre[]>('genres', {
     cache: 'force-cache',

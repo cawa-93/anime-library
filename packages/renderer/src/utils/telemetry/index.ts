@@ -4,8 +4,8 @@ import {isLoggedIn} from '/@/utils/shikimori-api';
 import {isEnabled as isTimelineThumbnailsEnabled} from '/@/components/Options/TimelineThumbnails.vue';
 import {isEnabled as isEnableHardwareAccelerationEnabled} from '/@/components/Options/EnableHardwareAcceleration.vue';
 
-const TRACKING_ENABLED = !!import.meta.env.VITE_UA_TRACK_ID;
-
+const TRACKING_ID = import.meta.env.VITE_UA_TRACK_ID;
+const TRACKING_ENABLED = TRACKING_ID !== undefined;
 /**
  * Сохранённое состояние параметра isEnableHardwareAccelerationEnabled
  * Необходимо заранее загрузить его значение, чтобы в дальнейшем использовать в синхронных функциях
@@ -34,10 +34,10 @@ function getBaseParams() {
     ul: navigator.language,
     cid,
     sc: isNewSession ? 'start' : undefined,
-    tid: import.meta.env.VITE_UA_TRACK_ID,
+    tid: TRACKING_ID || '',
     an: 'Anime Library',
     aid: 'com.lib.anime',
-    av: import.meta.env.VITE_APP_VERSION,
+    av: import.meta.env.VITE_APP_VERSION || '',
     cd1: isLoggedIn() ? 'connected' : 'not-connected',
     cd2: isTimelineThumbnailsEnabled() ? 'enabled' : 'disabled',
     cd3: _isEnableHardwareAccelerationEnabled === undefined ? undefined : _isEnableHardwareAccelerationEnabled ? 'enabled' : 'disabled',
