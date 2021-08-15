@@ -6,8 +6,16 @@ import {builtinModules} from 'module';
 import vue from '@vitejs/plugin-vue';
 import copy from 'rollup-plugin-copy';
 import {VitePWA} from 'vite-plugin-pwa';
+import {getAppVersion} from '../../getAppVersion.cjs';
 
 const PACKAGE_ROOT = __dirname;
+
+/**
+ * Необходимо установить версиб приложения в переменной окружения,
+ * иначе она не будет доступна в рантайме
+ * @type {string}
+ */
+process.env.VITE_APP_VERSION = getAppVersion();
 
 
 const waitOnlinePlugin = {
@@ -26,6 +34,7 @@ const waitOnlinePlugin = {
     });
   },
 };
+
 
 /**
  * @type {import('vite').UserConfig}

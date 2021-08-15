@@ -1,8 +1,16 @@
 import {node} from '../../electron-vendors.config.json';
 import {join} from 'path';
 import {builtinModules} from 'module';
+import {getAppVersion} from '../../getAppVersion.cjs';
 
 const PACKAGE_ROOT = __dirname;
+
+/**
+ * Необходимо установить версиб приложения в переменной окружения,
+ * иначе она не будет доступна в рантайме
+ * @type {string}
+ */
+process.env.VITE_APP_VERSION = getAppVersion();
 
 /**
  * @type {import('vite').UserConfig}
