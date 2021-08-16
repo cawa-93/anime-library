@@ -102,15 +102,11 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, toRaw, watch} from 'vue';
+import {computed, defineAsyncComponent, defineComponent, ref, toRaw, watch} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
 import {clearVideosCache, getSeries, getVideo} from '/@/utils/videoProvider';
-import SidePanel from '/@/components/SidePanel.vue';
-import EpisodesList from '/@/components/WatchPage/EpisodesList.vue';
-import TranslationsList from '/@/components/WatchPage/TranslationsList.vue';
 import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
 import {getEpisodesList, getTranslationsList} from '/@/utils/prepareWatchData';
-import TabsSection from '/@/components/TabsSection.vue';
 import type {HistoryViewsItem} from '/@/utils/history-views';
 import {getViewHistoryItem, putHistoryItem} from '/@/utils/history-views';
 import {asyncComputed, ignorableWatch, useDebounceFn, useTitle} from '@vueuse/core';
@@ -118,6 +114,11 @@ import {showErrorMessage} from '/@/utils/dialogs';
 import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
 import {SECOND_MS} from '/@/utils/time';
 import {useMediaSessionMetadata} from '/@/components/WatchPage/VideoPlayer/useMediaSession';
+
+const SidePanel = defineAsyncComponent(() => import('/@/components/SidePanel.vue'));
+const TabsSection = defineAsyncComponent(() => import('/@/components/TabsSection.vue'));
+const TranslationsList = defineAsyncComponent(() => import('/@/components/WatchPage/TranslationsList.vue'));
+const EpisodesList = defineAsyncComponent(() => import('/@/components/WatchPage/EpisodesList.vue'));
 
 
 const DEFAULT_PAGE_TITLE = 'Просмотр аниме';
