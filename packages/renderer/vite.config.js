@@ -18,24 +18,6 @@ const PACKAGE_ROOT = __dirname;
 process.env.VITE_APP_VERSION = getAppVersion();
 
 
-const waitOnlinePlugin = {
-  requestWillFetch: ({request}) => {
-    if (navigator.onLine) {
-      return Promise.resolve(request);
-    }
-
-    return new Promise(r => {
-      const c = setInterval(() => {
-        if (navigator.onLine) {
-          clearInterval(c);
-          r(request);
-        }
-      }, 2000);
-    });
-  },
-};
-
-
 /**
  * @type {import('vite').UserConfig}
  * @see https://vitejs.dev/config/
@@ -94,18 +76,19 @@ const config = {
 
     VitePWA({
       strategies: 'generateSW',
-      mode: 'development',
+      mode: process.env.MODE,
       injectRegister: 'script',
       manifest: false,
-      debug: true,
+      debug: false,
       workbox: {
         globPatterns: [],
         runtimeCaching: [
+
+          /** Список серий */
           {
             urlPattern: /^https:\/\/smotret-anime\.online\/api\/series.*episodes/,
             handler: 'CacheFirst',
             options: {
-              plugins: [waitOnlinePlugin],
               cacheName: 'sm-episodes',
               expiration: {
                 maxAgeSeconds: 24 * 60 * 60,
@@ -113,11 +96,11 @@ const config = {
             },
           },
 
+          /** Базовая информация про аниме */
           {
             urlPattern: /^https:\/\/smotret-anime\.online\/api\/series.*/,
             handler: 'CacheFirst',
             options: {
-              plugins: [waitOnlinePlugin],
               cacheName: 'sm-series',
               expiration: {
                 maxEntries: 1000,
@@ -125,11 +108,11 @@ const config = {
             },
           },
 
+          /** embed данные видео */
           {
             urlPattern: /^https:\/\/smotret-anime\.online\/api\/translations\/embed\/.*access_token/,
             handler: 'CacheFirst',
             options: {
-              plugins: [waitOnlinePlugin],
               cacheName: 'sm-embeds',
               expiration: {
                 maxAgeSeconds: 24 * 60 * 60,
@@ -137,11 +120,11 @@ const config = {
             },
           },
 
+          /** Лубые другие обращения к API smotret-anime */
           {
             urlPattern: /^https:\/\/smotret-anime\.online\/api\/.*/,
             handler: 'CacheFirst',
             options: {
-              plugins: [waitOnlinePlugin],
               cacheName: 'sm-api-calls',
               expiration: {
                 maxAgeSeconds: 12 * 60 * 60, // 12 часов
@@ -149,30 +132,44 @@ const config = {
             },
           },
 
+          /** Файлы субтитров со smotret-anime */
           {
             urlPattern: /^https:\/\/sub\.smotret-anime\.online\/.*/,
             handler: 'CacheFirst',
             options: {
-              plugins: [waitOnlinePlugin],
               cacheName: 'sm-subtitles',
               expiration: {
-                maxEntries: 10,
+                maxEntries: 100,
               },
             },
           },
 
 
-          // {
-          //   urlPattern: /^https:\/\/shikimori\.one\/api\/animes\?.*/,
-          //   handler: 'CacheFirst',
-          //   options: {
-          //     plugins: [waitOnlinePlugin],
-          //     cacheName: 'shikimori-search-results',
-          //     expiration: {
-          //       maxAgeSeconds: 60 * 60 * 12,
-          //     },
-          //   },
-          // },
+          /**
+           * Кэш обращений к api MyAnimeList
+           */
+          {
+            urlPattern: /^https:\/\/api.jikan.moe\/v3\/anime\/.*/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'mal-api',
+              expiration: {
+                maxAgeSeconds: 7 * 24 * 60 * 60, // 7 дней
+              },
+            },
+          },
+
+          /** Кэш изображений с shikimori */
+          {
+            urlPattern: /^https:\/\/shikimori.one\/system\/animes\/.*\.(jpg|png|jpeg).*/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'shiki-images',
+              expiration: {
+                maxEntries: 1000,
+              },
+            },
+          },
 
 
         ],
