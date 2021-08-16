@@ -16,10 +16,11 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue';
+import {defineAsyncComponent, defineComponent, ref} from 'vue';
 import type {AnimeCollection} from '/@/components/AnimeCollection/AnimeCollectionDB';
 import {putCollection} from '/@/components/AnimeCollection/AnimeCollectionDB';
-import AnimeCollectionEdit from '/@/components/AnimeCollection/AnimeCollectionEditor.vue';
+
+const AnimeCollectionEdit = defineAsyncComponent(() => import('/@/components/AnimeCollection/AnimeCollectionEditor.vue'));
 
 
 export default defineComponent({
@@ -35,7 +36,7 @@ export default defineComponent({
       isModalVisible.value = false;
       return putCollection(newCollection).then(id => emit('created', id));
     };
-    const openModal = () => isModalVisible.value = true;
+    const openModal = () => isModalVisible.value = !isModalVisible.value;
 
     return {isModalVisible, saveCollection, openModal};
   },

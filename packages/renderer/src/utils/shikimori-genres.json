@@ -1,0 +1,260 @@
+[
+  {
+    "id": 8,
+    "name": "Drama",
+    "russian": "Драма",
+    "kind": "anime"
+  },
+  {
+    "id": 11,
+    "name": "Game",
+    "russian": "Игры",
+    "kind": "anime"
+  },
+  {
+    "id": 40,
+    "name": "Psychological",
+    "russian": "Психологическое",
+    "kind": "anime"
+  },
+  {
+    "id": 2,
+    "name": "Adventure",
+    "russian": "Приключения",
+    "kind": "anime"
+  },
+  {
+    "id": 19,
+    "name": "Music",
+    "russian": "Музыка",
+    "kind": "anime"
+  },
+  {
+    "id": 1,
+    "name": "Action",
+    "russian": "Экшен",
+    "kind": "anime"
+  },
+  {
+    "id": 4,
+    "name": "Comedy",
+    "russian": "Комедия",
+    "kind": "anime"
+  },
+  {
+    "id": 6,
+    "name": "Demons",
+    "russian": "Демоны",
+    "kind": "anime"
+  },
+  {
+    "id": 39,
+    "name": "Police",
+    "russian": "Полиция",
+    "kind": "anime"
+  },
+  {
+    "id": 29,
+    "name": "Space",
+    "russian": "Космос",
+    "kind": "anime"
+  },
+  {
+    "id": 9,
+    "name": "Ecchi",
+    "russian": "Этти",
+    "kind": "anime"
+  },
+  {
+    "id": 10,
+    "name": "Fantasy",
+    "russian": "Фэнтези",
+    "kind": "anime"
+  },
+  {
+    "id": 12,
+    "name": "Hentai",
+    "russian": "Хентай",
+    "kind": "anime"
+  },
+  {
+    "id": 13,
+    "name": "Historical",
+    "russian": "Исторический",
+    "kind": "anime"
+  },
+  {
+    "id": 14,
+    "name": "Horror",
+    "russian": "Ужасы",
+    "kind": "anime"
+  },
+  {
+    "id": 16,
+    "name": "Magic",
+    "russian": "Магия",
+    "kind": "anime"
+  },
+  {
+    "id": 18,
+    "name": "Mecha",
+    "russian": "Меха",
+    "kind": "anime"
+  },
+  {
+    "id": 20,
+    "name": "Parody",
+    "russian": "Пародия",
+    "kind": "anime"
+  },
+  {
+    "id": 21,
+    "name": "Samurai",
+    "russian": "Самураи",
+    "kind": "anime"
+  },
+  {
+    "id": 22,
+    "name": "Romance",
+    "russian": "Романтика",
+    "kind": "anime"
+  },
+  {
+    "id": 23,
+    "name": "School",
+    "russian": "Школа",
+    "kind": "anime"
+  },
+  {
+    "id": 27,
+    "name": "Shounen",
+    "russian": "Сёнен",
+    "kind": "anime"
+  },
+  {
+    "id": 30,
+    "name": "Sports",
+    "russian": "Спорт",
+    "kind": "anime"
+  },
+  {
+    "id": 32,
+    "name": "Vampire",
+    "russian": "Вампиры",
+    "kind": "anime"
+  },
+  {
+    "id": 33,
+    "name": "Yaoi",
+    "russian": "Яой",
+    "kind": "anime"
+  },
+  {
+    "id": 34,
+    "name": "Yuri",
+    "russian": "Юри",
+    "kind": "anime"
+  },
+  {
+    "id": 35,
+    "name": "Harem",
+    "russian": "Гарем",
+    "kind": "anime"
+  },
+  {
+    "id": 28,
+    "name": "Shounen Ai",
+    "russian": "Сёнен-ай",
+    "kind": "anime"
+  },
+  {
+    "id": 36,
+    "name": "Slice of Life",
+    "russian": "Повседневность",
+    "kind": "anime"
+  },
+  {
+    "id": 26,
+    "name": "Shoujo Ai",
+    "russian": "Сёдзё-ай",
+    "kind": "anime"
+  },
+  {
+    "id": 43,
+    "name": "Josei",
+    "russian": "Дзёсей",
+    "kind": "anime"
+  },
+  {
+    "id": 37,
+    "name": "Supernatural",
+    "russian": "Сверхъестественное",
+    "kind": "anime"
+  },
+  {
+    "id": 41,
+    "name": "Thriller",
+    "russian": "Триллер",
+    "kind": "anime"
+  },
+  {
+    "id": 24,
+    "name": "Sci-Fi",
+    "russian": "Фантастика",
+    "kind": "anime"
+  },
+  {
+    "id": 25,
+    "name": "Shoujo",
+    "russian": "Сёдзё",
+    "kind": "anime"
+  },
+  {
+    "id": 31,
+    "name": "Super Power",
+    "russian": "Супер сила",
+    "kind": "anime"
+  },
+  {
+    "id": 38,
+    "name": "Military",
+    "russian": "Военное",
+    "kind": "anime"
+  },
+  {
+    "id": 7,
+    "name": "Mystery",
+    "russian": "Детектив",
+    "kind": "anime"
+  },
+  {
+    "id": 15,
+    "name": "Kids",
+    "russian": "Детское",
+    "kind": "anime"
+  },
+  {
+    "id": 3,
+    "name": "Cars",
+    "russian": "Машины",
+    "kind": "anime"
+  },
+  {
+    "id": 17,
+    "name": "Martial Arts",
+    "russian": "Боевые искусства",
+    "kind": "anime"
+  },
+  {
+    "id": 5,
+    "name": "Dementia",
+    "russian": "Безумие",
+    "kind": "anime"
+  },
+  {
+    "id": 42,
+    "name": "Seinen",
+    "russian": "Сейнен",
+    "kind": "anime"
+  }
+]

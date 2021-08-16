@@ -34,10 +34,6 @@ function getApp() {
 }
 
 
-/**
- *
- * @param {string} client_id
- */
 export function getAuthUrl(): string {
   const {client_id} = getApp();
 
@@ -276,12 +272,5 @@ export interface Genre {
   id: number;
   name: string;
   russian: string;
-  kind: 'manga' | 'anime';
-}
-
-
-export function getGenres(): Promise<Genre[]> {
-  return apiFetch<Genre[]>('genres', {
-    cache: 'force-cache',
-  }).then(genres => genres.filter(g => g.kind === 'anime'));
+  kind: 'anime';
 }

@@ -64,14 +64,15 @@
 
 <script lang="ts">
 import type {PropType} from 'vue';
-import {defineComponent, ref} from 'vue';
+import {defineAsyncComponent, defineComponent, ref} from 'vue';
 import type {Anime} from '/@/components/AnimeCollection/Anime';
 import {apiFetch} from '/@/utils/shikimori-api';
 import type {AnimeCollection} from '/@/components/AnimeCollection/AnimeCollectionDB';
 import HorizontalScroller from '/@/components/HorizontalScroller.vue';
 import CustomListSingleCard from '/@/components/AnimeCollection/AnimeCollectionSingleCard.vue';
-import AnimeCollectionEdit from '/@/components/AnimeCollection/AnimeCollectionEditor.vue';
 import {deleteCollection as deleteCollectionFromDB, putCollection} from '/@/components/AnimeCollection/AnimeCollectionDB';
+
+const AnimeCollectionEdit = defineAsyncComponent(() => import('/@/components/AnimeCollection/AnimeCollectionEditor.vue'));
 
 
 

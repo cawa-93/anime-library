@@ -399,7 +399,7 @@ import type {PropType} from 'vue';
 import {defineComponent, onMounted, ref} from 'vue';
 import type {AnimeCollection} from '/@/components/AnimeCollection/AnimeCollectionDB';
 import {onClickOutside} from '@vueuse/core';
-import GenresSelector from '/@/GenresSelector.vue';
+import GenresSelector from '/@/components/GenresSelector.vue';
 
 
 export default defineComponent({
