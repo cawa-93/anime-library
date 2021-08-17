@@ -2,6 +2,8 @@ import type * as sm from '/@/utils/videoProvider/providers/anime365-interfaces';
 import type {Episode, Series, Translation, Video, VideoTrack} from '/@/utils/videoProvider';
 import {getAuthor} from '/@/utils/videoProvider/providers/anime365-authors';
 import {SECOND_MS} from '/@/utils/time';
+import {resolveEpisodesList} from '/@/utils/videoProvider/providers/resolveEpisodesList';
+import type {MalEpisode, MalResponse} from '/@/utils/videoProvider/providers/malEpisode';
 
 
 const HOST_ROOT = 'https://smotret-anime.online';
@@ -109,72 +111,8 @@ export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
     return [];
   }
 
-  const malEpisodesPromise = getEpisodesTitles(myAnimeListId);
-  const episodes: Episode[] = [];
-
-  /**
-   * Некоторые аниме имеют не ккоррекный тип. Например
-   * Сериал имеет тип `tv` а ВСЕ серии тип `ona`.
-   * Серии чей тип не соответствует типу сериала будут отфильтрованы,
-   * поэтому для случаев когда ВСЕ серии не соответствуют типу сериала я предполагаю, что не правильный тип именно у сериала
-   * и изменяю его на тип взятый с первой серии
-   */
-  {
-    const firstEpisodeType = targetSeries.episodes[0].episodeType;
-    if (targetSeries.episodes.every(e => e.episodeType === firstEpisodeType && e.episodeType !== targetSeries.type)) {
-      targetSeries.type = firstEpisodeType;
-    }
-  }
-
-  for (const episode of targetSeries.episodes) {
-    const number = Number.parseFloat(episode.episodeInt);
-    if (
-      episode.isActive !== 1
-      || !Number.isSafeInteger(number)
-      || number < 1
-      || episode.episodeType !== targetSeries.type
-      || (
-        // Удалять серии у которых number > Чем заявлено в сезоне
-        // Обычно такие серии залиты по ошибке
-        targetSeries.numberOfEpisodes !== 0 // `numberOfEpisodes` = 0 если количество эпизодов в сезоне не известно
-        && number > targetSeries.numberOfEpisodes
-      )
-    ) {
-      continue;
-    }
-
-    const malEpisode = (await malEpisodesPromise).get(number);
-    const title = episode.episodeTitle
-      || (
-        malEpisode && !/Episode [0-9]+/.test(malEpisode.title)
-          ? `${number}. ${malEpisode.title}`
-          : episode.episodeFull
-      );
-
-    episodes.push({
-      id: episode.id,
-      title,
-      number,
-      recap: malEpisode?.recap,
-      filler: malEpisode?.filler,
-    });
-  }
-
-  return episodes;
-}
-
-
-interface MalEpisode {
-  episode_id: number
-  title: string
-  filler: boolean,
-  recap: boolean,
-}
-
-
-interface MalResponse {
-  episodes_last_page?: number;
-  episodes?: MalEpisode[];
+  const malEpisodes = await getEpisodesTitles(myAnimeListId);
+  return resolveEpisodesList(targetSeries, malEpisodes);
 }
 
 
