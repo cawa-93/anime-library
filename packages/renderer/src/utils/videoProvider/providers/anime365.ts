@@ -1,6 +1,7 @@
 import type * as sm from '/@/utils/videoProvider/providers/anime365-interfaces';
 import type {Episode, Series, Translation, Video, VideoTrack} from '/@/utils/videoProvider';
 import {getAuthor} from '/@/utils/videoProvider/providers/anime365-authors';
+import {SECOND_MS} from '/@/utils/time';
 
 
 const HOST_ROOT = 'https://smotret-anime.online';
@@ -177,14 +178,24 @@ interface MalResponse {
 }
 
 
-async function getEpisodesTitles(seriesId: number): Promise<Map<number, MalEpisode>> {
+async function getEpisodesTitles(seriesId: number, timeout = SECOND_MS * 3): Promise<Map<number, MalEpisode>> {
   const episodes = new Map<number, MalEpisode>();
-  const firstPage: MalResponse | undefined = await fetch(`https://api.jikan.moe/v3/anime/${seriesId}/episodes/1`)
+
+  const controller = new AbortController();
+
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  const firstPage: MalResponse | undefined = await fetch(`https://api.jikan.moe/v3/anime/${seriesId}/episodes/1`, {
+    signal: controller.signal,
+  })
     .then(r => r.json())
     .catch(e => {
       console.error(e);
       return undefined;
     });
+
+  clearTimeout(timeoutId);
+
 
   if (!firstPage?.episodes?.length) {
     return episodes;
@@ -195,7 +206,13 @@ async function getEpisodesTitles(seriesId: number): Promise<Map<number, MalEpiso
   if (firstPage.episodes_last_page && firstPage.episodes_last_page > 1) {
     const promises: Promise<MalResponse>[] = [];
     for (let i = 2; i <= firstPage.episodes_last_page; i++) {
-      promises.push(fetch(`https://api.jikan.moe/v3/anime/${seriesId}/episodes/${i}`).then(r => r.json()));
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      promises.push(
+        fetch(`https://api.jikan.moe/v3/anime/${seriesId}/episodes/${i}`, {signal: controller.signal})
+          .then(r => r.json())
+          .finally(() => clearTimeout(timeoutId)),
+      );
     }
 
     const responses = await Promise.allSettled(promises);
