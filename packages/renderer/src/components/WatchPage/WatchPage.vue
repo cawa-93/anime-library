@@ -1,20 +1,6 @@
 <template>
   <main class="position-relative">
-    <p
-      v-if="error"
-      class="text-danger position-absolute top-50 text-center w-100 fw-bold lead"
-    >
-      {{ error }}
-      <br>
-      <button
-        class="btn btn-link"
-        @click="reloadPage"
-      >
-        Повторить попытку
-      </button>
-    </p>
     <video-player
-      v-else
       id="video-container"
       :video="video"
       :has-next-episode="!!nextEpisode"
@@ -98,6 +84,19 @@
         </side-panel>
       </template>
     </video-player>
+    <p
+      v-if="error"
+      class="error-box text-danger position-absolute text-center w-100 fw-bold lead m-0 py-2"
+    >
+      {{ error }}
+      <br>
+      <button
+        class="btn btn-link"
+        @click="reloadPage"
+      >
+        Повторить попытку
+      </button>
+    </p>
   </main>
 </template>
 
@@ -549,5 +548,11 @@ header .btn:before {
 
 .border-initial {
   border-color: initial;
+}
+
+.error-box {
+  top: 50%;
+  transform: translateY(-50%);
+  background: #000;
 }
 </style>
