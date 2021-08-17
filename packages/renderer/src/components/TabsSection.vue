@@ -34,7 +34,7 @@ export default defineComponent({
 
   setup(props, {slots}) {
     const slotsNames = Object.keys(slots).filter(name => name !== 'tab-header');
-    const activeTab = ref(props.defaultTab || slotsNames[0]);
+    const activeTab = ref(props.defaultTab && slotsNames.includes(props.defaultTab) ? props.defaultTab : slotsNames[0]);
     return {slotsNames, activeTab};
   },
 });
@@ -42,7 +42,7 @@ export default defineComponent({
 
 <style scoped>
 .position-sticky {
-  background-color: rgb(193,193,193);
+  background-color: rgb(193, 193, 193);
   z-index: 3;
 }
 
