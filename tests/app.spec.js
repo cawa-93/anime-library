@@ -1,5 +1,6 @@
+/* eslint-env node, jest */
+
 const {Application} = require('spectron');
-const {strict: assert} = require('assert');
 
 const app = new Application({
   path: require('electron'),
@@ -7,36 +8,30 @@ const app = new Application({
   args: ['.'],
 });
 
-app.start()
-  .then(async () => {
-    const isVisible = await app.browserWindow.isVisible();
-    assert.ok(isVisible, 'Main window not visible');
-  })
+jest.setTimeout(10000);
 
-  .then(async () => {
-    const isDevtoolsOpen = await app.webContents.isDevToolsOpened();
-    assert.ok(!isDevtoolsOpen, 'DevTools opened');
-  })
-
-  .then(async function () {
-    // Get the window content
-    const content = await app.client.$('#app');
-    assert.notStrictEqual(await content.getHTML(), '<div id="app"></div>', 'Window content is empty');
-  })
-
-  .then(function () {
-    if (app && app.isRunning()) {
-      return app.stop();
-    }
-  })
-
-  .then(() => process.exit(0))
-
-  .catch(function (error) {
-    console.error(error);
-    if (app && app.isRunning()) {
-      app.stop();
-    }
-    process.exit(1);
+describe('Главное окно', () => {
+  beforeAll(async () => {
+    await app.start();
   });
 
+  afterAll(async () => {
+    if (app && app.isRunning()) await app.stop();
+  });
+
+  test('Должно быть видимым', async () => {
+    const isVisible = await app.browserWindow.isVisible();
+    expect(isVisible).toBeTruthy();
+  });
+
+  test('DevTools должен быть закрыт', async () => {
+    const isDevtoolsOpen = await app.webContents.isDevToolsOpened();
+    expect(isDevtoolsOpen).toBeFalsy();
+  });
+
+  test('Не может быть пустым', async () => {
+    const content = await app.client.$('#app-root');
+    const innerHTML = (await content.getHTML(false)).trim();
+    expect(innerHTML).not.toBe('');
+  });
+});
