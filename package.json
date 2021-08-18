@@ -5,8 +5,8 @@
   "description": "Приложение для просмотра аниме (в работе).",
   "homepage": "https://github.com/cawa-93/anime-library#readme",
   "engines": {
-    "node": ">=v16.3",
-    "npm": ">=7.18.1"
+    "node": ">=v16.7",
+    "npm": ">=7.20"
   },
   "repository": {
     "type": "git",
