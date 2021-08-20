@@ -1,6 +1,6 @@
-import type * as sm from '/@/utils/videoProvider/providers/anime365-interfaces';
+import type * as sm from '/@/utils/videoProvider/providers/anime365/anime365-interfaces';
 import type {Episode} from '/@/utils/videoProvider';
-import type {MalEpisode} from '/@/utils/videoProvider/providers/malEpisode';
+import type {MalEpisode} from '/@/utils/videoProvider/providers/mal/malEpisode';
 
 
 export function resolveEpisodesList(targetSeries: Pick<sm.Series, 'episodes' | 'type' | 'numberOfEpisodes'>, malEpisodes: Map<number, MalEpisode>): Episode[] {

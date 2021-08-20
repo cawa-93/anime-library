@@ -1,6 +1,6 @@
 import type {TranslationAuthor} from '/@/utils/videoProvider';
 import type {MaybeReadonly} from '/@shared/types/utils';
-import {knownAuthors} from '/@/utils/videoProvider/providers/knownAuthors';
+import {knownAuthors} from '/@/utils/videoProvider/providers/anime365/knownAuthors';
 
 
 const qualitiesRegexps = [/tv/, /bd/, /hd/, /sd/, /dvd/, /blu-?ray/, /(?:720|1080)[pр]?/]; // pр -- буквы кирилицей и латиницей

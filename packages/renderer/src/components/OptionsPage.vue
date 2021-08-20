@@ -94,7 +94,7 @@
 <script lang="ts">
 import {computed, defineComponent, ref} from 'vue';
 import {onClickOutside, useTitle} from '@vueuse/core';
-import {getAccessToken, saveAccessToken} from '/@/utils/videoProvider/providers/anime365';
+import {getAccessToken, saveAccessToken} from '/@/utils/videoProvider/providers/anime365/anime365';
 import ShikiOauth from '/@/components/ShikiOauth.vue';
 import OptionAnime365 from '/@/components/OptionAnime365.vue';
 import {openGitHub, openTG, openVK} from '/@/use/socialLinks';

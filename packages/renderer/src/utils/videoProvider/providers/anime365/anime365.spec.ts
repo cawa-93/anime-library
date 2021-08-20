@@ -1,5 +1,5 @@
-import expectedData from './episodes-filter-data';
-import {resolveEpisodesList} from '/@/utils/videoProvider/providers/resolveEpisodesList';
+import expectedData from 'src/utils/videoProvider/providers/anime365/episodes-filter-data';
+import {resolveEpisodesList} from '/@/utils/videoProvider/providers/anime365/resolveEpisodesList';
 
 
 describe('Фильтр эпизодов', () => {

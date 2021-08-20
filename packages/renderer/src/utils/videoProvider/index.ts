@@ -1,46 +1,52 @@
 import {readonly} from 'vue';
-import * as provider from '/@/utils/videoProvider/providers/anime365';
+import * as provider from '/@/utils/videoProvider/providers/anime365/anime365';
 import {deDuplicatedRequest} from '/@/utils/deDuplicatedRequest';
+import {getEpisodesMeta} from '/@/utils/videoProvider/providers/mal/getEpisodesMeta';
 
 
 interface HasID {
-  id: number
+  id: number;
 }
 
+
 interface HasTitle {
-  title: string
+  title: string;
 }
 
 
 export interface Series extends HasID, HasTitle {
-  poster?: string
+  poster?: string;
 }
+
 
 export interface Episode extends HasID, HasTitle {
   /**
    * Порядковый номер эпизода в сериале
    */
-  number: number
-  recap?: boolean
-  filler?: boolean
+  number: number;
+  recap?: boolean;
+  filler?: boolean;
 }
 
+
 export type TranslationType = 'sub' | 'voice'
+
 
 export interface Translation extends HasID, HasTitle {
   /**
    * Тип перевода: Озвучка или субтитры
    */
-  type: TranslationType
+  type: TranslationType;
 
   /**
    * Автор перевода
    */
-  author: TranslationAuthor
+  author: TranslationAuthor;
 
-  qualityType: 'bd' | 'dvd' | 'tv'
-  censored: boolean
+  qualityType: 'bd' | 'dvd' | 'tv';
+  censored: boolean;
 }
+
 
 export interface VideoTrack {
   src: string,
@@ -50,15 +56,17 @@ export interface VideoTrack {
   default?: boolean
 }
 
+
 export interface Video {
   qualities: Map<number, string>,
   tracks?: VideoTrack[]
 }
 
+
 export interface TranslationAuthor {
-  readonly id: string | null
-  readonly team: string
-  readonly members: string[]
+  readonly id: string | null;
+  readonly team: string;
+  readonly members: string[];
 }
 
 
@@ -114,3 +122,15 @@ export function clearVideosCache(providerTranslationId: number): Promise<boolean
   return provider.clearVideosCache(providerTranslationId);
 }
 
+
+export function getEpisodeMeta(malId: number, episodeNumber: number): Promise<{
+  title: string
+  filler: boolean,
+  recap: boolean,
+  episode_id: number,
+} | undefined> {
+  return deDuplicatedRequest(
+    `episodes-meta-${malId}-${episodeNumber}`,
+    () => getEpisodesMeta(malId, episodeNumber),
+  );
+}

@@ -62,8 +62,8 @@ import {
   getAccessToken,
   isFailureResponse,
   saveAccessToken,
-} from '/@/utils/videoProvider/providers/anime365';
-import type {ApiResponse} from '/@/utils/videoProvider/providers/anime365-interfaces';
+} from '/@/utils/videoProvider/providers/anime365/anime365';
+import type {ApiResponse} from '/@/utils/videoProvider/providers/anime365/anime365-interfaces';
 import {showErrorMessage} from '/@/utils/dialogs';
 import {getVideo} from '/@/utils/videoProvider';
 import {useElectron} from '/@/use/electron';

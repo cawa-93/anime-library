@@ -12,10 +12,10 @@
       <template #header>
         <header class="position-absolute top-0 text-white w-100 p-3 d-flex align-items-start">
           <h2
-            v-if="currentEpisode && currentEpisode.title"
+            v-if="currentEpisode && (currentEpisodeMeta || currentEpisode.title)"
             class="h5 flex-fill m-0 fw-normal"
           >
-            {{ currentEpisode.title }}
+            {{ currentEpisodeMeta ? currentEpisode.number + '. ' + currentEpisodeMeta.title : currentEpisode.title }}
           </h2>
           <button
             v-if="episodes.length > 1 || translations.length"
@@ -66,6 +66,7 @@
             >
               <episodes-list
                 v-model:currentEpisode="currentEpisode"
+                :series-id="Number(seriesId)"
                 :episodes="episodes"
               />
             </template>
@@ -103,7 +104,7 @@
 <script lang="ts">
 import {computed, defineAsyncComponent, defineComponent, ref, toRaw, watch} from 'vue';
 import type {Episode, Translation, Video} from '/@/utils/videoProvider';
-import {clearVideosCache, getSeries, getVideo} from '/@/utils/videoProvider';
+import {clearVideosCache, getEpisodeMeta, getSeries, getVideo} from '/@/utils/videoProvider';
 import VideoPlayer from '/@/components/WatchPage/VideoPlayer/VideoPlayer.vue';
 import {getEpisodesList, getTranslationsList} from '/@/utils/prepareWatchData';
 import type {HistoryViewsItem} from '/@/utils/history-views';
@@ -153,6 +154,7 @@ export default defineComponent({
      */
     const episodes = ref<Episode[]>([]);
     const currentEpisode = ref<Episode | undefined>();
+    const currentEpisodeMeta = asyncComputed(() => currentEpisode.value?.number ? getEpisodeMeta(Number(props.seriesId), currentEpisode.value?.number) : undefined, undefined);
     watch(() => props.seriesId, (seriesId, oldSeriesId) => {
 
       if (seriesId === oldSeriesId) {
@@ -178,8 +180,6 @@ export default defineComponent({
 
         });
     }, {immediate: true});
-
-
 
     /**
      * Загрузка переводов
@@ -504,6 +504,7 @@ export default defineComponent({
       historyItem,
       videoProgressHandler,
       onSourceError,
+      currentEpisodeMeta,
     };
   },
 });

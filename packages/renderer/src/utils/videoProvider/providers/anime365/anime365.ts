@@ -1,9 +1,7 @@
-import type * as sm from '/@/utils/videoProvider/providers/anime365-interfaces';
+import type * as sm from '/@/utils/videoProvider/providers/anime365/anime365-interfaces';
 import type {Episode, Series, Translation, Video, VideoTrack} from '/@/utils/videoProvider';
-import {getAuthor} from '/@/utils/videoProvider/providers/anime365-authors';
-import {SECOND_MS} from '/@/utils/time';
-import {resolveEpisodesList} from '/@/utils/videoProvider/providers/resolveEpisodesList';
-import type {MalEpisode, MalResponse} from '/@/utils/videoProvider/providers/malEpisode';
+import {getAuthor} from '/@/utils/videoProvider/providers/anime365/anime365-authors';
+import {resolveEpisodesList} from '/@/utils/videoProvider/providers/anime365/resolveEpisodesList';
 
 
 const HOST_ROOT = 'https://smotret-anime.online';
@@ -111,57 +109,8 @@ export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
     return [];
   }
 
-  const malEpisodes = await getEpisodesTitles(myAnimeListId);
-  return resolveEpisodesList(targetSeries, malEpisodes);
-}
-
-
-async function getEpisodesTitles(seriesId: number, timeout = SECOND_MS * 3): Promise<Map<number, MalEpisode>> {
-  const episodes = new Map<number, MalEpisode>();
-
-  const controller = new AbortController();
-
-  const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-  const firstPage: MalResponse | undefined = await fetch(`https://api.jikan.moe/v3/anime/${seriesId}/episodes/1`, {
-    signal: controller.signal,
-  })
-    .then(r => r.json())
-    .catch(e => {
-      console.error(e);
-      return undefined;
-    });
-
-  clearTimeout(timeoutId);
-
-
-  if (!firstPage?.episodes?.length) {
-    return episodes;
-  }
-
-  firstPage.episodes.forEach(e => episodes.set(e.episode_id, e));
-
-  if (firstPage.episodes_last_page && firstPage.episodes_last_page > 1) {
-    const promises: Promise<MalResponse>[] = [];
-    for (let i = 2; i <= firstPage.episodes_last_page; i++) {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeout);
-      promises.push(
-        fetch(`https://api.jikan.moe/v3/anime/${seriesId}/episodes/${i}`, {signal: controller.signal})
-          .then(r => r.json())
-          .finally(() => clearTimeout(timeoutId)),
-      );
-    }
-
-    const responses = await Promise.allSettled(promises);
-    responses.forEach(response => {
-      if (response.status === 'fulfilled' && response.value.episodes && response.value.episodes.length) {
-        response.value.episodes.forEach(e => episodes.set(e.episode_id, e));
-      }
-    });
-  }
-
-  return episodes;
+  // const malEpisodes = await getEpisodesTitles(myAnimeListId);
+  return resolveEpisodesList(targetSeries, new Map);
 }
 
 
