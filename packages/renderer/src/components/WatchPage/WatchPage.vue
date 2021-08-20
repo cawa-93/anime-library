@@ -16,6 +16,16 @@
             class="h5 flex-fill m-0 fw-normal"
           >
             {{ currentEpisodeMeta ? currentEpisode.number + '. ' + currentEpisodeMeta.title : currentEpisode.title }}
+
+            <small
+              v-if="currentEpisodeMeta?.filler"
+              class="badge bg-danger"
+            >filler</small>
+
+            <small
+              v-if="currentEpisodeMeta?.recap"
+              class="badge bg-info text-dark"
+            >recap</small>
           </h2>
           <button
             v-if="episodes.length > 1 || translations.length"
