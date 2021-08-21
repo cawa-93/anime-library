@@ -6,7 +6,7 @@ describe('Фильтр эпизодов', () => {
   for (const {originalSeries, expectedEpisodes} of expectedData) {
     it('Фильтр для ' + originalSeries.seriesId, () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const resolved = resolveEpisodesList(originalSeries as any, new Map);
+      const resolved = resolveEpisodesList(originalSeries as any);
       expect(resolved.map((e: { id: number }) => e.id)).toEqual(expectedEpisodes);
     });
   }

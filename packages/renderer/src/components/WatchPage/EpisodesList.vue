@@ -44,7 +44,7 @@ export default defineComponent({
   emits: ['update:currentEpisode'],
   setup(props, {emit}) {
 
-    const allEpisodesMeta = asyncComputed<Map<number, { title: string, filler: boolean, recap: boolean }> | undefined>(() => {
+    const allEpisodesMeta = asyncComputed<Map<number, { title?: string, filler: boolean, recap: boolean }> | undefined>(() => {
         const seriesId = props.seriesId;
         return seriesId && props.episodes.length
           ? Promise.allSettled(props.episodes.map(e => getEpisodeMeta(seriesId, e.number)))
@@ -57,7 +57,7 @@ export default defineComponent({
                 accum.set(result.value.episode_id, result.value);
 
                 return accum;
-              }, new Map<number, { title: string, filler: boolean, recap: boolean }>());
+              }, new Map<number, { title?: string, filler: boolean, recap: boolean }>());
             })
           : undefined;
       },

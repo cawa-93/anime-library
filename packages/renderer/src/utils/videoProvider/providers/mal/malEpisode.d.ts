@@ -1,6 +1,6 @@
 export interface MalEpisode {
     episode_id: number
-    title: string
+    title?: string
     filler: boolean,
     recap: boolean,
 }

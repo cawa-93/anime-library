@@ -1,9 +1,8 @@
 import type * as sm from '/@/utils/videoProvider/providers/anime365/anime365-interfaces';
 import type {Episode} from '/@/utils/videoProvider';
-import type {MalEpisode} from '/@/utils/videoProvider/providers/mal/malEpisode';
 
 
-export function resolveEpisodesList(targetSeries: Pick<sm.Series, 'episodes' | 'type' | 'numberOfEpisodes'>, malEpisodes: Map<number, MalEpisode>): Episode[] {
+export function resolveEpisodesList(targetSeries: Pick<sm.Series, 'episodes' | 'type' | 'numberOfEpisodes'>): Episode[] {
   const episodes = targetSeries.episodes;
   if (!episodes || episodes.length === 0) {
     return [];
@@ -57,20 +56,10 @@ export function resolveEpisodesList(targetSeries: Pick<sm.Series, 'episodes' | '
       return accum;
     }
 
-    const malEpisode = malEpisodes.get(number);
-    const title = episode.episodeTitle
-      || (
-        malEpisode && !/Episode [0-9]+/.test(malEpisode.title)
-          ? `${number}. ${malEpisode.title}`
-          : episode.episodeFull
-      );
-
     accum.push({
       id: episode.id,
-      title,
+      title: episode.episodeFull,
       number,
-      recap: malEpisode?.recap,
-      filler: malEpisode?.filler,
     });
 
     return accum;

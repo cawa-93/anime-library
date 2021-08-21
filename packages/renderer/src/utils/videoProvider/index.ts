@@ -124,7 +124,7 @@ export function clearVideosCache(providerTranslationId: number): Promise<boolean
 
 
 export function getEpisodeMeta(malId: number, episodeNumber: number): Promise<{
-  title: string
+  title?: string
   filler: boolean,
   recap: boolean,
   episode_id: number,

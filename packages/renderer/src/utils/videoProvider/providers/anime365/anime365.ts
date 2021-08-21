@@ -109,8 +109,7 @@ export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
     return [];
   }
 
-  // const malEpisodes = await getEpisodesTitles(myAnimeListId);
-  return resolveEpisodesList(targetSeries, new Map);
+  return resolveEpisodesList(targetSeries);
 }
 
 
