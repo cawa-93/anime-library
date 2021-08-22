@@ -73,7 +73,7 @@
     "@sentry/integrations": "6.11.0",
     "@vueuse/core": "6.0.0",
     "bootstrap": "5.0.2",
-    "electron-updater": "4.4.5",
+    "electron-updater": "4.4.6",
     "electron-window-state": "5.0.3",
     "idb": "6.1.2",
     "uuid": "8.3.2",
