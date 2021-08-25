@@ -7,6 +7,7 @@
       <back-button id="back-button" />
       <home-button />
       <feedback-button />
+      <open-shikimori />
       <window-title class="flex-fill px-3 align-self-center" />
       <options-button />
       <minimize-button class="window-control" />
@@ -26,11 +27,13 @@ import MaximizeButton from '/@/components/AppWindowTitleBar/MaximizeButton.vue';
 import HomeButton from '/@/components/AppWindowTitleBar/HomeButton.vue';
 import OptionsButton from '/@/components/AppWindowTitleBar/OptionsButton.vue';
 import FeedbackButton from '/@/components/AppWindowTitleBar/FeedbackButton.vue';
+import OpenShikimori from '/@/components/AppWindowTitleBar/OpenShikimori.vue';
 
 
 export default defineComponent({
   name: 'AppTitleBar',
   components: {
+    OpenShikimori,
     FeedbackButton,
     OptionsButton,
     HomeButton,

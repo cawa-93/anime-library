@@ -1,8 +1,8 @@
 <template>
   <div
-    class="position-relative btn rounded-0 py-0 border-0 text-primary title-bar-github-link text-truncate d-sm-inline-flex d-none align-items-center justify-content-center "
+    class="position-relative btn rounded-0 py-0 border-0 text-primary title-bar-github-link d-sm-inline-flex d-none align-items-center justify-content-center"
   >
-    <small>
+    <small class="text-truncate">
       {{ selectedVariant }}
     </small>
 
