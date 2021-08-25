@@ -10,14 +10,15 @@ const app = new Application({
 
 jest.setTimeout(10000);
 
-describe('Главное окно', () => {
-  beforeAll(async () => {
-    await app.start();
-  });
+beforeAll(async () => {
+  await app.start();
+});
 
-  afterAll(async () => {
-    if (app && app.isRunning()) await app.stop();
-  });
+afterAll(async () => {
+  if (app && app.isRunning()) await app.stop();
+});
+
+describe('Главное окно', () => {
 
   test('Должно быть видимым', async () => {
     const isVisible = await app.browserWindow.isVisible();
@@ -33,5 +34,12 @@ describe('Главное окно', () => {
     const content = await app.client.$('#app-root');
     const innerHTML = (await content.getHTML(false)).trim();
     expect(innerHTML).not.toBe('');
+  });
+
+  test('Не должно содержать ошибок в консоли', async () => {
+    /** @type {{level: 'SEVERE' | 'WARNING'}[]} */
+    const logs = await app.client.getRenderProcessLogs();
+    const errorLogsCount = logs.filter(log => log.level === 'SEVERE').length;
+    expect(errorLogsCount).toBe(0);
   });
 });
