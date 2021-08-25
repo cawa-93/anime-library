@@ -113,7 +113,6 @@ jobs:
         uses: samuelmeuli/action-electron-builder@v1
         env:
           VITE_UA_TRACK_ID: ${{ secrets.VITE_UA_TRACK_ID }}
-          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
           VITE_SHIKI_CLIENT_ID: ${{ secrets.VITE_SHIKI_CLIENT_ID }}
           VITE_SHIKI_CLIENT_SECRET: ${{ secrets.VITE_SHIKI_CLIENT_SECRET }}
           VITE_APP_VERSION: ${{ needs.prepare-draft.outputs.version }}
@@ -152,27 +151,3 @@ jobs:
         with:
           name: builded-assets
           path: packages/**/dist/**
-
-  create-sentry-relase:
-    needs: [ prepare-draft, compile-app ]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - uses: actions/download-artifact@v2
-        with:
-          name: builded-assets
-          path: ./packages
-
-      - name: Create Sentry release
-        uses: getsentry/action-release@v1
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-        with:
-          finalize: false
-          sourcemaps: ./packages
-          version: v${{ needs.prepare-draft.outputs.version }}

@@ -12,6 +12,5 @@ interface ImportMetaEnv {
   VITE_SHIKI_CLIENT_SECRET:  string | undefined;
   VITE_UA_TRACK_ID:  string | undefined;
   VITE_DEV_SERVER_URL: string | undefined;
-  VITE_SENTRY_DSN: string | undefined;
   VITE_APP_VERSION: string | undefined;
 }
