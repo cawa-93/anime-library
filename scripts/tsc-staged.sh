@@ -21,6 +21,5 @@ fi
 if [ -z "$args" ]; then
   echo "No type sensitivity files staged"
 else
-  node scripts/buildEnvTypes.js
   npx concurrently --raw "${args[@]}"
 fi
