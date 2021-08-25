@@ -10,17 +10,8 @@
   </button>
 </template>
 
-<script lang="ts">
-import {defineComponent} from 'vue';
+<script lang="ts" setup>
 import {minimize} from '/@/utils/window-controllers';
-
-export default defineComponent({
-  name: 'MinimizeButton',
-
-  setup() {
-    return {minimize};
-  },
-});
 </script>
 
 <style scoped>

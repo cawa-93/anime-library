@@ -9,14 +9,6 @@
   </router-link>
 </template>
 
-<script lang="ts">
-import {defineComponent} from 'vue';
-
-export default defineComponent({
-  name: 'OptionsButton',
-});
-</script>
-
 <style scoped>
 @import "base-titlebar-button.css";
 </style>
