@@ -134,6 +134,9 @@ function getFreshCredentials(): Promise<Credentials | undefined> {
   return deDuplicatedRequest('getFreshCredentials', () => refreshCredentials({
     type: 'refresh_token',
     refresh_token: credentials.refresh_token,
+  }).catch(e => {
+    console.error(e);
+    return undefined;
   }));
 
 }
@@ -194,6 +197,9 @@ export function getUserRate(seriesId: number): Promise<ShikiUserRate | null> {
       savedUserRatesCache.set(seriesId, user_rate.episodes);
     }
     return user_rate;
+  }).catch(e => {
+    console.error(e);
+    return null;
   });
 }
 
