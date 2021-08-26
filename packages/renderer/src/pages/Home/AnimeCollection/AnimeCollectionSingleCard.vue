@@ -1,19 +1,19 @@
 <script lang="ts" setup>
 import type {PropType} from 'vue';
 import {ref} from 'vue';
-import type {Anime} from '/@/pages/Home/AnimeCollection/Anime';
+import type {Anime as AnimeType} from '/@/pages/Home/AnimeCollection/Anime';
 import {useElectron} from '/@/use/electron';
 
 
 defineProps({
   anime: {
-    type: Object as PropType<Anime>,
+    type: Object as PropType<AnimeType>,
     required: true,
   },
 });
 
 const {openURL} = useElectron();
-const openAnime = (event: MouseEvent, anime: Anime) => {
+const openAnime = (event: MouseEvent, anime: AnimeType) => {
   if (event.ctrlKey || event.button === 1) {
     event.preventDefault();
     return openURL('https://shikimori.one' + anime.url);
@@ -68,7 +68,11 @@ const isOverlayVisible = ref(false);
           <ul class="list-group list-group-flush">
             <li
               class="list-group-item anime-status d-flex gap-1"
-              :class="anime.status"
+              :class="{
+                'released': anime.status === 'released',
+                'anons': anime.status === 'anons',
+                'ongoing': anime.status === 'ongoing',
+              }"
             >
               {{ anime.status === 'ongoing' ? 'Выходит' : anime.status === 'released' ? 'Вышло' : 'Анонс' }}
             </li>
@@ -126,6 +130,7 @@ img {
 }
 
 
+/*noinspection CssUnusedSymbol*/
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 200ms ease;
@@ -139,5 +144,17 @@ img {
   background: red;
   align-self: center;
   border-radius: 50%;
+}
+
+.anime-status.released:before {
+  background-color: var(--bs-success);
+}
+
+.anime-status.ongoing:before {
+  background-color: var(--bs-primary);
+}
+
+.anime-status.anons:before {
+  background-color: var(--bs-danger);
 }
 </style>
