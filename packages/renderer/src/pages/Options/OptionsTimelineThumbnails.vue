@@ -1,3 +1,28 @@
+<script lang="ts" setup>
+import {computed, ref} from 'vue';
+import EnableHardwareAcceleration from '/@/pages/Options/OptionsEnableHardwareAcceleration.vue';
+import {
+  isEnabled as isThumbnailsEnabled,
+  setEnabled as setThumbnailsEnabled,
+} from '/@/pages/Options/settingTimelineThumbnails';
+import {setEnabled as setHardwareAccelerationEnabled} from '/@/pages/Options/settingHardwareAcceleration';
+
+
+const _enable = ref(isThumbnailsEnabled());
+const enable = computed({
+  get() {
+    return _enable.value;
+  },
+  set(value: boolean) {
+    _enable.value = value;
+    setThumbnailsEnabled(value);
+    if (!value) {
+      setHardwareAccelerationEnabled(false);
+    }
+  },
+});
+</script>
+
 <template>
   <div class="form-check">
     <input
@@ -23,36 +48,3 @@
     <enable-hardware-acceleration v-if="enable" />
   </div>
 </template>
-
-<script lang="ts">
-import {computed, defineComponent, ref} from 'vue';
-import EnableHardwareAcceleration from '/@/pages/Options/OptionsEnableHardwareAcceleration.vue';
-import {
-  isEnabled as isThumbnailsEnabled,
-  setEnabled as setThumbnailsEnabled,
-} from '/@/pages/Options/settingTimelineThumbnails';
-import {setEnabled as setHardwareAccelerationEnabled} from '/@/pages/Options/settingHardwareAcceleration';
-
-
-export default defineComponent({
-  name: 'TimelineThumbnails',
-  components: {EnableHardwareAcceleration},
-  setup() {
-    const _enable = ref(isThumbnailsEnabled());
-    const enable = computed({
-      get() {
-        return _enable.value;
-      },
-      set(value: boolean) {
-        _enable.value = value;
-        setThumbnailsEnabled(value);
-        if (!value) {
-          setHardwareAccelerationEnabled(false);
-        }
-      },
-    });
-
-    return {enable};
-  },
-});
-</script>

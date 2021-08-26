@@ -1,3 +1,31 @@
+<script lang="ts" setup>
+import {computed, ref} from 'vue';
+import {isEnabled, setEnabled} from '/@/pages/Options/settingHardwareAcceleration';
+
+
+const _enable = ref(false);
+const enable = computed({
+  get() {
+    return _enable.value;
+  },
+  set(value: boolean) {
+    _enable.value = value;
+    setEnabled(value);
+  },
+});
+
+let origValue = ref();
+
+isEnabled().then(value => {
+  origValue.value = value;
+  _enable.value = value;
+});
+
+const showNotice = computed(() => {
+  return enable.value !== origValue.value && origValue.value !== undefined;
+});
+</script>
+
 <template>
   <div class="form-check">
     <input
@@ -29,39 +57,3 @@
     </p>
   </div>
 </template>
-
-<script lang="ts">
-import {computed, defineComponent, ref} from 'vue';
-import {isEnabled, setEnabled} from '/@/pages/Options/settingHardwareAcceleration';
-
-
-export default defineComponent({
-  name: 'EnableHardwareAcceleration',
-  setup() {
-
-    const _enable = ref(false);
-    const enable = computed({
-      get() {
-        return _enable.value;
-      },
-      set(value: boolean) {
-        _enable.value = value;
-        setEnabled(value);
-      },
-    });
-
-    let origValue = ref();
-
-    isEnabled().then(value => {
-      origValue.value = value;
-      _enable.value = value;
-    });
-
-    const showNotice = computed(() => {
-      return enable.value !== origValue.value && origValue.value !== undefined;
-    });
-
-    return {enable, showNotice};
-  },
-});
-</script>

@@ -1,3 +1,56 @@
+<script lang="ts" setup>
+import {ref} from 'vue';
+import {useElectron} from '/@/use/electron';
+import type {ShikiUser} from '/@/utils/shikimori-api';
+import {clearCredentials, getAuthUrl, getUser, refreshCredentials} from '/@/utils/shikimori-api';
+import {showErrorMessage} from '/@/utils/dialogs';
+import {useRouter} from 'vue-router';
+
+
+const {openURL} = useElectron();
+const login = () => openURL(getAuthUrl());
+
+const isLoading = ref(true);
+const profile = ref<ShikiUser | null>(null);
+
+const updateName = async () => {
+  isLoading.value = true;
+  try {
+    profile.value = await getUser();
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const code = new URL(location.href).searchParams.get('code') || '';
+if (code) {
+  const router = useRouter();
+  router.replace({query: {}});
+  refreshCredentials({type: 'authorization_code', code})
+    .then(() => {
+      updateName();
+    })
+    .catch(e => {
+      showErrorMessage({
+        title: 'Ошибка авторизации в Shikimori',
+        message: typeof e === 'string'
+          ? e
+          : e.error_description || e.message
+            ? e.error_description || e.message
+            : JSON.stringify(e),
+      });
+      console.error(e);
+    });
+} else {
+  updateName();
+}
+
+const logOut = () => {
+  clearCredentials();
+  profile.value = null;
+};
+</script>
+
 <template>
   <section class="card p-3">
     <p>
@@ -37,68 +90,3 @@
     </p>
   </section>
 </template>
-
-<script lang="ts">
-import {defineComponent, ref} from 'vue';
-import {useElectron} from '/@/use/electron';
-import type {ShikiUser} from '/@/utils/shikimori-api';
-import {clearCredentials, getAuthUrl, getUser, refreshCredentials} from '/@/utils/shikimori-api';
-import {showErrorMessage} from '/@/utils/dialogs';
-import {useRouter} from 'vue-router';
-
-
-export default defineComponent({
-  name: 'ShikiOauth',
-  setup() {
-    const {openURL} = useElectron();
-    const login = () => openURL(getAuthUrl());
-
-    const isLoading = ref(true);
-    const profile = ref<ShikiUser | null>(null);
-
-    const updateName = async () => {
-      isLoading.value = true;
-      try {
-        profile.value = await getUser();
-      } finally {
-        isLoading.value = false;
-      }
-    };
-
-    const code = new URL(location.href).searchParams.get('code') || '';
-    if (code) {
-      const router = useRouter();
-      router.replace({query: {}});
-      refreshCredentials({type: 'authorization_code', code})
-        .then(() => {
-          updateName();
-        })
-        .catch(e => {
-          showErrorMessage({
-            title: 'Ошибка авторизации в Shikimori',
-            message: typeof e === 'string'
-              ? e
-              : e.error_description || e.message
-                ? e.error_description || e.message
-                : JSON.stringify(e),
-          });
-          console.error(e);
-        });
-    } else {
-      updateName();
-    }
-
-    const logOut = () => {
-      clearCredentials();
-      profile.value = null;
-    };
-
-
-    return {login, profile, isLoading, openURL, logOut};
-  },
-});
-</script>
-
-<style scoped>
-
-</style>

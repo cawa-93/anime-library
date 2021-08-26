@@ -1,3 +1,22 @@
+<script lang="ts" setup>
+import {computed, ref} from 'vue';
+import {getScheme, setScheme} from '/@/pages/Options/settingColorScheme';
+
+
+const _colorScheme = ref<'system' | 'light' | 'dark'>('system');
+getScheme().then(v => _colorScheme.value = v || 'system');
+
+const colorScheme = computed({
+  get() {
+    return _colorScheme.value;
+  },
+  set(v: 'system' | 'light' | 'dark') {
+    _colorScheme.value = v;
+    setScheme(v);
+  },
+});
+</script>
+
 <template>
   <div class="form-check">
     <input
@@ -42,29 +61,3 @@
     >Темная</label>
   </div>
 </template>
-
-<script lang="ts">
-import {computed, defineComponent, ref} from 'vue';
-import {getScheme, setScheme} from '/@/pages/Options/settingColorScheme';
-
-
-export default defineComponent({
-  name: 'ColorScheme',
-  setup() {
-    const _colorScheme = ref<'system' | 'light' | 'dark'>('system');
-    getScheme().then(v => _colorScheme.value = v || 'system');
-
-    const colorScheme = computed({
-      get() {
-        return _colorScheme.value;
-      },
-      set(v: 'system' | 'light' | 'dark') {
-        _colorScheme.value = v;
-        setScheme(v);
-      },
-    });
-
-    return {colorScheme};
-  },
-});
-</script>
