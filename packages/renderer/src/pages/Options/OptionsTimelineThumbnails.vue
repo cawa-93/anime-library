@@ -17,7 +17,8 @@
       id="enable-timeline-thumbnails-help"
       class="form-text"
     >
-      В некоторых случаях эта функция может сильно повлиять на скорость загрузки видео, поэтому она выключена по-умолчанию.
+      В некоторых случаях эта функция может сильно повлиять на скорость загрузки видео, поэтому она выключена
+      по-умолчанию.
     </p>
     <enable-hardware-acceleration v-if="enable" />
   </div>
@@ -25,29 +26,28 @@
 
 <script lang="ts">
 import {computed, defineComponent, ref} from 'vue';
-import EnableHardwareAcceleration from '/@/components/Options/EnableHardwareAcceleration.vue';
-import {createIpcClient} from '/@/ipc';
+import EnableHardwareAcceleration from '/@/pages/Options/OptionsEnableHardwareAcceleration.vue';
+import {
+  isEnabled as isThumbnailsEnabled,
+  setEnabled as setThumbnailsEnabled,
+} from '/@/pages/Options/settingTimelineThumbnails';
+import {setEnabled as setHardwareAccelerationEnabled} from '/@/pages/Options/settingHardwareAcceleration';
 
-const LOCALSTORAGE_KEY = 'enable_timeline_thumbnails';
-
-export const isEnabled = (): boolean => localStorage.getItem(LOCALSTORAGE_KEY) === 'true';
 
 export default defineComponent({
   name: 'TimelineThumbnails',
   components: {EnableHardwareAcceleration},
   setup() {
-    const userSettings = createIpcClient('UserSettingsController');
-
-    const _enable = ref(isEnabled());
+    const _enable = ref(isThumbnailsEnabled());
     const enable = computed({
       get() {
         return _enable.value;
       },
       set(value: boolean) {
         _enable.value = value;
-        localStorage.setItem(LOCALSTORAGE_KEY, String(value));
+        setThumbnailsEnabled(value);
         if (!value) {
-          userSettings.set('enable_hardware_acceleration', value);
+          setHardwareAccelerationEnabled(false);
         }
       },
     });

@@ -6,7 +6,7 @@ import {nextTick} from 'vue';
 
 const routes: RouteRecordRaw[] = [
   {path: '/', name: 'Home', component: () => import('/@/components/Home.vue')},
-  {path: '/options/', name: 'Options', component: () => import('/@/components/OptionsPage.vue')},
+  {path: '/options/', name: 'Options', component: () => import('/@/pages/Options/Options.vue')},
   {
     path: '/watch/:seriesId(\\d+)/:episodeNum(\\d+)?/:translationId(\\d+)?/',
     name: 'Watch',

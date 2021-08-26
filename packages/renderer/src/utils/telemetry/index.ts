@@ -1,8 +1,8 @@
 import {useElectron} from '/@/use/electron';
 import type {EventParams, PageViewParams, ScreenViewParams, TimingParams} from '/@/utils/telemetry/types';
 import {isLoggedIn} from '/@/utils/shikimori-api';
-import {isEnabled as isTimelineThumbnailsEnabled} from '/@/components/Options/TimelineThumbnails.vue';
-import {isEnabled as isEnableHardwareAccelerationEnabled} from '/@/components/Options/EnableHardwareAcceleration.vue';
+import {isEnabled as isEnableHardwareAccelerationEnabled} from '/@/pages/Options/settingHardwareAcceleration';
+import {isEnabled as isTimelineThumbnailsEnabled} from '/@/pages/Options/settingTimelineThumbnails';
 
 const TRACKING_ID = import.meta.env.VITE_UA_TRACK_ID;
 const TRACKING_ENABLED = TRACKING_ID !== undefined;

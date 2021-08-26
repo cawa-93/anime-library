@@ -95,11 +95,11 @@
 import {computed, defineComponent, ref} from 'vue';
 import {onClickOutside, useTitle} from '@vueuse/core';
 import {getAccessToken, saveAccessToken} from '/@/utils/videoProvider/providers/anime365/anime365';
-import ShikiOauth from '/@/components/ShikiOauth.vue';
-import OptionAnime365 from '/@/components/OptionAnime365.vue';
+import ShikiOauth from '/@/pages/Options/OptionsShikiOauth.vue';
+import OptionAnime365 from '/@/pages/Options/OptionsAnime365.vue';
 import {openGitHub, openTG, openVK} from '/@/use/socialLinks';
-import TimelineThumbnails from '/@/components/Options/TimelineThumbnails.vue';
-import ColorScheme from '/@/components/Options/ColorScheme.vue';
+import TimelineThumbnails from '/@/pages/Options/OptionsTimelineThumbnails.vue';
+import ColorScheme from '/@/pages/Options/OptionsColorScheme.vue';
 
 
 export default defineComponent({

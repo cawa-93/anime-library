@@ -155,9 +155,9 @@ import {isMediaMetadataLoaded} from '/@/use/isMediaMetadataLoaded';
 import {getFramesFromVideo} from '/@/components/WatchPage/VideoPlayer/getFramesFromVideo';
 import {HOUR, SECOND_MS} from '/@/utils/time';
 import {trackTime} from '/@/utils/telemetry';
-import {isEnabled as isTimelineThumbnailsEnabled} from '/@/components/Options/TimelineThumbnails.vue';
 import type {ActionsHandlers as UseMediaSessionHandlers} from '/@/components/WatchPage/VideoPlayer/useMediaSession';
 import {useMediaSessionActionsHandlers} from '/@/components/WatchPage/VideoPlayer/useMediaSession';
+import {isEnabled as isTimelineThumbnailsEnabled} from '/@/pages/Options/settingTimelineThumbnails';
 
 
 const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/WatchPage/VideoPlayer/LibAssSubtitlesRenderer.vue'));

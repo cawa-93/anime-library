@@ -17,7 +17,8 @@
       id="enable-hardware-acceleration-help"
       class="form-text"
     >
-      В редких случаях загрузка превью для таймлайна видео приводит к прерывистому зависанию приложения во время просмотра видео в высоком качестве.
+      В редких случаях загрузка превью для таймлайна видео приводит к прерывистому зависанию приложения во время
+      просмотра видео в высоком качестве.
       В зависимости от вашей системы этот параметр может решить эту проблему в ущерб автономности.
     </p>
     <p
@@ -31,10 +32,8 @@
 
 <script lang="ts">
 import {computed, defineComponent, ref} from 'vue';
-import {createIpcClient} from '/@/ipc';
+import {isEnabled, setEnabled} from '/@/pages/Options/settingHardwareAcceleration';
 
-const userSettings = createIpcClient('UserSettingsController');
-export const isEnabled = (): Promise<boolean> => userSettings.get('enable_hardware_acceleration').then(v => !!v);
 
 export default defineComponent({
   name: 'EnableHardwareAcceleration',
@@ -47,7 +46,7 @@ export default defineComponent({
       },
       set(value: boolean) {
         _enable.value = value;
-        userSettings.set('enable_hardware_acceleration', value);
+        setEnabled(value);
       },
     });
 

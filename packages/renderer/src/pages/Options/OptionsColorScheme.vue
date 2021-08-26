@@ -45,11 +45,8 @@
 
 <script lang="ts">
 import {computed, defineComponent, ref} from 'vue';
-import {createIpcClient} from '/@/ipc';
+import {getScheme, setScheme} from '/@/pages/Options/settingColorScheme';
 
-const userSettings = createIpcClient('UserSettingsController');
-const getScheme = () => userSettings.get('color_scheme', 'system');
-const currentColorScheme = createIpcClient('ColorSchemeController');
 
 export default defineComponent({
   name: 'ColorScheme',
@@ -63,8 +60,7 @@ export default defineComponent({
       },
       set(v: 'system' | 'light' | 'dark') {
         _colorScheme.value = v;
-        userSettings.set('color_scheme', v);
-        currentColorScheme.setColorScheme(v);
+        setScheme(v);
       },
     });
 
