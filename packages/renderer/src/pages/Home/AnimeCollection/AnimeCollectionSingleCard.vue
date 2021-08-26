@@ -1,3 +1,29 @@
+<script lang="ts" setup>
+import type {PropType} from 'vue';
+import {ref} from 'vue';
+import type {Anime} from '/@/pages/Home/AnimeCollection/Anime';
+import {useElectron} from '/@/use/electron';
+
+
+defineProps({
+  anime: {
+    type: Object as PropType<Anime>,
+    required: true,
+  },
+});
+
+const {openURL} = useElectron();
+const openAnime = (event: MouseEvent, anime: Anime) => {
+  if (event.ctrlKey || event.button === 1) {
+    event.preventDefault();
+    return openURL('https://shikimori.one' + anime.url);
+  }
+};
+
+const isOverlayVisible = ref(false);
+</script>
+
+
 <template>
   <router-link
     :to="{
@@ -76,42 +102,7 @@
   </router-link>
 </template>
 
-<script lang="ts">
-import type {PropType} from 'vue';
-import {defineComponent, ref} from 'vue';
-import type {Anime} from '/@/components/AnimeCollection/Anime';
-import {useElectron} from '/@/use/electron';
-
-
-export default defineComponent({
-  name: 'CustomListSingleCard',
-  props: {
-    anime: {
-      type: Object as PropType<Anime>,
-      required: true,
-    },
-  },
-  setup() {
-    const {openURL} = useElectron();
-    const openAnime = (event: MouseEvent, anime: Anime) => {
-      if (event.ctrlKey || event.button === 1) {
-        event.preventDefault();
-        return openURL('https://shikimori.one' + anime.url);
-      }
-    };
-
-    const isOverlayVisible = ref(false);
-
-    return {openAnime, isOverlayVisible};
-  },
-});
-</script>
-
 <style scoped>
-.anime-status-indicator {
-  height: 0.5rem;
-}
-
 .card {
   min-width: auto;
   scroll-snap-align: start;
@@ -148,17 +139,5 @@ img {
   background: red;
   align-self: center;
   border-radius: 50%;
-}
-
-.anime-status.released:before {
-  background-color: var(--bs-success);
-}
-
-.anime-status.ongoing:before {
-  background-color: var(--bs-primary);
-}
-
-.anime-status.anons:before {
-  background-color: var(--bs-danger);
 }
 </style>

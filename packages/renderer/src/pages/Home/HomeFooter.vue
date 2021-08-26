@@ -1,3 +1,29 @@
+<script lang="ts" setup>
+import {ref} from 'vue';
+import {trackEvent} from '/@/utils/telemetry';
+import {openTG, openVK} from '/@/use/socialLinks';
+
+
+const STATES = {
+  INITIAL: 0,
+  LIKED: 1,
+  DISLIKED: 2,
+} as const;
+
+const state = ref<typeof STATES[keyof typeof STATES]>(STATES.INITIAL);
+
+const liked = () => {
+  state.value = STATES.LIKED;
+  trackEvent('UserSatisfactionSurvey', 'Satisfied');
+};
+
+const disliked = () => {
+  state.value = STATES.DISLIKED;
+  trackEvent('UserSatisfactionSurvey', 'NotSatisfied');
+};
+</script>
+
+
 <template>
   <footer class="text-center p-3">
     <template v-if="state === STATES.INITIAL">
@@ -73,37 +99,6 @@
   </footer>
 </template>
 
-<script lang="ts">
-import {defineComponent, ref} from 'vue';
-import {trackEvent} from '/@/utils/telemetry';
-import {openTG, openVK} from '/@/use/socialLinks';
-
-
-const STATES = {
-  INITIAL: 0,
-  LIKED: 1,
-  DISLIKED: 2,
-};
-
-export default defineComponent({
-  name: 'HomeFooter',
-  setup() {
-    const state = ref(STATES.INITIAL);
-
-    const liked = () => {
-      state.value = STATES.LIKED;
-      trackEvent('UserSatisfactionSurvey', 'Satisfied');
-    };
-
-    const disliked = () => {
-      state.value = STATES.DISLIKED;
-      trackEvent('UserSatisfactionSurvey', 'NotSatisfied');
-    };
-
-    return {state, liked, disliked, STATES, openVK, openTG};
-  },
-});
-</script>
 
 <style scoped>
 svg {

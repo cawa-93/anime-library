@@ -1,3 +1,42 @@
+<script lang="ts" setup>
+import type {PropType} from 'vue';
+import {ref} from 'vue';
+import type {Genre} from '/@/utils/shikimori-api';
+import shikimoriAnimeGenres from '/@/utils/shikimori-genres.json';
+import ButtonSwitcher from '/@/components/ButtonSwitcher.vue';
+
+
+const genres: Genre[] = (shikimoriAnimeGenres as Genre[]).sort((a, b) => {
+  const name1 = a.russian || a.name || a.id;
+  const name2 = b.russian || b.name || b.id;
+  return name1 < name2 ? -1 : name1 > name2 ? 1 : 0;
+});
+
+const props = defineProps({
+  modelValue: {
+    type: Array as PropType<[number, 'include' | 'exclude'][]>,
+    required: false,
+    default: () => ([]),
+  },
+});
+
+const emit = defineEmits({
+  'update:modelValue': null,
+});
+
+const selectedGenres = ref(new Map(props.modelValue));
+
+const update = (id: number, state: '' | 'include' | 'exclude') => {
+  if (state === '') {
+    selectedGenres.value.delete(id);
+  } else {
+    selectedGenres.value.set(id, state);
+  }
+
+  emit('update:modelValue', [...selectedGenres.value.entries()]);
+};
+</script>
+
 <template>
   <section v-if="genres !== undefined">
     <button-switcher
@@ -17,48 +56,6 @@
     </button-switcher>
   </section>
 </template>
-
-<script lang="ts">
-import type {PropType} from 'vue';
-import {defineComponent, ref} from 'vue';
-import type {Genre} from '/@/utils/shikimori-api';
-import shikimoriAnimeGenres from '/@/utils/shikimori-genres.json';
-import ButtonSwitcher from '/@/components/ButtonSwitcher.vue';
-
-const genres: Genre[] = (shikimoriAnimeGenres as Genre[]).sort((a, b) => {
-  const name1 = a.russian || a.name || a.id;
-  const name2 = b.russian || b.name || b.id;
-  return name1 < name2 ? -1 : name1 > name2 ? 1 : 0;
-});
-
-export default defineComponent({
-  name: 'GenresSelector',
-  components: {ButtonSwitcher},
-  props: {
-    modelValue: {
-      type: Array as PropType<[number, 'include' | 'exclude'][]>,
-      required: false,
-      default: () => ([]),
-    },
-  },
-  emits: ['update:modelValue'],
-  setup(props, {emit}) {
-    const selectedGenres = ref(new Map(props.modelValue));
-
-    const update = (id: number, state: '' | 'include' | 'exclude') => {
-      if (state === '') {
-        selectedGenres.value.delete(id);
-      } else {
-        selectedGenres.value.set(id, state);
-      }
-
-      emit('update:modelValue', [...selectedGenres.value.entries()]);
-    };
-
-    return {genres, selectedGenres, update};
-  },
-});
-</script>
 
 <style scoped>
 section {

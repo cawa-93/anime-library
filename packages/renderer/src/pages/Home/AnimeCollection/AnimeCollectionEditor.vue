@@ -1,3 +1,93 @@
+<script lang="ts" setup>
+import type {PropType} from 'vue';
+import {onMounted, ref} from 'vue';
+import type {AnimeCollection} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
+import {onClickOutside} from '@vueuse/core';
+import GenresSelector from '/@/pages/Home/AnimeCollection/GenresSelector.vue';
+
+
+const props = defineProps({
+  header: {
+    type: String,
+    required: false,
+    default: '',
+  },
+
+  title: {
+    type: String,
+    required: false,
+    default: '',
+  },
+
+  requestParams: {
+    type: Object as PropType<AnimeCollection['requestParams']>,
+    required: false,
+    default: () => ({
+      limit: 10,
+      status: '',
+      kind: '',
+      order: 'ranked',
+      mylist: '',
+      genre: '',
+    }),
+  },
+
+  onDelete: {
+    type: Function,
+    required: false,
+    default: undefined,
+  },
+});
+
+const emit = defineEmits({
+  'save': null,
+  'close': null,
+  'delete': null,
+});
+
+
+const root = ref<HTMLElement>();
+onClickOutside(root, () => emit('close'));
+
+onMounted(() => root.value?.querySelector<HTMLInputElement>('input[autofocus]')?.focus());
+
+const listTitle = ref(props.title);
+const listLimit = ref(props.requestParams.limit);
+const status = ref(props.requestParams.status.split(',').filter(s => !!s));
+const kind = ref(props.requestParams.kind.split(',').filter(s => !!s));
+const order = ref(props.requestParams.order);
+
+const myList = ref(props.requestParams.mylist.split(',').filter(s => !!s).map(s => s.startsWith('!') ? s.substring(1) : s));
+const myListType = ref(props.requestParams.mylist && !props.requestParams.mylist.startsWith('!') ? 'include' : 'exclude');
+
+const genre = ref<[number, 'include' | 'exclude'][]>(
+  props.requestParams.genre
+    ? props.requestParams.genre
+      .split(',')
+      .filter(s => !!s)
+      .map(s => s.startsWith('!') ? [Number(s.slice(1)), 'exclude'] : [Number(s), 'include'])
+    : [],
+);
+
+const onSave = () => {
+  const newList: AnimeCollection = {
+    title: listTitle.value,
+    requestParams: {
+      limit: listLimit.value,
+      status: status.value.join(','),
+      kind: kind.value.join(','),
+      order: order.value,
+      mylist: (
+        myListType.value === 'include' ? myList.value : myList.value.map(s => `!${s}`)
+      ).join(','),
+      genre: genre.value.reduce((s, [id, state]) => s + (state === 'exclude' ? '!' : '') + id + ',', ''),
+    },
+  };
+
+  emit('save', newList);
+};
+</script>
+
 <template>
   <dialog
     ref="root"
@@ -6,7 +96,6 @@
     aria-labelledby="modal-title"
   >
     <form
-      method="dialog"
       class="card"
       @submit.prevent="onSave"
     >
@@ -394,97 +483,6 @@
   </dialog>
 </template>
 
-<script lang="ts">
-import type {PropType} from 'vue';
-import {defineComponent, onMounted, ref} from 'vue';
-import type {AnimeCollection} from '/@/components/AnimeCollection/AnimeCollectionDB';
-import {onClickOutside} from '@vueuse/core';
-import GenresSelector from '/@/components/GenresSelector.vue';
-
-
-export default defineComponent({
-  name: 'AnimeCollectionEdit',
-  components: {GenresSelector},
-  props: {
-    header: {
-      type: String,
-      required: false,
-      default: '',
-    },
-
-    title: {
-      type: String,
-      required: false,
-      default: '',
-    },
-
-    requestParams: {
-      type: Object as PropType<AnimeCollection['requestParams']>,
-      required: false,
-      default: () => ({
-        limit: 10,
-        status: '',
-        kind: '',
-        order: 'ranked',
-        mylist: '',
-        genre: '',
-      }),
-    },
-
-    onDelete: {
-      type: Function,
-      required: false,
-      default: undefined,
-    },
-  },
-
-  emits: ['save', 'close', 'delete'],
-  setup(props, {emit}) {
-    const root = ref<HTMLElement>();
-    onClickOutside(root, () => emit('close'));
-
-    onMounted(() => root.value?.querySelector<HTMLInputElement>('input[autofocus]')?.focus());
-
-    const listTitle = ref(props.title);
-    const listLimit = ref(props.requestParams.limit);
-    const status = ref(props.requestParams.status.split(',').filter(s => !!s));
-    const kind = ref(props.requestParams.kind.split(',').filter(s => !!s));
-    const order = ref(props.requestParams.order);
-
-    const myList = ref(props.requestParams.mylist.split(',').filter(s => !!s).map(s => s.startsWith('!') ? s.substring(1) : s));
-    const myListType = ref(props.requestParams.mylist && !props.requestParams.mylist.startsWith('!') ? 'include' : 'exclude');
-
-    const genre = ref<[number, 'include' | 'exclude'][]>(
-      props.requestParams.genre
-        ? props.requestParams.genre
-          .split(',')
-          .filter(s => !!s)
-          .map(s => s.startsWith('!') ? [Number(s.slice(1)), 'exclude'] : [Number(s), 'include'])
-        : [],
-    );
-
-    const onSave = () => {
-      const newList: AnimeCollection = {
-        title: listTitle.value,
-        requestParams: {
-          limit: listLimit.value,
-          status: status.value.join(','),
-          kind: kind.value.join(','),
-          order: order.value,
-          mylist: (
-            myListType.value === 'include' ? myList.value : myList.value.map(s => `!${s}`)
-          ).join(','),
-          genre: genre.value.reduce((s, [id, state]) => s + (state === 'exclude' ? '!' : '') + id + ',', ''),
-        },
-      };
-
-      emit('save', newList);
-    };
-
-    return {onSave, status, kind, root, order, myListType, myList, listTitle, listLimit, genre};
-  },
-});
-</script>
 
 <style scoped>
 dialog {
@@ -505,5 +503,9 @@ dialog::backdrop {
 
 dialog button[type=submit] {
   margin-left: auto;
+}
+
+.card-header button {
+  -webkit-app-region: no-drag;
 }
 </style>

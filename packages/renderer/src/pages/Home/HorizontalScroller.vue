@@ -1,3 +1,16 @@
+<script lang="ts" setup>
+import type {PropType} from 'vue';
+
+defineProps({
+  items: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    type: Array as PropType<any[]>,
+    required: false,
+    default: () => ([]),
+  },
+});
+</script>
+
 <template>
   <ul>
     <li
@@ -12,23 +25,6 @@
   </ul>
 </template>
 
-<script lang="ts">
-import type {PropType} from 'vue';
-import {defineComponent} from 'vue';
-
-
-export default defineComponent({
-  name: 'HorizontalScroller',
-  props: {
-    items: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      type: Array as PropType<any[]>,
-      required: false,
-      default: () => ([]),
-    },
-  },
-});
-</script>
 
 <style scoped>
 ul {
