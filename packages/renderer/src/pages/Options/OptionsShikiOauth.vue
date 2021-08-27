@@ -3,76 +3,81 @@ import {ref} from 'vue';
 import {useElectron} from '/@/use/electron';
 import type {ShikiUser} from '/@/utils/shikimori-api';
 import {clearCredentials, getAuthUrl, getUser, isLoggedIn, refreshCredentials} from '/@/utils/shikimori-api';
-import {showErrorMessage} from '/@/utils/dialogs';
 import {useRouter} from 'vue-router';
 
 
-const isShikiLoggedIn = ref(isLoggedIn());
-
 const {openURL} = useElectron();
-const login = () => openURL(getAuthUrl());
 
-const isLoading = ref(true);
+const isShikimoriCredentialsExist = ref(isLoggedIn());
+const updateShikiLoggedState = () => isShikimoriCredentialsExist.value = isLoggedIn();
+
+const isLoading = ref(false);
 const profile = ref<ShikiUser | null>(null);
 
-/**
- * Загружает имя подключенного аккаунта
- */
-const updateName = async () => {
-  isLoading.value = true;
-  isShikiLoggedIn.value = isLoggedIn();
-  if (isShikiLoggedIn.value) {
-    try {
-      profile.value = await getUser();
-    } catch (e) {
-      showErrorMessage({
-        title: 'Ошибка авторизации в Shikimori',
-        message: typeof e === 'string'
-          ? e
-          : e.error_description || e.message
-            ? e.error_description || e.message
-            : JSON.stringify(e),
-      });
-    } finally {
-      isLoading.value = false;
-    }
-  } else {
-    isLoading.value = false;
+const error = ref<string | null>(null);
+const setFormattedError = (e: unknown) => {
+  if (!e) {
+    return;
   }
+
+  if (typeof e === 'string') {
+    error.value = e;
+    return;
+  }
+
+  if (e instanceof Error) {
+    error.value = String(e);
+    return;
+  }
+
+  error.value = JSON.stringify(e);
 };
-
-/**
- * Код авторизации полученный от Шикимори OAuth
- */
-const code = new URL(location.href).searchParams.get('code') || '';
-if (code) {
-  const router = useRouter();
-  router.replace({query: {}});
-
-  refreshCredentials({type: 'authorization_code', code})
-    .then(updateName)
-    .catch(e => {
-      showErrorMessage({
-        title: 'Ошибка авторизации в Shikimori',
-        message: typeof e === 'string'
-          ? e
-          : e.error_description || e.message
-            ? e.error_description || e.message
-            : JSON.stringify(e),
-      });
-      console.error(e);
-    })
-    .finally(() => isLoading.value = false);
-} else {
-  updateName();
-}
-
+const login = () => openURL(getAuthUrl());
 const logOut = () => {
   clearCredentials();
   profile.value = null;
-  isShikiLoggedIn.value = isLoggedIn();
-
+  updateShikiLoggedState();
 };
+
+
+(async () => {
+  /**
+   * Код авторизации полученный от Шикимори OAuth
+   */
+  const code = new URL(location.href).searchParams.get('code') || '';
+
+  // Если был передан код -- обновить access_token
+  if (code) {
+    const router = useRouter();
+    await router.replace({query: {}});
+
+    isLoading.value = true;
+
+    try {
+      await refreshCredentials({type: 'authorization_code', code});
+    } catch (e) {
+      console.error(e);
+      setFormattedError(e);
+    }
+
+    updateShikiLoggedState();
+    isLoading.value = false;
+  }
+
+  if (isShikimoriCredentialsExist.value) {
+    isLoading.value = true;
+    try {
+      profile.value = await getUser();
+    } catch (e) {
+      console.error(e);
+      setFormattedError(e);
+    }
+
+    isLoading.value = false;
+  }
+
+})();
+
 </script>
 
 <template>
@@ -81,8 +86,14 @@ const logOut = () => {
       Если вы подключите ваш аккаунт Шикимори, то прогресс просмотра В этом приложении будет автоматически
       синхронизироваться с вашими списками на Шикимори
     </p>
+    <p
+      v-if="error"
+      class="text-danger"
+    >
+      Ошибка подключения к Шикимори: {{ error }}
+    </p>
     <p class="d-flex flex-row-reverse gap-2 align-items-center">
-      <template v-if="isShikiLoggedIn">
+      <template v-if="isShikimoriCredentialsExist">
         <button
           class="btn btn-danger"
           @click="logOut"

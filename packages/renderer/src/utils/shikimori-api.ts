@@ -46,6 +46,10 @@ export function getAuthUrl(): string {
 }
 
 
+/**
+ * Получает новый `access_token` по переданному `authorization_code` или `refresh_token`
+ * @param request
+ */
 export function refreshCredentials(request: { type: 'authorization_code', code: string } | { type: 'refresh_token', refresh_token: string }): Promise<Credentials> {
   const {client_id, client_secret} = getApp();
   const body: Record<string, string> = {
