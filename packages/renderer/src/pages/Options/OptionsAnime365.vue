@@ -10,6 +10,7 @@ import type {ApiResponse} from '/@/utils/videoProvider/providers/anime365/anime3
 import {showErrorMessage} from '/@/utils/dialogs';
 import {getVideo} from '/@/utils/videoProvider';
 import {useElectron} from '/@/use/electron';
+import {unknownToString} from '/@/utils/unknownToString';
 
 
 const {openURL} = useElectron();
@@ -48,7 +49,7 @@ const saveAccessTokenOption = async () => {
       } catch (e) {
         await showErrorMessage({
           title: 'Проверьте правильность введённых данных',
-          message: typeof e === 'string' ? e : e.message || JSON.stringify(e),
+          message: unknownToString(e),
         });
       }
     }
@@ -72,14 +73,14 @@ const saveAccessTokenOption = async () => {
       } catch (e) {
         await showErrorMessage({
           title: 'Не удалось проверить валидность ключа',
-          message: typeof e === 'string' ? e : e.message || JSON.stringify(e),
+          message: unknownToString(e),
         });
       }
     }
   } catch (e) {
     await showErrorMessage({
       title: 'Не удалось сохранить Ключ. Произошла непредвиденная ошибка',
-      message: typeof e === 'string' ? e : e.message || JSON.stringify(e),
+      message: unknownToString(e),
     });
   } finally {
     isLoading.value = false;

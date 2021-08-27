@@ -38,7 +38,7 @@ function setActionHandlers(handlers: ActionsHandlers) {
 
 function clearActionHandlers() {
   for (const action in defaultHandlers) {
-    navigator.mediaSession.setActionHandler(action, null);
+    navigator.mediaSession.setActionHandler((action as keyof typeof defaultHandlers), null);
   }
 }
 

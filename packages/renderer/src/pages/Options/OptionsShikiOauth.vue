@@ -4,6 +4,7 @@ import {useElectron} from '/@/use/electron';
 import type {ShikiUser} from '/@/utils/shikimori-api';
 import {clearCredentials, getAuthUrl, getUser, isLoggedIn, refreshCredentials} from '/@/utils/shikimori-api';
 import {useRouter} from 'vue-router';
+import {unknownToString} from '/@/utils/unknownToString';
 
 
 const {openURL} = useElectron();
@@ -15,23 +16,6 @@ const isLoading = ref(false);
 const profile = ref<ShikiUser | null>(null);
 
 const error = ref<string | null>(null);
-const setFormattedError = (e: unknown) => {
-  if (!e) {
-    return;
-  }
-
-  if (typeof e === 'string') {
-    error.value = e;
-    return;
-  }
-
-  if (e instanceof Error) {
-    error.value = String(e);
-    return;
-  }
-
-  error.value = JSON.stringify(e);
-};
 const login = () => openURL(getAuthUrl());
 const logOut = () => {
   clearCredentials();
@@ -57,7 +41,7 @@ const logOut = () => {
       await refreshCredentials({type: 'authorization_code', code});
     } catch (e) {
       console.error(e);
-      setFormattedError(e);
+      error.value = unknownToString(e);
     }
 
     updateShikiLoggedState();
@@ -70,7 +54,7 @@ const logOut = () => {
       profile.value = await getUser();
     } catch (e) {
       console.error(e);
-      setFormattedError(e);
+      error.value = unknownToString(e);
     }
 
     isLoading.value = false;

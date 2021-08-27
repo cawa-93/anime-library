@@ -7,7 +7,7 @@ import type {UserSettings} from '/@shared/types/ipc/UserSettingsController';
 const SETTINGS_FILENAME = 'user-settings.json';
 const SETTINGS_DIR_PATH = app.getPath('userData');
 const SETTINGS_FILE_PATH = path.join(SETTINGS_DIR_PATH, SETTINGS_FILENAME);
-
+console.log({SETTINGS_FILE_PATH});
 let settingsCache: Map<keyof UserSettings, UserSettings[keyof UserSettings]> | undefined = undefined;
 
 
@@ -30,13 +30,14 @@ function loadSettings() {
     return Promise.resolve(settingsCache);
   }
 
+
   return fs.promises.access(SETTINGS_FILE_PATH, fs.constants.W_OK)
     .then(() => fs.promises.readFile(SETTINGS_FILE_PATH, {encoding: 'utf-8'}))
     .then(str => {
       settingsCache = new Map(JSON.parse(str));
       return settingsCache;
     })
-    .catch((e) => {
+    .catch((e: unknown) => {
       console.error(e);
       return undefined;
     });
@@ -70,7 +71,7 @@ function ensureSettingsDirSync(): void {
   try {
     fs.statSync(SETTINGS_DIR_PATH);
   } catch (err) {
-    if (err.code === 'ENOENT') {
+    if (err instanceof Error && (err as NodeJS.ErrnoException).code === 'ENOENT') {
       fs.mkdirSync(SETTINGS_DIR_PATH);
     } else {
       throw err;
@@ -87,8 +88,10 @@ function ensureSettingsDirSync(): void {
  */
 function ensureSettingsDir(): Promise<void> {
   return fs.promises.access(SETTINGS_DIR_PATH)
-    .catch(err => {
-      if (err.code === 'ENOENT') {
+    .catch((err: unknown) => {
+      console.log(err);
+      console.log(err instanceof Error);
+      if (err instanceof Error && (err as NodeJS.ErrnoException).code === 'ENOENT') {
         return fs.promises.mkdir(SETTINGS_DIR_PATH);
       }
 
