@@ -7,7 +7,6 @@ import type {UserSettings} from '/@shared/types/ipc/UserSettingsController';
 const SETTINGS_FILENAME = 'user-settings.json';
 const SETTINGS_DIR_PATH = app.getPath('userData');
 const SETTINGS_FILE_PATH = path.join(SETTINGS_DIR_PATH, SETTINGS_FILENAME);
-console.log({SETTINGS_FILE_PATH});
 let settingsCache: Map<keyof UserSettings, UserSettings[keyof UserSettings]> | undefined = undefined;
 
 
