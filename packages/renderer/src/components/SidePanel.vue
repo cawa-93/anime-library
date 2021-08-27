@@ -1,36 +1,28 @@
 <template>
-  <section
-    ref="el"
-  >
+  <section ref="el">
     <slot />
   </section>
 </template>
 
-<script lang="ts">
-import {defineComponent, ref} from 'vue';
+<script lang="ts" setup>
+import {ref} from 'vue';
 import {onClickOutside} from '@vueuse/core';
 
 
-export default defineComponent({
-  name: 'SidePanel',
-  props: {
-    defaultState: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-  },
-  emits: {
-    close: null,
-  },
-
-  setup(props, {emit}) {
-    const el = ref();
-    const opened = ref(props.defaultState);
-    onClickOutside(el, () => emit('close'));
-    return {el, opened};
+defineProps({
+  defaultState: {
+    type: Boolean,
+    required: false,
+    default: false,
   },
 });
+
+const emit = defineEmits({
+  close: null,
+});
+
+const el = ref();
+onClickOutside(el, () => emit('close'));
 </script>
 
 <style scoped>
@@ -44,7 +36,7 @@ section {
   min-width: 250px;
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  --background-color: 255,255,255;
+  --background-color: 255, 255, 255;
   --background-opacity: 0.75;
   background-color: rgba(var(--background-color), var(--background-opacity));
   height: 100%;
@@ -53,7 +45,7 @@ section {
 
 @media (prefers-color-scheme: dark) {
   section {
-    --background-color: 0,0,0;
+    --background-color: 0, 0, 0;
   }
 }
 </style>
