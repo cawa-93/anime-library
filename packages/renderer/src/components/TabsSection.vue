@@ -5,39 +5,40 @@
     aria-label="Basic radio toggle button group"
   >
     <slot
-      v-for="slotName of slotsNames"
+      v-for="slotName of slots"
       :key="slotName"
-      name="tab-header"
+      :name="SLOT_NAME_FOR_TABS_CONTROLS"
       :tab-name="slotName"
-      :is-active="activeTab === slotName"
-      :select="() => activeTab = slotName"
+      :is-active="activeSlot === slotName"
+      :activate="() => activateSlot(slotName)"
     />
   </div>
 
-  <slot :name="activeTab" />
+  <slot :name="activeSlot" />
 </template>
 
-<script lang="ts">
-import {defineComponent, ref} from 'vue';
+<script lang="ts" setup>
+import {ref, useSlots} from 'vue';
 
-
-export default defineComponent({
-  name: 'TabsSection',
-
-  props: {
-    defaultTab: {
-      type: String,
-      required: false,
-      default: '',
-    },
-  },
-
-  setup(props, {slots}) {
-    const slotsNames = Object.keys(slots).filter(name => name !== 'tab-header');
-    const activeTab = ref(props.defaultTab && slotsNames.includes(props.defaultTab) ? props.defaultTab : slotsNames[0]);
-    return {slotsNames, activeTab};
+const props = defineProps({
+  defaultActiveSlot: {
+    type: [String, Number],
+    required: false,
+    default: '',
   },
 });
+
+const SLOT_NAME_FOR_TABS_CONTROLS = 'tab-header';
+
+const slots = Object.keys(useSlots()).filter(name => name !== SLOT_NAME_FOR_TABS_CONTROLS);
+const isValidSlotName = (name: string | number) => name !== '' && slots.includes(name);
+const activeSlot = ref(isValidSlotName(props.defaultActiveSlot) ? props.defaultActiveSlot : slots[0]);
+
+const activateSlot = (slotName: string | number) => {
+  if (isValidSlotName(slotName)) {
+    activeSlot.value = slotName;
+  }
+};
 </script>
 
 <style scoped>

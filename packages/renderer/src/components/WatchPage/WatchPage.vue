@@ -437,8 +437,8 @@ const isSidePanelOpened = ref(false);
           :default-state="true"
           @close="isSidePanelOpened = false"
         >
-          <tabs-section default-tab="translations">
-            <template #tab-header="{tabName, isActive, select}">
+          <tabs-section default-active-slot="translations">
+            <template #tab-header="{tabName, isActive, activate}">
               <input
                 :id="`${tabName}-tab-header`"
                 value="episodes"
@@ -447,7 +447,7 @@ const isSidePanelOpened = ref(false);
                 name="active-tab"
                 autocomplete="off"
                 :checked="isActive"
-                @input="select"
+                @input="activate"
               >
               <label
                 class="btn rounded-0"
