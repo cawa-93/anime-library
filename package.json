@@ -54,7 +54,7 @@
     "electron-builder": "22.11.7",
     "electron-devtools-installer": "3.2.0",
     "eslint": "7.32.0",
-    "eslint-plugin-vue": "7.16.0",
+    "eslint-plugin-vue": "7.17.0",
     "jest": "27.0.6",
     "lint-staged": "11.1.2",
     "rollup-plugin-copy": "3.4.0",
