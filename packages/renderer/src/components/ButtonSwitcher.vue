@@ -1,3 +1,29 @@
+<script lang="ts" setup>
+import type {PropType} from 'vue';
+
+defineProps({
+  states: {
+    type: Array as PropType<string[]>,
+    required: true,
+  },
+
+  modelValue: {
+    type: String,
+    required: false,
+    default: '',
+  },
+
+  groupName: {
+    type: String,
+    required: true,
+  },
+});
+
+defineEmits({
+  'update:modelValue': null,
+});
+</script>
+
 <template>
   <span class="position-relative">
     <input
@@ -12,34 +38,6 @@
     <slot />
   </span>
 </template>
-
-<script lang="ts">
-import type {PropType} from 'vue';
-import {defineComponent} from 'vue';
-
-
-export default defineComponent({
-  name: 'ButtonSwitcher',
-  props: {
-    states: {
-      type: Array as PropType<string[]>,
-      required: true,
-    },
-
-    modelValue: {
-      type: String,
-      required: false,
-      default: '',
-    },
-
-    groupName: {
-      type: String,
-      required: true,
-    },
-  },
-  emits: ['update:modelValue'],
-});
-</script>
 
 <style scoped>
 input {
