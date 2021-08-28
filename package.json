@@ -58,7 +58,7 @@
     "jest": "27.1.0",
     "lint-staged": "11.1.2",
     "rollup-plugin-copy": "3.4.0",
-    "sass": "1.38.1",
+    "sass": "1.38.2",
     "simple-git-hooks": "2.6.1",
     "spectron": "15.0.0",
     "ts-jest": "27.0.5",
