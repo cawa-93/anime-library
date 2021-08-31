@@ -118,6 +118,7 @@ const createWindow = async (pageUrl?: string) => {
     frame: false,
     backgroundColor: '#fff',
     webPreferences: {
+      nativeWindowOpen: true,
       preload: join(__dirname, '../../preload/dist/index.cjs'),
       contextIsolation: import.meta.env.MODE !== 'test',   // Spectron tests can't work with contextIsolation: true
       enableRemoteModule: import.meta.env.MODE === 'test', // Spectron tests can't work with enableRemoteModule: false
