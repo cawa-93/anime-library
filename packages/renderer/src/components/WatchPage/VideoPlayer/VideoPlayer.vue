@@ -503,23 +503,10 @@ video {
 
 
 .control-panel:before {
-  background: linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 1) 0%,
-    rgba(0, 0, 0, 0.93) 10%,
-    rgba(0, 0, 0, 0.81) 20%,
-    rgba(0, 0, 0, 0.69) 30%,
-    rgba(0, 0, 0, 0.57) 40%,
-    rgba(0, 0, 0, 0.45) 50%,
-    rgba(0, 0, 0, 0.35) 60%,
-    rgba(0, 0, 0, 0.21) 70%,
-    rgba(0, 0, 0, 0.09) 80%,
-    rgba(0, 0, 0, 0.01) 90%,
-    rgba(0, 0, 0, 0) 100%
-  );
+  background: linear-gradient(transparent,rgba(0,0,0,.75));
   bottom: 0;
   content: "";
-  height: 200%;
+  height: 140%;
   left: 0;
   position: absolute;
   width: 100%;

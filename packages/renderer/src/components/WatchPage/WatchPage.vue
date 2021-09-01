@@ -512,7 +512,7 @@ main {
 header {
   --offset-top: 1rem;
   --offset-right: 1rem;
-  background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 83%);
+  background-image: linear-gradient(360deg, transparent,rgba(0,0,0,.75));
   pointer-events: none;
   z-index: 10;
 }
