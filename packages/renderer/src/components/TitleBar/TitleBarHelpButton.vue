@@ -15,18 +15,8 @@ const SELECT_OPTIONS = [{
 }] as const;
 
 
-
-const textVariants = [
-  '🐞 Сообщить о проблеме',
-  '💡 Поделится идеей',
-  '❔ Задать вопрос',
-  '👍🏻 Похвалить приложение',
-  '👎🏻 Раскритиковать приложение',
-];
-
-const selectedVariant = textVariants[Math.floor(Math.random() * textVariants.length)];
-
 const onSelected = (event: Event) => {
+  console.log('onSelected', event);
   const select = event.target;
 
   if (!select || !(select instanceof HTMLSelectElement)) {
@@ -36,10 +26,10 @@ const onSelected = (event: Event) => {
   const socialTarget = select.value as typeof SELECT_OPTIONS[number]['id'];
   switch (socialTarget) {
     case 'vk':
-      openVK();
+      openVK(true);
       break;
     case 'telegram':
-      openTG();
+      openTG(true);
       break;
     case 'github':
       openGitHub('discussions');
@@ -50,7 +40,7 @@ const onSelected = (event: Event) => {
   // чтобы при повторном выборе того же элемента сработало событие `input`
   select.value = '';
 
-  trackEvent('New Issue', 'Click Title bar link', selectedVariant);
+  trackEvent('New Issue', 'Click Title bar link', 'Помощь');
 };
 </script>
 
@@ -59,12 +49,13 @@ const onSelected = (event: Event) => {
     class="position-relative btn rounded-0 py-0 border-0 text-primary title-bar-github-link d-sm-inline-flex d-none align-items-center justify-content-center"
   >
     <small class="text-truncate">
-      {{ selectedVariant }}
+      Помощь
     </small>
 
     <select
-      :aria-label="selectedVariant"
+      aria-label="Помощь"
       class="position-absolute top-0 left-0 w-100 h-100"
+      value=""
       @input.prevent="onSelected"
     >
       <option

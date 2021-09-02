@@ -89,11 +89,11 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
                 Сообщество пользователей в
                 <a
                   href="#"
-                  @click.prevent="openVK"
+                  @click.prevent="openVK()"
                 >Вконтакте</a> и в
                 <a
                   href="#"
-                  @click.prevent="openTG"
+                  @click.prevent="openTG()"
                 >Telegram</a>
               </p>
             </section>

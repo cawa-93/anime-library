@@ -5,15 +5,21 @@ import {trackEvent} from '/@/utils/telemetry';
 const {openURL} = useElectron();
 
 
-export function openVK(): Promise<void> {
+export function openVK(mustOpenChat = false): Promise<void> {
   trackEvent('Social', 'Click on social link', 'VK');
-  return openURL('https://vk.com/playshikionline');
+  return openURL(mustOpenChat
+    ? 'https://vk.com/im?sel=-185683833'
+    : 'https://vk.com/playshikionline',
+  );
 }
 
 
-export function openTG(): Promise<void> {
+export function openTG(mustOpenChat = false): Promise<void> {
   trackEvent('Social', 'Click on social link', 'TG');
-  return openURL('https://t.me/playshikionline');
+  return openURL(mustOpenChat
+    ? 'https://t.me/playshikionline_chat'
+    : 'https://t.me/playshikionline',
+  );
 }
 
 

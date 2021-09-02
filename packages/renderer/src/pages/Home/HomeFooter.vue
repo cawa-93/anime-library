@@ -53,7 +53,7 @@ const disliked = () => {
       </p>
       <a
         class="btn btn-outline-dark mx-1"
-        @click.prevent="openVK"
+        @click.prevent="openVK()"
       >
         <svg
           aria-hidden="true"
@@ -75,7 +75,7 @@ const disliked = () => {
       </a>
       <a
         class="btn btn-outline-dark mx-1"
-        @click.prevent="openTG"
+        @click.prevent="openTG()"
       >
         <svg
           aria-hidden="true"
