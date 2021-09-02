@@ -18,7 +18,9 @@ interface TranslationRecommendations extends DBSchema {
   };
 }
 
+
 let dbPromise: Promise<IDBPDatabase<TranslationRecommendations>> | null = null;
+
 
 function getDB() {
 
@@ -66,6 +68,7 @@ function getDB() {
  * Необходимо для экономии памяти в хранилище
  */
 const PREFERRED_AUTHORS_PER_SERIES_LIMIT = 5;
+
 
 export async function savePreferredTranslation(seriesId: number, translationRef: MaybeRef<Translation>): Promise<number> {
   const translation = toRaw(translationRef) as Translation;
@@ -127,9 +130,9 @@ async function getPreferredTranslationAuthorsByType(preferredType: IndexKey<Tran
 }
 
 
-export async function getPreferredTranslationFromList<T extends MaybeReadonly<Translation>>(seriesId: number, translations: T[]): Promise<T | undefined> {
+export async function getPreferredTranslationFromList<T extends MaybeReadonly<Translation>>(seriesId: number, availableTranslations: T[]): Promise<T | undefined> {
 
-  if (!translations || translations.length === 0) {
+  if (!availableTranslations || availableTranslations.length === 0) {
     return undefined;
   }
 
@@ -142,15 +145,40 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
 
   // Попытка быстро вернуть перевод, если сразу найдётся совпадение по автору и типу
   if (reference) {
-    const preferredTranslation = translations
-      .find(t =>
-        t.type === reference.type
-        && t.author.id
-        && reference.author.includes(t.author.id),
-      );
-    if (preferredTranslation) {
+
+    /**
+     * Перевод который соответствует тому, что сохранен в базе данных
+     */
+    let foundTranslation: T | null = null;
+
+    /**
+     * Приоритет найденного перевода. От 0 до Infinity где
+     * 0 -- Самый ВЫСОКИЙ приоритет. Infinity -- Самый НИЗКИЙ приоритет
+     * В {@link reference} гранится несколько предпочитаемых авторов.
+     * Приоритет нужен для того, чтобы из них выбраться самого приоритетного для пользователя
+     **/
+    let priorityOfFoundTranslation = Infinity;
+
+    for (const translation of availableTranslations) {
+      if (translation.type !== reference.type || !translation.author.id) {
+        continue;
+      }
+
+      const priority = reference.author.findIndex(authorId => authorId === translation.author.id);
+
+      // Если нашли перевод с найвысшим приоритетом -- остановить цикл так как в дальнейшем поиске нет смысла
+      if (priority === 0) {
+        foundTranslation = translation;
+        break;
+      } else if (priority > 0 && priority < priorityOfFoundTranslation) {
+        foundTranslation = translation;
+        priorityOfFoundTranslation = priority;
+      }
+    }
+
+    if (foundTranslation) {
       track(performance.now() - start, 'by-reference');
-      return preferredTranslation;
+      return foundTranslation;
     }
   }
 
@@ -162,12 +190,12 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
   /**
    * Массив переводов предпочитаемого {@link TranslationType типа}
    */
-  const typedTranslations = translations.filter(t => t.type === preferredType);
+  const typedTranslations = availableTranslations.filter(t => t.type === preferredType);
 
   // Если нет ни одного перевода предпочитаемого типа -- просто вернуть первый (любого типа) из всего списка
   if (typedTranslations.length === 0) {
     track(performance.now() - start, 'first-any-type');
-    return translations[0];
+    return availableTranslations[0];
   }
 
   // Быстро вернуть перевод предпочитаемого типа если он всего один
@@ -185,7 +213,7 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
 
   // Попытка найти среди доступных перевод от одного из предпочитаемых авторов по порядку их приоритета
   for (const preferredAuthor of preferredAuthors) {
-    const preferredTranslation = translations.find(t => t.author.id === preferredAuthor);
+    const preferredTranslation = availableTranslations.find(t => t.author.id === preferredAuthor);
     if (preferredTranslation) {
       track(performance.now() - start, 'by-preferred-authors');
       return preferredTranslation;
