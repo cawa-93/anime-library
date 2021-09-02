@@ -1,7 +1,7 @@
 import type {Episode, Translation} from '/@/utils/videoProvider';
 import {getEpisodes, getTranslations} from '/@/utils/videoProvider';
 import {getViewHistoryItem} from '/@/utils/history-views';
-import {getPreferredTranslationFromList} from '/@/utils/translationRecomendations';
+import {getPreferredTranslationFromList} from '/@/utils/translationRecommendations/getPreferredTranslationFromList';
 
 
 function strToNum(str: number | string): number {

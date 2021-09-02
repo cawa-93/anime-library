@@ -22,10 +22,10 @@
 import type {PropType} from 'vue';
 import {computed, defineComponent} from 'vue';
 import type {Translation} from '/@/utils/videoProvider';
-import {savePreferredTranslation} from '/@/utils/translationRecomendations';
 import {formatList} from '/@/utils/formatList';
 import type {PlayListItem} from '/@/components/WatchPage/PlayList.vue';
 import PlayList from '/@/components/WatchPage/PlayList.vue';
+import {savePreferredTranslation} from '/@/utils/translationRecommendations/savePreferredTranslation';
 
 
 interface TranslationPlayListItem extends PlayListItem {
