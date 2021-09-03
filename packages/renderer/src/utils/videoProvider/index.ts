@@ -84,7 +84,7 @@ export function getSeries(malId: number): Promise<Series | undefined> {
 /**
  * Возвращает массив {@link Episode} относящихся к аниме
  */
-export function getEpisodes(malId: number): Promise<Episode[]> {
+export function getEpisodes(malId: number | string): Promise<Episode[]> {
   return deDuplicatedRequest(
     `episodes-${malId}`,
     () => provider.getEpisodes(malId),
@@ -96,7 +96,7 @@ export function getEpisodes(malId: number): Promise<Episode[]> {
  * Возвращает массив переводов относящихся к конкретной серии
  * @param providerEpisodeId ID Серии полученный от конкретного видео-провайдера
  */
-export function getTranslations(providerEpisodeId: number): Promise<Translation[]> {
+export function getTranslations(providerEpisodeId: number | string): Promise<Translation[]> {
   return deDuplicatedRequest(
     `translations-${providerEpisodeId}`,
     () => provider.getTranslations(providerEpisodeId),
@@ -107,7 +107,7 @@ export function getTranslations(providerEpisodeId: number): Promise<Translation[
 /**
  * Возвращает массив видео для конкретного перевода
  */
-export function getVideo(providerTranslationId: number): Promise<Video | undefined> {
+export function getVideo(providerTranslationId: number | string): Promise<Video | undefined> {
   return deDuplicatedRequest(
     `videos-${providerTranslationId}`,
     () => provider.getStream(providerTranslationId),
@@ -118,7 +118,7 @@ export function getVideo(providerTranslationId: number): Promise<Video | undefin
 /**
  * Удаляет кэш видео для конкретного перевода
  */
-export function clearVideosCache(providerTranslationId: number): Promise<boolean> {
+export function clearVideosCache(providerTranslationId: number | string): Promise<boolean> {
   return provider.clearVideosCache(providerTranslationId);
 }
 

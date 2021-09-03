@@ -181,8 +181,8 @@ const config = {
       hook: 'writeBundle',
       targets: [{
         src: [
-          './src/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus-worker.data',
-          './src/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus-worker.wasm',
+          './src/components/VideoPlayer/libass-wasm/subtitles-octopus-worker.data',
+          './src/components/VideoPlayer/libass-wasm/subtitles-octopus-worker.wasm',
         ],
         dest: './dist',
       }],

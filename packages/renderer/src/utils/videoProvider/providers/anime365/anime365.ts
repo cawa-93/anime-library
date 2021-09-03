@@ -81,7 +81,7 @@ export async function getSeries(myAnimeListId: number): Promise<Series | undefin
 }
 
 
-export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
+export async function getEpisodes(myAnimeListId: number | string): Promise<Episode[]> {
   const fields = ['episodes', 'numberOfEpisodes', 'type'] as const;
   type RequestedFields = typeof fields[number]
 
@@ -113,7 +113,7 @@ export async function getEpisodes(myAnimeListId: number): Promise<Episode[]> {
 }
 
 
-export async function getTranslations(episodeId: number): Promise<Translation[]> {
+export async function getTranslations(episodeId: number | string): Promise<Translation[]> {
   const fields = ['id', 'authorsSummary', 'authorsList', 'episodeId', 'typeKind', 'typeLang', 'isActive', 'qualityType'] as const;
   type RequestedFields = typeof fields[number]
   type ResponseItem = Pick<sm.Translation, RequestedFields>
@@ -170,7 +170,7 @@ export async function getTranslations(episodeId: number): Promise<Translation[]>
 }
 
 
-export async function getStream(translationId: number): Promise<Video | undefined> {
+export async function getStream(translationId: number | string): Promise<Video | undefined> {
   type ExpectedResponse = sm.Video
 
   const requestURL = new URL(`translations/embed/${translationId}`, API_BASE);
@@ -213,7 +213,7 @@ export async function getStream(translationId: number): Promise<Video | undefine
 }
 
 
-export function clearVideosCache(translationId: number): Promise<boolean> {
+export function clearVideosCache(translationId: number | string): Promise<boolean> {
   return caches
     .open('sm-api-calls')
     .then(cache => cache.delete(`${API_BASE}translations/embed/${translationId}`, {ignoreSearch: true}));

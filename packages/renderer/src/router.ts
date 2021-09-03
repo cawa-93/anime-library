@@ -10,7 +10,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/watch/:seriesId(\\d+)/:episodeNum(\\d+)?/:translationId(\\d+)?/',
     name: 'Watch',
-    component: () => import('/@/components/WatchPage/WatchPage.vue'),
+    component: () => import('/@/pages/Watch/Watch.vue'),
     props: true,
   },
 ];

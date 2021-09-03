@@ -1,3 +1,4 @@
+import type { Ref} from 'vue';
 import {isRef, onUnmounted, watch, watchEffect, unref} from 'vue';
 import type {MaybeRef} from '@vueuse/core';
 
@@ -43,7 +44,7 @@ function clearActionHandlers() {
 }
 
 
-export function useMediaSessionActionsHandlers(handlers: MaybeRef<ActionsHandlers>): void {
+export function useMediaSessionActionsHandlers(handlers: ActionsHandlers | Ref<ActionsHandlers>): void {
   onUnmounted(clearActionHandlers);
 
   if (isRef(handlers)) {

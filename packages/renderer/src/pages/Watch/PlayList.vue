@@ -1,3 +1,42 @@
+<script lang="ts" setup>
+import type {PropType} from 'vue';
+import {onMounted, ref} from 'vue';
+
+
+export interface PlayListItem {
+  id: number,
+  label: string,
+  title?: string,
+  badges?: { text: string, style: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark' }[]
+}
+
+
+defineProps({
+  items: {
+    type: Array as PropType<PlayListItem[]>,
+    required: true,
+  },
+  selectedItemId: {
+    type: Number,
+    required: false,
+    default: null,
+  },
+});
+
+defineEmits({
+  'item-click': null,
+});
+
+const root = ref<HTMLElement>();
+
+onMounted(() => {
+  const activeElement = root.value?.querySelector<HTMLElement>('.active');
+  if (activeElement) {
+    activeElement.scrollIntoViewIfNeeded();
+  }
+});
+</script>
+
 <template>
   <nav
     ref="root"
@@ -23,51 +62,6 @@
     </a>
   </nav>
 </template>
-
-<script lang="ts">
-import type {PropType} from 'vue';
-import {defineComponent, onMounted, ref} from 'vue';
-
-
-export interface PlayListItem {
-  id: number,
-  label: string,
-  title?: string,
-  badges?: {text: string, style: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark'}[]
-}
-
-
-export default defineComponent({
-  name: 'PlayList',
-
-  props: {
-    items: {
-      type: Array as PropType<PlayListItem[]>,
-      required: true,
-    },
-    selectedItemId: {
-      type: Number,
-      required: false,
-      default: null,
-    },
-  },
-
-  emits: ['item-click'],
-
-  setup() {
-    const root = ref<HTMLElement>();
-
-    onMounted(() => {
-      const activeElement = root.value?.querySelector<HTMLElement>('.active');
-      if (activeElement) {
-        activeElement.scrollIntoViewIfNeeded();
-      }
-    });
-
-    return {root};
-  },
-});
-</script>
 
 <style scoped>
 .list-group-item {

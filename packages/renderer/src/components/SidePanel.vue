@@ -10,19 +10,18 @@ import {onClickOutside} from '@vueuse/core';
 
 
 defineProps({
-  defaultState: {
+  isOpened: {
     type: Boolean,
-    required: false,
-    default: false,
+    required: true,
   },
 });
 
 const emit = defineEmits({
-  close: null,
+  'update:isOpened': null,
 });
 
 const el = ref();
-onClickOutside(el, () => emit('close'));
+onClickOutside(el, () => emit('update:isOpened', false));
 </script>
 
 <style scoped>
@@ -41,7 +40,9 @@ section {
   background-color: rgba(var(--background-color), var(--background-opacity));
   height: 100%;
   overflow-y: auto;
+  -webkit-app-region: no-drag;
 }
+
 
 @media (prefers-color-scheme: dark) {
   section {
