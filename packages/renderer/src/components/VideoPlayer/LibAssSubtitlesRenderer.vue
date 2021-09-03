@@ -9,8 +9,8 @@
 import type {PropType} from 'vue';
 import {defineComponent, onMounted, onUnmounted, ref, toRef, watch} from 'vue';
 import type {VideoTrack} from '/@/utils/videoProvider';
-import SubtitlesOctopus from '/@/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus.js';
-import SubtitlesOctopusWorker from '/@/components/WatchPage/VideoPlayer/libass-wasm/subtitles-octopus-worker.js?url';
+import SubtitlesOctopus from '/@/components/VideoPlayer/libass-wasm/subtitles-octopus.js';
+import SubtitlesOctopusWorker from '/@/components/VideoPlayer/libass-wasm/subtitles-octopus-worker?url';
 import {useEventListener, useResizeObserver} from '@vueuse/core';
 
 export default defineComponent({
