@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {useEpisodes} from '/@/pages/Watch/useEpisodes';
-import {computed, ref, watchEffect} from 'vue';
+import {computed, ref, watch, watchEffect} from 'vue';
 import VideoPlayer from '/@/components/VideoPlayer/VideoPlayer.vue';
 import EpisodesList from '/@/pages/Watch/EpisodesList.vue';
 import {asyncComputed} from '@vueuse/core';
@@ -90,7 +90,7 @@ const onSourceError = (qualityToReload: number) => {
 /**
  * Предзагрузка переводов и видео для следующей серии
  */
-watchEffect(async () => {
+watch([nextEpisode, duration, currentTime], async () => {
   if (!(nextEpisode.value && duration.value > 0 && isEpisodeCompleted(currentTime.value, duration.value))) { return; }
 
   // Загрузка переводов

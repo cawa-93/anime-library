@@ -75,10 +75,10 @@ export function useVideos(translationId: Ref<number | string | undefined | null>
     preloadedVideos.set(Number(id), video);
 
     // Предзагрузка медиа-файла
-    const link = document.createElement('video');
-    link.preload = 'auto';
-    link.crossOrigin = 'anonymous';
-    link.src = video.qualities.values().next().value;
+    const videoElement = document.createElement('video');
+    videoElement.preload = 'auto';
+    videoElement.crossOrigin = 'anonymous';
+    videoElement.src = video.qualities.values().next().value;
 
     return video;
   };

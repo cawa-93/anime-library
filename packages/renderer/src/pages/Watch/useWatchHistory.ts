@@ -21,7 +21,7 @@ export function useWatchHistory(
 
 
   const saveProgressDebounced = useDebounceFn((historyItem) => {
-    putHistoryItem(historyItem).catch(console.error);
+    return putHistoryItem(historyItem).catch(console.error);
   }, SECOND_MS);
 
   const getByKey =
@@ -37,12 +37,26 @@ export function useWatchHistory(
             : defaultValue;
         },
         set(value: number) {
-          if (!historyItem.value?.episode || historyItem.value.episode[k] === value) {
-            return;
-          }
-          historyItem.value.episode[k] = value;
 
-          saveProgressDebounced(toRaw(historyItem.value));
+          if (historyItem.value !== null) {
+            if (historyItem.value.episode[k] !== value) {
+              historyItem.value.episode[k] = value;
+            }
+
+          } else if (selectedEpisodeNumber.value) {
+            historyItem.value = {
+              seriesId: Number(seriesId),
+              episode: {
+                number: selectedEpisodeNumber.value,
+                time: 0,
+                duration: 0,
+              },
+            };
+          }
+
+          if (historyItem.value) {
+            saveProgressDebounced(toRaw(historyItem.value));//.then(debRes => console.log({debRes}));
+          }
         },
       });
 
