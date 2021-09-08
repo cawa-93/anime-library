@@ -12,8 +12,17 @@ export function getEpisodesMeta(malId: number, episodeNumber: number): Promise<M
       return undefined;
     }
 
+    // Выполнить быстрый поиск по индексу
+    // Обычно номер эпизода соответствует индексу в массиве
+    // Что позволяет найти нужный элемент очень быстро не прибегая к перебору
     const targetEpisodeIndex = episodeNumber - (targetPage - 1) * 100 - 1;
-    const targetEpisode = episodes[targetEpisodeIndex];
+    let targetEpisode: MalEpisode | undefined = episodes[targetEpisodeIndex];
+
+    // Если эпизод найденный по индексу не соответствует запрошенныму
+    // Выполнить поиск перебором
+    if (targetEpisode?.episode_id !== episodeNumber) {
+      targetEpisode = episodes.find(e => e.episode_id === episodeNumber);
+    }
 
     // Если у загруженного эпизода название в шаблоне "Episode 1"
     // Удалить это название будто его вовсе нет.
