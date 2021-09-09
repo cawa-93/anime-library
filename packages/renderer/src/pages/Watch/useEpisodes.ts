@@ -26,7 +26,7 @@ export function useEpisodes(seriesId: Ref<number | string>, episodeNumRaw?: numb
    */
   const selectEpisode = (num: number) => {
     if ($episodes.value && $episodes.value.length > 0) {
-      $selectedEpisodeIndex.value = $episodes.value.findIndex(e => e.number === num);
+      $selectedEpisodeIndex.value = $episodes.value.findIndex((e: Episode) => e.number === num);
     }
   };
 

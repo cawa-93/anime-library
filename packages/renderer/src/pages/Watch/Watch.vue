@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {useEpisodes} from '/@/pages/Watch/useEpisodes';
-import {computed, ref, watch, watchEffect} from 'vue';
+import {computed, ref, watch} from 'vue';
 import VideoPlayer from '/@/components/VideoPlayer/VideoPlayer.vue';
 import EpisodesList from '/@/pages/Watch/EpisodesList.vue';
 import {asyncComputed} from '@vueuse/core';
