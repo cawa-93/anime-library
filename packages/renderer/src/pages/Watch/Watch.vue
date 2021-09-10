@@ -2,8 +2,8 @@
 import {useEpisodes} from '/@/pages/Watch/useEpisodes';
 import {computed, defineAsyncComponent, ref, watch} from 'vue';
 import VideoPlayer from '/@/components/VideoPlayer/VideoPlayer.vue';
-import {asyncComputed} from '@vueuse/core';
-import {getEpisodeMeta} from '/@/utils/videoProvider';
+import {asyncComputed, useTitle} from '@vueuse/core';
+import {getEpisodeMeta, getSeries} from '/@/utils/videoProvider';
 import {useTranslations} from '/@/pages/Watch/useTranslations';
 import {useVideos} from '/@/pages/Watch/useVideos';
 import {useWatchHistory} from '/@/pages/Watch/useWatchHistory';
@@ -126,6 +126,17 @@ const loadWatchDataError = computed(() => {
  * Флажок отвечающий за видимость боковой панели с плейлистами
  */
 const isSidePanelOpenedFlag = ref(false);
+
+/**
+ * Обновление заголовка страницы
+ */
+const fallbackPageTitle = 'Просмотр аниме';
+useTitle(
+  asyncComputed(
+    () => getSeries(seriesIdNumber.value).then(s => s?.title || fallbackPageTitle),
+    fallbackPageTitle,
+  ),
+);
 </script>
 
 <template>
