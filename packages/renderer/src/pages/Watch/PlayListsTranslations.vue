@@ -3,8 +3,8 @@ import type {PropType} from 'vue';
 import {computed} from 'vue';
 import type {Translation} from '/@/utils/videoProvider';
 import {formatList} from '/@/utils/formatList';
-import type {PlayListItem} from '/@/pages/Watch/PlayList.vue';
-import PlayList from '/@/pages/Watch/PlayList.vue';
+import type {PlayListItem} from '/@/pages/Watch/PlayListsBaseList.vue';
+import PlayListsBaseList from '/@/pages/Watch/PlayListsBaseList.vue';
 import {savePreferredTranslation} from '/@/utils/translationRecommendations/savePreferredTranslation';
 
 
@@ -23,7 +23,7 @@ const props = defineProps({
     type: Array as PropType<Translation[]>,
     required: true,
   },
-  currentTranslation: {
+  selectedTranslation: {
     required: false,
     type: Object as PropType<Translation>,
     default: () => ({}),
@@ -31,7 +31,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits({
-  'update:currentTranslation': null,
+  'update:selectedTranslation': null,
 });
 
 
@@ -110,7 +110,7 @@ const groups = computed<{ title: string, playListItems: PlayListItem[] }[]>(() =
 // Сохранение выбранного перевода в предпочтениях
 const onManualSelect = (item: TranslationPlayListItem) => {
   const targetTranslation = item.translation;
-  emit('update:currentTranslation', targetTranslation);
+  emit('update:selectedTranslation', targetTranslation);
 
   if (props.seriesId !== 0) {
     savePreferredTranslation(props.seriesId, targetTranslation);
@@ -129,11 +129,11 @@ const onManualSelect = (item: TranslationPlayListItem) => {
       <h4 class="mt-3 px-3">
         {{ group.title }}
       </h4>
-      <play-list
+      <play-lists-base-list
         class="my-3"
         :aria-label="group.title"
         :items="group.playListItems"
-        :selected-item-id="currentTranslation.id"
+        :selected-item-id="selectedTranslation.id"
         @item-click="onManualSelect"
       />
     </template>

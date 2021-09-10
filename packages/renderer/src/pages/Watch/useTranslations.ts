@@ -1,8 +1,7 @@
-import {asyncComputed} from '@vueuse/core';
 import type {Translation} from '/@/utils/videoProvider';
 import {getTranslations} from '/@/utils/videoProvider';
 import type {Ref} from 'vue';
-import {ref, unref} from 'vue';
+import {ref, unref, watch} from 'vue';
 import {getPreferredTranslationFromList} from '/@/utils/translationRecommendations/getPreferredTranslationFromList';
 
 
@@ -23,31 +22,36 @@ export function useTranslations(
   const evaluating = ref(true);
 
   const $selectedTranslation = ref<Translation | undefined>();
-  const $translations = asyncComputed(
-    () => {
-      const id = unref(episodeId);
+  const $translations = ref<Translation[]>([]);
+
+  watch(episodeId, async () => {
+
+    evaluating.value = true;
+
+    try {
+      const id = Number(unref(episodeId));
 
       if (!id) {
-        return Promise.resolve([]);
+        return;
       }
 
       const cached = cache.get(Number(id));
-
       if (cached) {
+        $translations.value = cached.translations;
         $selectedTranslation.value = cached.selectedTranslation;
-        cache.delete(Number(id));
-        return cached.translations;
+        cache.delete(id);
+        return;
       }
 
-      return getTranslations(id)
-        .then(async translations => {
-          $selectedTranslation.value = await getPreferredTranslationFromList(Number(seriesId), translations);
-          return translations;
-        });
-    },
-    [],
-    {evaluating},
-  );
+      const translations = await getTranslations(id);
+      const selectedTranslation = await getPreferredTranslationFromList(id, translations);
+
+      $translations.value = translations;
+      $selectedTranslation.value = selectedTranslation;
+    } finally {
+      evaluating.value = false;
+    }
+  });
 
   const preload = async (id: number | string) => {
     const cached = cache.get(Number(id));

@@ -2,8 +2,8 @@
 import type {PropType} from 'vue';
 import {computed} from 'vue';
 import type {Episode} from '/@/utils/videoProvider';
-import type {PlayListItem} from '/@/pages/Watch/PlayList.vue';
-import PlayList from '/@/pages/Watch/PlayList.vue';
+import type {PlayListItem} from '/@/pages/Watch/PlayListsBaseList.vue';
+import PlayListsBaseList from '/@/pages/Watch/PlayListsBaseList.vue';
 import {getEpisodeMeta} from '/@/utils/videoProvider';
 import {asyncComputed} from '@vueuse/core';
 
@@ -18,7 +18,7 @@ const props = defineProps({
     type: Array as PropType<Episode[]>,
     required: true,
   },
-  currentEpisode: {
+  selectedEpisode: {
     type: Object as PropType<Episode>,
     required: false,
     default: () => ({}),
@@ -31,7 +31,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits({
-  'update:currentEpisode': null,
+  'update:selectedEpisode': (episode) => !!episode,
 });
 
 
@@ -90,15 +90,15 @@ const playListItems = computed<EpisodePlayListItem[]>(
 );
 
 const onManualSelect = (item: EpisodePlayListItem) => {
-  emit('update:currentEpisode', item.episode);
+  emit('update:selectedEpisode', item.episode);
 };
 </script>
 
 <template>
-  <play-list
+  <play-lists-base-list
     class="my-3 episode-list"
     :items="playListItems"
-    :selected-item-id="currentEpisode.id"
+    :selected-item-id="selectedEpisode.id"
     @item-click="onManualSelect"
   />
 </template>

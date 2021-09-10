@@ -1,18 +1,17 @@
 <script lang="ts" setup>
 import {useEpisodes} from '/@/pages/Watch/useEpisodes';
-import {computed, ref, watch} from 'vue';
+import {computed, defineAsyncComponent, ref, watch} from 'vue';
 import VideoPlayer from '/@/components/VideoPlayer/VideoPlayer.vue';
-import EpisodesList from '/@/pages/Watch/EpisodesList.vue';
 import {asyncComputed} from '@vueuse/core';
 import {getEpisodeMeta} from '/@/utils/videoProvider';
 import {useTranslations} from '/@/pages/Watch/useTranslations';
-import TranslationsList from '/@/pages/Watch/TranslationsList.vue';
 import {useVideos} from '/@/pages/Watch/useVideos';
-import TabsSection from '/@/components/TabsSection.vue';
-import SidePanel from '/@/components/SidePanel.vue';
 import {useWatchHistory} from '/@/pages/Watch/useWatchHistory';
-import ErrorMessage from '/@/pages/Watch/ErrorMessage.vue';
 import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
+
+
+const PlayLists = defineAsyncComponent(() => import('/@/pages/Watch/PlayLists.vue'));
+const ErrorMessage = defineAsyncComponent(() => import('/@/pages/Watch/ErrorMessage.vue'));
 
 
 const props = defineProps({
@@ -22,7 +21,7 @@ const props = defineProps({
   },
 });
 
-const seriesId = computed(() => Number(props.seriesId));
+const seriesIdNumber = computed(() => Number(props.seriesId));
 
 /**
  *
@@ -34,12 +33,12 @@ const {
   selectNextEpisode,
   nextEpisode,
   isEvaluating: isEvaluatingEpisodes,
-} = useEpisodes(seriesId);
+} = useEpisodes(seriesIdNumber);
 
 
 const selectedEpisodeMeta = asyncComputed(
   () => selectedEpisode.value?.number
-    ? getEpisodeMeta(seriesId.value, selectedEpisode.value?.number)
+    ? getEpisodeMeta(seriesIdNumber.value, selectedEpisode.value?.number)
     : undefined,
   undefined,
 );
@@ -48,7 +47,7 @@ const selectedEpisodeMeta = asyncComputed(
 /**
  * Обработка прогресса просмотра
  */
-const {currentTime, duration} = useWatchHistory(seriesId.value, computed(() => selectedEpisode.value?.number));
+const {currentTime, duration} = useWatchHistory(seriesIdNumber.value, computed(() => selectedEpisode.value?.number));
 
 /**
  * Заголовок эпизода
@@ -72,7 +71,7 @@ const {
   translations,
   isEvaluating: isEvaluatingTranslations,
   preload: preloadTranslations,
-} = useTranslations(selectedEpisodeId, seriesId.value);
+} = useTranslations(selectedEpisodeId, seriesIdNumber.value);
 
 
 /**
@@ -112,17 +111,16 @@ const loadWatchDataError = computed(() => {
     return 'Не удалось загрузить список эпизодов для выбранного аниме';
   }
 
-  if (translations.value.length === 0 && !isEvaluatingEpisodes.value && !isEvaluatingTranslations.value) {
+  if (selectedEpisode.value && translations.value.length === 0 && !isEvaluatingEpisodes.value && !isEvaluatingTranslations.value) {
     return 'Не удалось загрузить список переводов для выбранного эпизода';
   }
 
-  if (!video.value && !isEvaluatingEpisodes.value && !isEvaluatingTranslations.value && !isEvaluatingVideo.value) {
+  if (selectedTranslation.value && !video.value && !isEvaluatingEpisodes.value && !isEvaluatingTranslations.value && !isEvaluatingVideo.value) {
     return 'Не удалось загрузить видео для выбранного перевода';
   }
 
   return null;
 });
-
 
 /**
  * Флажок отвечающий за видимость боковой панели с плейлистами
@@ -169,59 +167,15 @@ const isSidePanelOpenedFlag = ref(false);
         </header>
       </template>
 
-      <template #default>
-        <side-panel
-          v-if="isSidePanelOpenedFlag && (episodes.length > 1 || translations.length)"
-          v-model:is-opened="isSidePanelOpenedFlag"
-        >
-          <tabs-section default-active-slot="translations">
-            <template #tab-header="{tabName, isActive, activate}">
-              <input
-                :id="`${tabName}-tab-header`"
-                value="episodes"
-                type="radio"
-                class="btn-check"
-                name="active-tab"
-                autocomplete="off"
-                :checked="isActive"
-                @input="activate"
-              >
-              <label
-                class="btn rounded-0"
-                :for="`${tabName}-tab-header`"
-              >
-                <span
-                  class="border-initial px-2 pb-2"
-                  :class="{'border-bottom': isActive}"
-                >
-                  {{ tabName === 'episodes' ? 'Эпизоды' : tabName === 'translations' ? 'Переводы' : tabName }}
-                </span>
-              </label>
-            </template>
-            <template
-              v-if="episodes.length > 1"
-              #episodes
-            >
-              <episodes-list
-                v-model:currentEpisode="selectedEpisode"
-                :series-id="Number(seriesId)"
-                :episodes="episodes"
-              />
-            </template>
-
-            <template
-              v-if="translations.length && selectedEpisode !== undefined"
-              #translations
-            >
-              <translations-list
-                v-model:currentTranslation="selectedTranslation"
-                :series-id="Number(seriesId)"
-                :translations="translations"
-              />
-            </template>
-          </tabs-section>
-        </side-panel>
-      </template>
+      <play-lists
+        v-if="isSidePanelOpenedFlag"
+        v-model:is-opened="isSidePanelOpenedFlag"
+        v-model:selected-episode="selectedEpisode"
+        v-model:selected-translation="selectedTranslation"
+        :series-id="seriesIdNumber"
+        :episodes="episodes"
+        :translations="translations"
+      />
     </video-player>
     <error-message
       v-if="loadWatchDataError"
@@ -261,9 +215,5 @@ header .btn:before {
   left: 0;
   height: calc(100% + var(--offset-top));
   width: calc(100% + var(--offset-right));
-}
-
-.border-initial {
-  border-color: initial;
 }
 </style>
