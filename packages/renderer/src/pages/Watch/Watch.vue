@@ -20,30 +20,26 @@ const props = defineProps({
     type: [String, Number],
     required: true,
   },
-  episodeNum: {
-    type: [String, Number],
-    required: false,
-    default: '',
-  },
-  translationId: {
-    type: [String, Number],
-    required: false,
-    default: '',
-  },
 });
 
+const seriesId = computed(() => Number(props.seriesId));
 
 /**
  *
  * Загрузка серий
  */
-const {selectedEpisode, episodes, selectNextEpisode, nextEpisode, isEvaluating: isEvaluatingEpisodes}
-  = useEpisodes(computed(() => props.seriesId));
+const {
+  selectedEpisode,
+  episodes,
+  selectNextEpisode,
+  nextEpisode,
+  isEvaluating: isEvaluatingEpisodes,
+} = useEpisodes(seriesId);
 
 
 const selectedEpisodeMeta = asyncComputed(
   () => selectedEpisode.value?.number
-    ? getEpisodeMeta(Number(props.seriesId), selectedEpisode.value?.number)
+    ? getEpisodeMeta(seriesId.value, selectedEpisode.value?.number)
     : undefined,
   undefined,
 );
@@ -52,7 +48,7 @@ const selectedEpisodeMeta = asyncComputed(
 /**
  * Обработка прогресса просмотра
  */
-const {currentTime, duration} = useWatchHistory(props.seriesId, computed(() => selectedEpisode.value?.number));
+const {currentTime, duration} = useWatchHistory(seriesId.value, computed(() => selectedEpisode.value?.number));
 
 /**
  * Заголовок эпизода
@@ -71,8 +67,12 @@ const displayedTitle = computed(
  * Загрузка переводов для серии
  */
 const selectedEpisodeId = computed(() => selectedEpisode.value?.id);
-const {selectedTranslation, translations, isEvaluating: isEvaluatingTranslations, preload: preloadTranslations}
-  = useTranslations(selectedEpisodeId, props.seriesId);
+const {
+  selectedTranslation,
+  translations,
+  isEvaluating: isEvaluatingTranslations,
+  preload: preloadTranslations,
+} = useTranslations(selectedEpisodeId, seriesId.value);
 
 
 /**

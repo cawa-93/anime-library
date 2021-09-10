@@ -8,7 +8,7 @@ const routes: RouteRecordRaw[] = [
   {path: '/', name: 'Home', component: () => import('/@/pages/Home/Home.vue')},
   {path: '/options/', name: 'Options', component: () => import('/@/pages/Options/Options.vue')},
   {
-    path: '/watch/:seriesId(\\d+)/:episodeNum(\\d+)?/:translationId(\\d+)?/',
+    path: '/watch/:seriesId(\\d+)/',
     name: 'Watch',
     component: () => import('/@/pages/Watch/Watch.vue'),
     props: true,
