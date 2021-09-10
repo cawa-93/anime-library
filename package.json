@@ -23,7 +23,7 @@
     "build-assets:renderer": "cd ./packages/renderer && vite build",
     "compile": "npm run build && electron-builder build --config electron-builder.config.js --dir --config.asar=false",
     "pretest": "cross-env MODE=test npm run build",
-    "test": "jest",
+    "test": "jest --detectOpenHandles",
     "watch": "node scripts/watch.js",
     "lint": "eslint . --ext js,ts,vue",
     "typecheck": "concurrently --raw \"npm:typecheck:*\"",
