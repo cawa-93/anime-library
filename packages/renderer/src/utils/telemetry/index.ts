@@ -4,6 +4,7 @@ import {isLoggedIn} from '/@/utils/shikimori-api';
 import {isEnabled as isEnableHardwareAccelerationEnabled} from '/@/pages/Options/settingHardwareAcceleration';
 import {isEnabled as isTimelineThumbnailsEnabled} from '/@/pages/Options/settingTimelineThumbnails';
 
+
 const TRACKING_ID = import.meta.env.VITE_UA_TRACK_ID;
 const TRACKING_ENABLED = TRACKING_ID !== undefined;
 /**
@@ -40,7 +41,9 @@ function getBaseParams() {
     av: import.meta.env.VITE_APP_VERSION || '',
     cd1: isLoggedIn() ? 'connected' : 'not-connected',
     cd2: isTimelineThumbnailsEnabled() ? 'enabled' : 'disabled',
-    cd3: _isEnableHardwareAccelerationEnabled === undefined ? undefined : _isEnableHardwareAccelerationEnabled ? 'enabled' : 'disabled',
+    cd3: _isEnableHardwareAccelerationEnabled === undefined ? undefined : _isEnableHardwareAccelerationEnabled
+      ? 'enabled'
+      : 'disabled',
     cd4: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
   } as const;
 }
@@ -48,7 +51,8 @@ function getBaseParams() {
 
 function send(params: PageViewParams | ScreenViewParams | EventParams | TimingParams): void {
   if (TRACKING_ENABLED) {
-    const payload = new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== '')).toString();
+    const payload = new URLSearchParams(Object.entries(params)
+      .filter(([, v]) => v !== undefined && v !== '')).toString();
     navigator.sendBeacon('https://google-analytics.com/collect', payload);
   }
 }
