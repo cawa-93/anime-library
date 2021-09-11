@@ -60,7 +60,9 @@ if (import.meta.env.MODE === 'development') {
 
 
 const getFullHref = (path: string) => {
-  let host = import.meta.env.MODE === 'development' && import.meta.env.VITE_DEV_SERVER_URL !== undefined ? import.meta.env.VITE_DEV_SERVER_URL : `${PROTOCOL}://.`;
+  let host = import.meta.env.MODE === 'development' && import.meta.env.VITE_DEV_SERVER_URL !== undefined
+    ? import.meta.env.VITE_DEV_SERVER_URL
+    : `${PROTOCOL}://.`;
   if (host.endsWith('/')) {
     host = host.substring(0, host.length - 1);
   }
@@ -120,12 +122,8 @@ const createWindow = async (pageUrl?: string) => {
     webPreferences: {
       nativeWindowOpen: true,
       preload: join(__dirname, '../../preload/dist/index.cjs'),
-      contextIsolation: import.meta.env.MODE !== 'test',   // Spectron tests can't work with contextIsolation: true
-      enableRemoteModule: import.meta.env.MODE === 'test', // Spectron tests can't work with enableRemoteModule: false
     },
   });
-
-
 
   mainWindow.addListener('ready-to-show', function onReady() {
     if (mainWindow) {
@@ -142,7 +140,7 @@ const createWindow = async (pageUrl?: string) => {
   /**
    * URL for main window.
    * `http://localhost:3000` - in development
-   * {@link PROTOCOL}://./ - in production and test
+   * {@link PROTOCOL}://./ - in production
    */
   if (!pageUrl) {
     const arg = getInitialArg(process.argv);
