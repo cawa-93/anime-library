@@ -1,7 +1,5 @@
 import {contextBridge, ipcRenderer, shell} from 'electron';
-
-// TODO: Заменить на `const { randomUUID } = require('crypto');` после node v14.17
-import {v4} from 'uuid';
+import {randomUUID} from 'crypto';
 
 
 const apiKey = 'electron';
@@ -11,7 +9,7 @@ const apiKey = 'electron';
 const api: ElectronApi = {
   invoke: (...args) => ipcRenderer.invoke(...args),
   openURL: (url) => shell.openExternal(url),
-  uuid: v4,
+  uuid: randomUUID,
 };
 
 contextBridge.exposeInMainWorld(apiKey, api);
