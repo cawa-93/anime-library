@@ -154,9 +154,8 @@ import {isMediaMetadataLoaded} from '/@/use/isMediaMetadataLoaded';
 import {getFramesFromVideo} from '/@/components/VideoPlayer/getFramesFromVideo';
 import {HOUR, SECOND_MS} from '/@/utils/time';
 import {trackTime} from '/@/utils/telemetry';
-import type {ActionsHandlers as UseMediaSessionHandlers} from '/@/components/VideoPlayer/useMediaSession';
-import {useMediaSessionActionsHandlers} from '/@/components/VideoPlayer/useMediaSession';
 import {isEnabled as isTimelineThumbnailsEnabled} from '/@/pages/Options/settingTimelineThumbnails';
+import {useMediaSessionActions} from '/@/use/useMediaSessionActions';
 
 
 const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/VideoPlayer/LibAssSubtitlesRenderer.vue'));
@@ -334,16 +333,29 @@ const controlsVisible = computed(() => !playing.value || !idle.value);
 /**
  * Media Session Actions
  */
-useMediaSessionActionsHandlers(
-  computed<UseMediaSessionHandlers>(() => ({
-    play: () => playing.value = true,
-    seekto: (details => console.log({details})),
-    pause: () => playing.value = false,
-    seekbackward: () => seek(-DEFAULT_SEEK_SPEED),
-    seekforward: () => seek(DEFAULT_SEEK_SPEED),
-    nexttrack: props.hasNextEpisode ? () => emit('go-to-next-episode') : undefined,
-  })),
-);
+// useMediaSessionActionsHandlers(
+//   computed<UseMediaSessionHandlers>(() => ({
+//     play: () => playing.value = true,
+//     seekto: (details => console.log({details})),
+//     pause: () => playing.value = false,
+//     seekbackward: () => seek(-DEFAULT_SEEK_SPEED),
+//     seekforward: () => seek(DEFAULT_SEEK_SPEED),
+//     nexttrack: props.hasNextEpisode ? () => emit('go-to-next-episode') : undefined,
+//   })),
+// );
+
+const {
+  onPause,
+  onPlay,
+  onSeekbackward,
+  onSeekforward,
+} = useMediaSessionActions(['play', 'pause', 'seekbackward', 'seekforward']);
+
+onPause(() => playing.value = false);
+onPlay(() => playing.value = true);
+onSeekbackward(() => seek(-DEFAULT_SEEK_SPEED));
+onSeekforward(() => seek(DEFAULT_SEEK_SPEED));
+//
 
 let frames = ref({
   step: 0,

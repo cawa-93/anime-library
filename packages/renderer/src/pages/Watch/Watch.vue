@@ -8,6 +8,7 @@ import {useTranslations} from '/@/pages/Watch/useTranslations';
 import {useVideos} from '/@/pages/Watch/useVideos';
 import {useWatchHistory} from '/@/pages/Watch/useWatchHistory';
 import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
+import {useMediaSessionMetadata} from '/@/use/useMediaSessionMetadata';
 
 
 const PlayLists = defineAsyncComponent(() => import('/@/pages/Watch/PlayLists.vue'));
@@ -127,16 +128,26 @@ const loadWatchDataError = computed(() => {
  */
 const isSidePanelOpenedFlag = ref(false);
 
+
+const series = asyncComputed(() => getSeries(seriesIdNumber.value), undefined);
+
+useMediaSessionMetadata(computed<MediaMetadataInit | null>(() => series.value
+  ? ({
+    title: selectedEpisode.value?.title || '',
+    artist: series.value.title,
+    artwork: series.value.poster ? [{
+      src: series.value.poster,
+    }] : undefined,
+  })
+  : null,
+));
+
+
 /**
  * Обновление заголовка страницы
  */
 const fallbackPageTitle = 'Просмотр аниме';
-useTitle(
-  asyncComputed(
-    () => getSeries(seriesIdNumber.value).then(s => s?.title || fallbackPageTitle),
-    fallbackPageTitle,
-  ),
-);
+useTitle(computed(() => series.value?.title || fallbackPageTitle));
 </script>
 
 <template>
