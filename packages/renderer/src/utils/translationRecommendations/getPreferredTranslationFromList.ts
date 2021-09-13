@@ -82,7 +82,7 @@ export async function getPreferredTranslationFromList<T extends MaybeReadonly<Tr
 
   // Попытка найти среди доступных перевод от одного из предпочитаемых авторов по порядку их приоритета
   for (const preferredAuthor of preferredAuthors) {
-    const preferredTranslation = availableTranslations.find(t => t.author.id === preferredAuthor);
+    const preferredTranslation = typedTranslations.find(t => t.author.id === preferredAuthor);
     if (preferredTranslation) {
       return preferredTranslation;
     }

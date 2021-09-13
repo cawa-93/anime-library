@@ -107,4 +107,22 @@ describe('getPreferredTranslationFromList', () => {
     expect(preferred).toEqual(SELECTED_TRANSLATION);
   });
 
+  test('Должен возвращать перевод предпочитаемого автора и типа, если один автор представил и озвучку и субтитры', async () => {
+    await savePreferredTranslation(0, t('voice', team1));
+    await savePreferredTranslation(1, t('voice', team1));
+    await savePreferredTranslation(2, t('voice', team1));
+
+    const SELECTED_TRANSLATION = t('voice', team1);
+
+    const availableTranslations = [
+      t('sub', team1),
+      t('sub', team2),
+      t('voice', team2),
+      SELECTED_TRANSLATION,
+    ];
+
+    const preferred = await getPreferredTranslationFromList(-1, availableTranslations);
+    expect(preferred).toEqual(SELECTED_TRANSLATION);
+  });
+
 });
