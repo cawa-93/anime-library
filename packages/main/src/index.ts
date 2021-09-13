@@ -125,14 +125,13 @@ const createWindow = async (pageUrl?: string) => {
     },
   });
 
-  mainWindow.addListener('ready-to-show', function onReady() {
+  mainWindow.once('ready-to-show', () => {
     if (mainWindow) {
       mainWindowState.manage(mainWindow);
       mainWindow.show();
       if (import.meta.env.MODE === 'development') {
         mainWindow.webContents.openDevTools();
       }
-      mainWindow.removeListener('ready-to-show', onReady);
     }
   });
 
