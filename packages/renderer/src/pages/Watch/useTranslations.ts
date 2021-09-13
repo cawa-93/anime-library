@@ -44,7 +44,7 @@ export function useTranslations(
       }
 
       const translations = await getTranslations(id);
-      const selectedTranslation = await getPreferredTranslationFromList(id, translations);
+      const selectedTranslation = await getPreferredTranslationFromList(Number(seriesId), translations);
 
       $translations.value = translations;
       $selectedTranslation.value = selectedTranslation;
