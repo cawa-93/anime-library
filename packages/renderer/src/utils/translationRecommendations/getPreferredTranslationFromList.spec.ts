@@ -81,7 +81,6 @@ describe('getPreferredTranslationFromList', () => {
   test('Должен возвращать перевод предпочитаемого автора с правильным типом', async () => {
     const SERIES_ID = 1;
     const team1 = a();
-    // const team2 = a()
 
     await savePreferredTranslation(SERIES_ID + 1, t('sub', team1));
     await savePreferredTranslation(SERIES_ID + 2, t('sub'));
@@ -89,10 +88,10 @@ describe('getPreferredTranslationFromList', () => {
     await savePreferredTranslation(SERIES_ID + 4, t('sub', team1));
 
     const preferred = await getPreferredTranslationFromList(SERIES_ID, [
-      t('sub'),
-      t('sub', team1),
       t('voice'),
       t('voice', team1),
+      t('sub'),
+      t('sub', team1),
     ]);
 
     expect(preferred?.author).toEqual(team1);
