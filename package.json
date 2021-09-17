@@ -69,7 +69,7 @@
     "vue-tsc": "0.3.0"
   },
   "dependencies": {
-    "@vueuse/core": "6.3.3",
+    "@vueuse/core": "6.4.0",
     "bootstrap": "5.0.2",
     "electron-updater": "4.6.0",
     "electron-window-state": "5.0.3",
