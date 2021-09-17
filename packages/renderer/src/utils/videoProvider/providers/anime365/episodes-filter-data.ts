@@ -1,6 +1,83 @@
 export default [
   {
     'originalSeries': {
+      'seriesId': 1,
+      'numberOfEpisodes': 10,
+      'type': 'tv',
+      'episodes': [],
+    },
+    expectedEpisodes: [],
+  },
+  {
+    'originalSeries': {
+      'seriesId': 1,
+      'numberOfEpisodes': 10,
+      'type': 'tv',
+      'episodes': [
+        {
+          'isActive': 1,
+          'episodeInt': '10',
+          'episodeType': 'tv',
+        },
+        {
+          'isActive': 1,
+          'episodeInt': '0',
+          'episodeType': 'tv',
+        },
+        {
+          'isActive': 1,
+          'episodeInt': '100',
+          'episodeType': 'tv',
+        },
+      ],
+    },
+    expectedEpisodes: [],
+  },
+  {
+    'originalSeries': {
+      'seriesId': 1,
+      'numberOfEpisodes': 10,
+      'type': 'tv',
+      'episodes': [
+        {
+          'isActive': 0,
+          'episodeInt': '1',
+          'episodeType': 'tv',
+        },
+      ],
+    },
+    expectedEpisodes: [],
+  },
+  {
+    'originalSeries': {
+      'seriesId': 1,
+      'numberOfEpisodes': 10,
+      'type': 'tv',
+      'episodes': [
+        {
+          'id': 1,
+          'isActive': 1,
+          'episodeInt': '1',
+          'episodeType': 'tv',
+        },
+        {
+          'id': 2,
+          'isActive': 1,
+          'episodeInt': '0',
+          'episodeType': 'tv',
+        },
+        {
+          'id': 3,
+          'isActive': 1,
+          'episodeInt': '100',
+          'episodeType': 'tv',
+        },
+      ],
+    },
+    expectedEpisodes: [1],
+  },
+  {
+    'originalSeries': {
       'seriesId': 19608,
       'numberOfEpisodes': 10,
       'type': 'tv',
