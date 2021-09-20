@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type {PropType} from 'vue';
-import {defineProps} from 'vue';
 import type {Episode, Translation} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/SidePanel.vue';
 import TabsSection from '/@/components/TabsSection.vue';
