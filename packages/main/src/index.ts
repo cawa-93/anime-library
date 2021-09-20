@@ -118,7 +118,7 @@ const createWindow = async (pageUrl?: string) => {
     y: mainWindowState.y,
     minWidth: 430,
     frame: false,
-    backgroundColor: '#fff',
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#1b1d1f' : '#fff',
     webPreferences: {
       nativeWindowOpen: true,
       preload: join(__dirname, '../../preload/dist/index.cjs'),
