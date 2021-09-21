@@ -1,5 +1,13 @@
 @layer base {
+  html {
+    @apply h-full
+  }
+
   body {
-    @apply bg-gray-50 dark:bg-dark-900
+    @apply bg-light-400 dark:bg-dark-900 h-full overflow-hidden
+  }
+
+  body > main {
+    @apply overflow-auto h-full
   }
 }

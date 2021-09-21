@@ -120,7 +120,7 @@ const open = (seriesId: number) => router.push({name: 'Watch', params: {seriesId
       &#xF78B;
     </button>
     <small
-      class="col-span-full"
+      class="col-span-full text-gray-500"
     >
       {{ title || 'Вставьте ссылка на аниме с Шикимори или MyAnimeList' }}
     </small>

@@ -25,7 +25,7 @@ defineEmits({
 </script>
 
 <template>
-  <span class="position-relative">
+  <span class="relative">
     <input
       v-for="state of states"
       :key="state"

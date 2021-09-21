@@ -15,6 +15,6 @@ export default defineConfig({
     },
   },
   plugins: [
-    formsPlugin,
+    // formsPlugin,
   ],
 });

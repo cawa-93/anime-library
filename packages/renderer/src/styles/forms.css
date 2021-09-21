@@ -14,6 +14,12 @@
   input[multiple],
   textarea,
   select {
-    @apply block w-full rounded-md bg-gray-100 border-transparent focus:(ring-accent ring-1 bg-white)
+    @apply block w-full rounded-md bg-light-400 border-1 focus:(ring-accent ring-1 bg-transparent)
+    dark:(bg-dark-900)
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    @apply bg-none
   }
 }
