@@ -4,7 +4,7 @@ import {close} from '/@/utils/window-controllers';
 
 <template>
   <button
-    class="btn win-icon rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
+    class="btn-title-bar win-icon win-icon-xs w-[45px] !hover:(bg-[#E81123] text-white)"
     title="Закрыть"
     aria-label="Закрыть"
     type="button"
@@ -16,17 +16,17 @@ import {close} from '/@/utils/window-controllers';
 
 
 <style scoped>
-@import "base-titlebar-button.css";
+@import "./btn-titlebar.css";
 
-button:hover {
-  background: #E81123 !important;
-}
+/*button:hover {*/
+/*  background: #E81123 !important;*/
+/*}*/
 
-button:active {
-  background: #F1707A !important;
-}
+/*button:active {*/
+/*  background: #F1707A !important;*/
+/*}*/
 
-button:active, button:hover {
-  color: white;
-}
+/*button:active, button:hover {*/
+/*  color: white;*/
+/*}*/
 </style>

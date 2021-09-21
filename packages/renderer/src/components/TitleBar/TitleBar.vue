@@ -12,43 +12,45 @@ import OpenShikimori from '/@/components/TitleBar/TitleBarGoToShikimori.vue';
 
 
 <template>
-  <header>
-    <div
-      id="drag-region"
-      class="d-flex"
-    >
-      <back-button id="back-button" />
-      <home-button />
-      <help-button />
-      <open-shikimori />
-      <window-title class="flex-fill px-3 align-self-center" />
-      <options-button />
-      <minimize-button class="window-control" />
-      <maximize-button class="window-control" />
-      <close-button class="window-control" />
-    </div>
+  <header class="flex drag-region bg-[#f2f2f2] dark:(bg-[#2b2b2b] text-white)">
+    <back-button />
+    <home-button />
+    <help-button />
+    <open-shikimori />
+    <window-title class="flex-fill px-3 align-self-center" />
+    <options-button />
+    <minimize-button class="window-control" />
+    <maximize-button class="window-control" />
+    <close-button class="window-control" />
   </header>
 </template>
 
 <style scoped>
+/*@import "btn-titlebar.css";*/
+
 header {
-  --padding: 5px;
-  padding: var(--padding);
+  --title-bar-height: 34px;
+  height: var(--title-bar-height);
 }
 
-#back-button {
-  font-size: 12px;
-}
+/*header {*/
+/*  --padding: 5px;*/
+/*  padding: var(--padding);*/
+/*}*/
 
-.window-control {
-  width: 45px;
-  font-size: 10px;
-}
+/*#back-button {*/
+/*  font-size: 12px;*/
+/*}*/
 
-#drag-region {
-  height: calc(24px + var(--padding) * 2);
-  -webkit-app-region: drag;
-  margin: calc(-1 * var(--padding));
-}
+/*.window-control {*/
+/*  width: 45px;*/
+/*  font-size: 10px;*/
+/*}*/
+
+/*#drag-region {*/
+/*  height: calc(24px + var(--padding) * 2);*/
+/*  -webkit-app-region: drag;*/
+/*  margin: calc(-1 * var(--padding));*/
+/*}*/
 
 </style>

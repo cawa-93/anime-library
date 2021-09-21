@@ -1,4 +1,7 @@
-import './styles/index.scss';
+// import './styles/index.scss';
+import 'virtual:windi.css';
+import './styles/win-icon.css';
+
 import {createApp} from 'vue';
 import App from '/@/App.vue';
 import router from '/@/router';

@@ -7,6 +7,7 @@ import vue from '@vitejs/plugin-vue';
 import copy from 'rollup-plugin-copy';
 import {VitePWA} from 'vite-plugin-pwa';
 import {getAppVersion} from '../../getAppVersion.cjs';
+import WindiCSS from 'vite-plugin-windicss';
 
 const PACKAGE_ROOT = __dirname;
 
@@ -73,6 +74,7 @@ const config = {
   },
   plugins: [
     vue(),
+    WindiCSS(),
 
     VitePWA({
       strategies: 'generateSW',

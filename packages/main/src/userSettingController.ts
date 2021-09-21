@@ -37,7 +37,7 @@ function loadSettings() {
       return settingsCache;
     })
     .catch((e: unknown) => {
-      console.error(e);
+      console.error(e, e.stack);
       return undefined;
     });
 }
@@ -88,6 +88,8 @@ function ensureSettingsDirSync(): void {
 function ensureSettingsDir(): Promise<void> {
   return fs.promises.access(SETTINGS_DIR_PATH)
     .catch((err: unknown) => {
+      console.error(err, err.stack);
+
       console.log(err);
       console.log(err instanceof Error);
       if (err instanceof Error && (err as NodeJS.ErrnoException).code === 'ENOENT') {

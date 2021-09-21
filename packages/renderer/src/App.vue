@@ -1,5 +1,3 @@
-
-
 <script lang="ts" setup>
 import {isWindowMaximized} from '/@/use/isWindowMaximized';
 import {computed} from 'vue';
@@ -14,6 +12,7 @@ const borderWidth = computed(() => isMaximized.value ? '0px' : '1px');
   <div
     id="app"
     :style="`--window-border-width: ${borderWidth}`"
+    class=""
   >
     <title-bar />
     <router-view />

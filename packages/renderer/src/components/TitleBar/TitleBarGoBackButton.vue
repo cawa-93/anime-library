@@ -39,7 +39,7 @@ const goBack = () => {
     :disabled="isDisabled"
     title="Вернутся назад"
     aria-label="Вернутся назад"
-    class="btn win-icon rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
+    class="btn-title-bar win-icon win-icon-sm disabled:opacity-30"
     @click="goBack"
   >
     &#xE830;
@@ -47,9 +47,5 @@ const goBack = () => {
 </template>
 
 <style scoped>
-@import "base-titlebar-button.css";
-
-button:disabled {
-  opacity: 0.3;
-}
+@import "./btn-titlebar.css";
 </style>
