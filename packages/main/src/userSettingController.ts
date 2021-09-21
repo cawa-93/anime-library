@@ -36,8 +36,7 @@ function loadSettings() {
       settingsCache = new Map(JSON.parse(str));
       return settingsCache;
     })
-    .catch((e: unknown) => {
-      console.error(e);
+    .catch(() => {
       return undefined;
     });
 }
@@ -88,8 +87,6 @@ function ensureSettingsDirSync(): void {
 function ensureSettingsDir(): Promise<void> {
   return fs.promises.access(SETTINGS_DIR_PATH)
     .catch((err: unknown) => {
-      console.log(err);
-      console.log(err instanceof Error);
       if (err instanceof Error && (err as NodeJS.ErrnoException).code === 'ENOENT') {
         return fs.promises.mkdir(SETTINGS_DIR_PATH);
       }
