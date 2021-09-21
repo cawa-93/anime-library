@@ -43,11 +43,9 @@ const onCollectionDeleted = (deletedId: number) => {
 </script>
 
 <template>
-  <main>
+  <main class="pt-5">
     <user-rating />
-    <div class="p-3 container-fluid">
-      <home-search />
-    </div>
+    <home-search class="w-1/2 m-auto" />
 
     <template v-if="userCollections !== null">
       <anime-collection

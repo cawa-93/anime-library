@@ -1,0 +1,5 @@
+@layer components {
+  .card {
+    @apply overflow-hidden rounded shadow p-4 bg-white dark:bg-dark-600;
+  }
+}

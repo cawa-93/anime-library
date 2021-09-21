@@ -74,63 +74,56 @@ const open = (seriesId: number) => router.push({name: 'Watch', params: {seriesId
 
 <template>
   <form
-    class="container shadow-sm card"
+    class="card grid grid-cols-[1fr,auto] grid-rows-[auto,auto,auto] gap-y-2 px-6 rounded-xl"
     @submit.prevent="onSearch"
   >
-    <div class="card-body border-primary">
-      <label
-        for="search-field"
-        class="form-label"
-      >Ссылка на аниме</label>
-      <div class="input-group">
-        <input
-          id="search-field"
-          v-model="searchText"
-          autofocus
-          autocomplete="on"
-          pattern=".*/animes?/[a-z]*[0-9]+.*"
-          placeholder="https://shikimori.one/animes/..."
-          required
-          type="url"
-          class="form-control"
-          aria-describedby="search-field-help"
-          list="history"
-          @input="onDatalistOptionSelect"
+    <label
+      for="search-field"
+      class="col-span-full"
+    >Ссылка на аниме</label>
+    <input
+      id="search-field"
+      v-model="searchText"
+      autofocus
+      autocomplete="on"
+      pattern=".*/animes?/[a-z]*[0-9]+.*"
+      placeholder="https://shikimori.one/animes/..."
+      required
+      type="url"
+      class="form-control"
+      aria-describedby="search-field-help"
+      list="history"
+      @input="onDatalistOptionSelect"
+    >
+
+    <datalist
+      v-if="history.length > 0"
+      id="history"
+    >
+      <optgroup label="Вы недавно смотрели">
+        Вы недавно смотрели
+        <option
+          v-for="item of history"
+          :key="item.id"
         >
+          {{ item.title }}
+        </option>
+      </optgroup>
+    </datalist>
 
-        <datalist
-          v-if="history.length > 0"
-          id="history"
-        >
-          <optgroup label="Вы недавно смотрели">
-            Вы недавно смотрели
-            <option
-              v-for="item of history"
-              :key="item.id"
-            >
-              {{ item.title }}
-            </option>
-          </optgroup>
-        </datalist>
-
-        <button
-          class="btn btn-outline-secondary win-icon"
-          type="submit"
-          title="Найти"
-          aria-label="Найти"
-        >
-          &#xF78B;
-        </button>
-      </div>
-
-
-      <small
-        id="search-field-help"
-        class="form-text"
-      >
-        {{ title || 'Вставьте ссылка на аниме с Шикимори или MyAnimeList' }}
-      </small>
-    </div>
+    <button
+      class="btn win-icon"
+      type="submit"
+      title="Найти"
+      aria-label="Найти"
+    >
+      &#xF78B;
+    </button>
+    <small
+      class="col-span-full"
+    >
+      {{ title || 'Вставьте ссылка на аниме с Шикимори или MyAnimeList' }}
+    </small>
   </form>
 </template>
 
