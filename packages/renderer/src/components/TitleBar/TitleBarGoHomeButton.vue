@@ -1,5 +1,6 @@
 <template>
   <router-link
+    draggable="false"
     class="btn-title-bar win-icon"
     :to="{name: 'Home'}"
     title="На главную"

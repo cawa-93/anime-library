@@ -1,6 +1,5 @@
-// import './styles/index.scss';
 import 'virtual:windi.css';
-import './styles/win-icon.css';
+import './styles/index.css';
 
 import {createApp} from 'vue';
 import App from '/@/App.vue';

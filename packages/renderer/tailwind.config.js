@@ -6,12 +6,4 @@ export default defineConfig({
   extract: {
     include: ['./index.html', './src/**/*.vue'],
   },
-  shortcuts: {
-    'no-drag': {
-      '-webkit-app-region': 'no-drag',
-    },
-    'drag-region': {
-      '-webkit-app-region': 'drag',
-    },
-  },
 });

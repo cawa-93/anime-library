@@ -17,16 +17,4 @@ import {close} from '/@/utils/window-controllers';
 
 <style scoped>
 @import "./btn-titlebar.css";
-
-/*button:hover {*/
-/*  background: #E81123 !important;*/
-/*}*/
-
-/*button:active {*/
-/*  background: #F1707A !important;*/
-/*}*/
-
-/*button:active, button:hover {*/
-/*  color: white;*/
-/*}*/
 </style>

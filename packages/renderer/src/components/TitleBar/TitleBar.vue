@@ -12,7 +12,7 @@ import OpenShikimori from '/@/components/TitleBar/TitleBarGoToShikimori.vue';
 
 
 <template>
-  <header class="flex drag-region bg-[#f2f2f2] dark:(bg-[#2b2b2b] text-white)">
+  <header class="flex region-drag bg-[#f2f2f2] dark:(bg-[#2b2b2b] text-white)">
     <back-button />
     <home-button />
     <help-button />

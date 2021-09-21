@@ -1,5 +1,6 @@
 <template>
   <router-link
+    draggable="false"
     class="win-icon btn-title-bar"
     :to="{name: 'Options'}"
     title="Параметры"
