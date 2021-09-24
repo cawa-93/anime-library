@@ -74,23 +74,23 @@ const open = (seriesId: number) => router.push({name: 'Watch', params: {seriesId
 
 <template>
   <form
-    class="card grid grid-cols-[1fr,auto] grid-rows-[auto,auto,auto] gap-y-2 px-6 rounded-xl"
+    class="card grid grid-cols-[1fr,auto] grid-rows-[auto]"
     @submit.prevent="onSearch"
   >
     <label
       for="search-field"
-      class="col-span-full"
-    >Ссылка на аниме</label>
+      class="sr-only"
+    >Поиск</label>
     <input
       id="search-field"
       v-model="searchText"
       autofocus
       autocomplete="on"
       pattern=".*/animes?/[a-z]*[0-9]+.*"
-      placeholder="https://shikimori.one/animes/..."
+      placeholder="Поиск аниме по названию или по ссылке"
       required
       type="url"
-      class="form-control"
+      class="border-r-0 rounded-tr-none rounded-br-none"
       aria-describedby="search-field-help"
       list="history"
       @input="onDatalistOptionSelect"
@@ -112,18 +112,13 @@ const open = (seriesId: number) => router.push({name: 'Watch', params: {seriesId
     </datalist>
 
     <button
-      class="btn win-icon"
+      class="btn btn-outline border-l-0 rounded-tl-none rounded-bl-none win-icon"
       type="submit"
       title="Найти"
       aria-label="Найти"
     >
       &#xF78B;
     </button>
-    <small
-      class="col-span-full text-gray-500"
-    >
-      {{ title || 'Вставьте ссылка на аниме с Шикимори или MyAnimeList' }}
-    </small>
   </form>
 </template>
 

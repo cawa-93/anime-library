@@ -1,12 +1,7 @@
 import {defineConfig} from 'windicss/helpers';
-import formsPlugin  from 'windicss/plugin/forms';
 import colors from 'windicss/colors';
 
 export default defineConfig({
-  // preflight: false,
-
-
-
   darkMode: 'media',
   extract: {
     include: ['./index.html', './src/**/*.vue'],
@@ -23,8 +18,4 @@ export default defineConfig({
       },
     },
   },
-  plugins: [
-    // typography,
-    // formsPlugin,
-  ],
 });

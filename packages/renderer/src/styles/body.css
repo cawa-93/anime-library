@@ -4,7 +4,7 @@
   }
 
   body {
-    @apply bg-light-400 dark:bg-dark-900 h-full overflow-hidden
+    @apply bg-true-gray-100 dark:bg-true-gray-900 h-full overflow-hidden
   }
 
   body > main {
