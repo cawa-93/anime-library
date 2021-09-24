@@ -15,10 +15,10 @@ export default defineConfig({
     extend: {
       colors: {
         accent: {
-          ...colors.indigo,
-          DEFAULT: colors.indigo['500'],
-          light: colors.indigo['200'],
-          dark: colors.indigo['800'],
+          ...colors.yellow,
+          DEFAULT: colors.yellow['400'],
+          light: colors.indigo['100'],
+          dark: colors.indigo['900'],
         },
       },
     },
