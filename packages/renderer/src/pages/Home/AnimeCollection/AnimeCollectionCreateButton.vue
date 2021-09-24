@@ -25,7 +25,10 @@ const openModal = () => isModalVisible.value = !isModalVisible.value;
     name="activator"
     :openModal="openModal"
   >
-    <button @click="openModal">
+    <button
+      class="btn btn-outline"
+      @click="openModal"
+    >
       Создать коллекцию
     </button>
   </slot>

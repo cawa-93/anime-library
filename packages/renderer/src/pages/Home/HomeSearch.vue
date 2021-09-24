@@ -90,7 +90,7 @@ const open = (seriesId: number) => router.push({name: 'Watch', params: {seriesId
       placeholder="Поиск аниме по названию или по ссылке"
       required
       type="url"
-      class="border-r-0 rounded-tr-none rounded-br-none"
+      class="border-r-0 rounded-tr-none rounded-br-none focus:ring-accent focus:ring-opacity-30 focus:border-accent"
       aria-describedby="search-field-help"
       list="history"
       @input="onDatalistOptionSelect"
@@ -112,7 +112,7 @@ const open = (seriesId: number) => router.push({name: 'Watch', params: {seriesId
     </datalist>
 
     <button
-      class="btn btn-outline border-l-0 rounded-tl-none rounded-bl-none win-icon"
+      class="btn btn-outline border-l-0 rounded-tl-none rounded-bl-none win-icon focus:ring-accent focus:ring-opacity-30 focus:border-accent"
       type="submit"
       title="Найти"
       aria-label="Найти"

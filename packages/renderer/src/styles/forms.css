@@ -8,10 +8,14 @@
   select:focus-visible,
   button:focus-visible {
     @apply
-    focus:ring-5
-    focus:ring-accent
-    focus:ring-opacity-30
-    focus:border-accent;
+    ring-5
+    ring-gray-800
+    dark:ring-gray-100
+    dark:ring-opacity-40
+    ring-opacity-30
+    ring-opacity-30
+    border-current
+    ;
     outline: none;
   }
 
