@@ -1,5 +1,12 @@
 @layer components {
   .card {
-    @apply overflow-hidden rounded shadow p-5 bg-white dark:bg-true-gray-800 border border-opacity-25 border-black dark:border-white dark:border-opacity-25;
+    --card-padding: theme('spacing.5');
+    padding: var(--card-padding);
+    @apply overflow-hidden rounded shadow bg-white dark:bg-true-gray-800 border border-opacity-25 border-black dark:border-white dark:border-opacity-25;
+  }
+
+  .card > .card-header {
+    margin: calc(0px - var(--card-padding)) calc(0px - var(--card-padding)) calc(var(--card-padding) / 2) calc(0px - var(--card-padding));
+    padding: calc(var(--card-padding) / 2) var(--card-padding);
   }
 }
