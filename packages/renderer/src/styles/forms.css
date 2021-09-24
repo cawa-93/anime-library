@@ -14,12 +14,32 @@
   input[multiple],
   textarea,
   select {
-    @apply block w-full rounded-md bg-light-400 border-1 focus:(ring-accent ring-1 bg-transparent)
-    dark:(bg-dark-900)
-  }
-
-  input[type="checkbox"],
-  input[type="radio"] {
-    @apply bg-none
+    @apply
+    w-full
+    bg-gray-100
+    dark:bg-gray-800
+    bg-opacity-50
+    dark:bg-opacity-40
+    rounded
+    border
+    border-gray-300
+    dark:border-gray-700
+    focus:ring-2
+    focus:ring-accent-200
+    dark:focus:ring-accent-900
+    focus:bg-transparent
+    focus:border-accent-500
+    text-base
+    outline-none
+    text-gray-700
+    dark:text-gray-100
+    py-1
+    px-3
+    leading-8
+    transition-colors
+    duration-200
+    ease-in-out;
+    color: red;
   }
 }
+

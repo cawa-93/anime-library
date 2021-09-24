@@ -4,7 +4,7 @@ import {close} from '/@/utils/window-controllers';
 
 <template>
   <button
-    class="btn-title-bar win-icon win-icon-xs w-[45px] !hover:(bg-[#E81123] text-white) !bg-opacity-100"
+    class="btn-title-bar  win-icon win-icon-xs w-[45px] !hover:(bg-[#E81123] text-white) !bg-opacity-100"
     title="Закрыть"
     aria-label="Закрыть"
     type="button"
