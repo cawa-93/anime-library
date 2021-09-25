@@ -1,4 +1,9 @@
 @layer base {
+
+  body {
+    accent-color: theme('colors.accent.DEFAULT');
+  }
+
   button:focus {
     outline: none;
   }
