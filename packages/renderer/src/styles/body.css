@@ -8,6 +8,7 @@
   }
 
   body > main {
-    @apply overflow-auto
+    @apply overflow-auto;
+    scroll-behavior: smooth;
   }
 }

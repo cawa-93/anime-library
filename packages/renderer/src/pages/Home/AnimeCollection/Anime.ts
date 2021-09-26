@@ -12,4 +12,5 @@ export interface Anime {
   score: string
   kind?: 'tv' | 'movie' | 'ova' | 'ona' | 'special',
   url: string
+  aired_on?: string
 }

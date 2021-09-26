@@ -42,6 +42,7 @@ ul {
   scroll-padding-inline: var(--local-gap);
   padding-block: calc(var(--local-gap) / 2); /* make space for scrollbar and focus outline */
   /*justify-content: flex-start;*/
+  scroll-behavior: smooth;
 }
 
 /*li {*/
