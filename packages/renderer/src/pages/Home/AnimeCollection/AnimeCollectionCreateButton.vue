@@ -4,13 +4,13 @@ import type {AnimeCollection} from '/@/pages/Home/AnimeCollection/AnimeCollectio
 import {putCollection} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
 
 
-const AnimeCollectionEdit = defineAsyncComponent(() => import('/@/pages/Home/AnimeCollection/AnimeCollectionEditor.vue'));
+const AnimeCollectionEditor = defineAsyncComponent(() => import('/@/pages/Home/AnimeCollection/AnimeCollectionEditor.vue'));
 
 const emit = defineEmits({
   created: null,
 });
 
-const isModalVisible = ref(false);
+const isModalVisible = ref(!false);
 
 const saveCollection = (newCollection: AnimeCollection) => {
   isModalVisible.value = false;
@@ -32,11 +32,10 @@ const openModal = () => isModalVisible.value = !isModalVisible.value;
       Создать коллекцию
     </button>
   </slot>
-  <anime-collection-edit
-    v-if="isModalVisible"
+  <anime-collection-editor
+    v-model:is-open="isModalVisible"
     header="Создание коллекции"
     @save="saveCollection"
-    @close="isModalVisible = false"
   />
 </template>
 

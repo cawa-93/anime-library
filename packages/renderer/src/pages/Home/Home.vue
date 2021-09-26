@@ -6,7 +6,7 @@ import HomeFooter from '/@/pages/Home/HomeFooter.vue';
 import type {AnimeCollection as AnimeCollectionType} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
 import {getAllCollections, getCollectionById} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
 import AnimeCollection from '/@/pages/Home/AnimeCollection/AnimeCollection.vue';
-import AnimeCollectionCreate from '/@/pages/Home/AnimeCollection/AnimeCollectionCreateButton.vue';
+import AnimeCollectionCreateButton from '/@/pages/Home/AnimeCollection/AnimeCollectionCreateButton.vue';
 import UserRating from '/@/components/UserRating.vue';
 
 
@@ -57,7 +57,7 @@ const onCollectionDeleted = (deletedId: number) => {
       />
     </template>
 
-    <anime-collection-create @created="onCollectionCreated">
+    <anime-collection-create-button @created="onCollectionCreated">
       <template #activator="{openModal}">
         <button
           class="btn btn-outline mx-auto"
@@ -66,8 +66,7 @@ const onCollectionDeleted = (deletedId: number) => {
           Добавить коллекцию аниме
         </button>
       </template>
-    </anime-collection-create>
-
+    </anime-collection-create-button>
 
     <home-footer class="mt-auto card shadow-none rounded-none border-b-0 border-l-0 border-r-0" />
   </main>
