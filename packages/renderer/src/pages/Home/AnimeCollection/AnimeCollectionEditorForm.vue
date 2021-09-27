@@ -134,7 +134,7 @@ const genreRef = computed({
 <template>
   <form>
     <label class="list-title">
-      Название коллекции
+      Название коллекции:
       <input
         type="text"
         :value="title"
@@ -143,7 +143,7 @@ const genreRef = computed({
     </label>
 
     <label class="limit-results">
-      Максимум результатов
+      Максимум результатов:
       <input
         :value="limit"
         type="number"

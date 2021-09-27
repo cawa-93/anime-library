@@ -8,7 +8,9 @@
     outline: none;
   }
 
-  input:focus,
+  input:focus-visible,
+  input[type="text"]:focus,
+  input[type="search"]:focus,
   textarea:focus,
   select:focus-visible,
   button:focus-visible {
