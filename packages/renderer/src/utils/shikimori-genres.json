@@ -80,7 +80,7 @@
   {
     "id": 13,
     "name": "Historical",
-    "russian": "Исторический",
+    "russian": "Историческое",
     "kind": "anime"
   },
   {
@@ -128,7 +128,7 @@
   {
     "id": 27,
     "name": "Shounen",
-    "russian": "Сёнен",
+    "russian": "Сёнэн",
     "kind": "anime"
   },
   {
@@ -164,7 +164,7 @@
   {
     "id": 28,
     "name": "Shounen Ai",
-    "russian": "Сёнен-ай",
+    "russian": "Сёнэн-ай",
     "kind": "anime"
   },
   {
