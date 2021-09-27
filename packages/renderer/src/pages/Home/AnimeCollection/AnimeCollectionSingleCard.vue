@@ -192,7 +192,7 @@ const isOverlayVisible = ref(false);
 }
 
 .card > div:not(:first-of-type) {
-  @apply border-t-1 border-opacity-30 border-gray-500
+  @apply border-t-1 border-opacity-30 border-true-gray-500
 }
 
 .card > div.inset {

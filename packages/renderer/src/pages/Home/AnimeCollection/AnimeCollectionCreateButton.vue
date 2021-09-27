@@ -10,7 +10,7 @@ const emit = defineEmits({
   created: null,
 });
 
-const isModalVisible = ref(!false);
+const isModalVisible = ref(false);
 
 const saveCollection = (newCollection: AnimeCollection) => {
   isModalVisible.value = false;

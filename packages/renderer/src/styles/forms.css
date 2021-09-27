@@ -4,26 +4,17 @@
     accent-color: theme('colors.accent.DEFAULT');
   }
 
-  button:focus {
-    outline: none;
+  .accented {
+    outline: 2px solid theme('colors.accent.DEFAULT') !important;
+    outline-offset: 2px;
   }
 
-  input:focus-visible,
-  input[type="text"]:focus,
-  input[type="search"]:focus,
-  textarea:focus,
-  select:focus-visible,
-  button:focus-visible {
-    @apply
-    ring-5
-    ring-gray-800
-    dark:ring-gray-100
-    dark:ring-opacity-40
-    ring-opacity-30
-    ring-opacity-30
-    border-current
-    ;
-    outline: none;
+  *:focus:not(:focus-visible), button:focus:not(:focus-visible) {
+    outline: none !important;
+  }
+
+  *:focus-visible {
+    @apply accented;
   }
 
 
@@ -48,8 +39,8 @@
     bg-white
     dark:bg-dark-900
     border border-opacity-25 border-black dark:border-white dark:border-opacity-25
+    focus:border-accent
     text-base
-    outline-none
     text-gray-700
     dark:text-gray-50
     py-1
