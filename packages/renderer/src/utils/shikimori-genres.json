@@ -80,7 +80,7 @@
   {
     "id": 13,
     "name": "Historical",
-    "russian": "Исторический",
+    "russian": "Историческое",
     "kind": "anime"
   },
   {
@@ -128,7 +128,7 @@
   {
     "id": 27,
     "name": "Shounen",
-    "russian": "Сёнен",
+    "russian": "Сёнэн",
     "kind": "anime"
   },
   {
@@ -164,7 +164,7 @@
   {
     "id": 28,
     "name": "Shounen Ai",
-    "russian": "Сёнен-ай",
+    "russian": "Сёнэн-ай",
     "kind": "anime"
   },
   {
@@ -182,7 +182,7 @@
   {
     "id": 43,
     "name": "Josei",
-    "russian": "Дзёсей",
+    "russian": "Дзёсэй",
     "kind": "anime"
   },
   {
@@ -212,7 +212,7 @@
   {
     "id": 31,
     "name": "Super Power",
-    "russian": "Супер сила",
+    "russian": "Суперсила",
     "kind": "anime"
   },
   {
@@ -254,7 +254,7 @@
   {
     "id": 42,
     "name": "Seinen",
-    "russian": "Сейнен",
+    "russian": "Сэйнэн",
     "kind": "anime"
   }
 ]
