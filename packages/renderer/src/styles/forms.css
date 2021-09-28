@@ -1,23 +1,4 @@
 @layer base {
-
-  body {
-    accent-color: theme('colors.accent.DEFAULT');
-  }
-
-  .accented {
-    outline: 2px solid theme('colors.accent.DEFAULT') !important;
-    outline-offset: 2px;
-  }
-
-  *:focus:not(:focus-visible), button:focus:not(:focus-visible) {
-    outline: none !important;
-  }
-
-  *:focus-visible {
-    @apply accented;
-  }
-
-
   [type='text'],
   [type='email'],
   [type='url'],
@@ -34,6 +15,7 @@
   textarea,
   select {
     @apply
+    focus-visible:!outline-none
     rounded
     w-full
     bg-white
