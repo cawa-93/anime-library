@@ -43,7 +43,7 @@ const onCollectionDeleted = (deletedId: number) => {
 </script>
 
 <template>
-  <main class="grid auto-rows-min grid-cols-1 gap-6 pt-6">
+  <main class="grid auto-rows-min grid-cols-1 gap-6 pt-6 content-between">
     <user-rating />
     <home-search class="max-w-screen-md w-11/12 mx-auto" />
 
