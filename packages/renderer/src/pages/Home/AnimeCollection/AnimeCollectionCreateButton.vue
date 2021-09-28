@@ -12,8 +12,9 @@ const emit = defineEmits({
 
 const isModalVisible = ref(false);
 
-const saveCollection = (newCollection: AnimeCollection) => {
-  isModalVisible.value = false;
+const saveCollection = (newCollectionData: AnimeCollection['requestParams'] & {title: AnimeCollection['title']}) => {
+  const {title, ...requestParams} = newCollectionData;
+  const newCollection = {title, requestParams};
   return putCollection(newCollection).then(id => emit('created', id));
 };
 const openModal = () => isModalVisible.value = !isModalVisible.value;
@@ -35,6 +36,8 @@ const openModal = () => isModalVisible.value = !isModalVisible.value;
   <anime-collection-editor
     v-model:is-open="isModalVisible"
     header="Создание коллекции"
+    :limit="10"
+    order="ranked"
     @save="saveCollection"
   />
 </template>

@@ -1,11 +1,7 @@
 @layer base {
   body {
-    accent-color: theme('colors.accent.DEFAULT');
-  }
-
-  .accented {
-    outline: 2px solid theme('colors.accent.DEFAULT') !important;
-    outline-offset: 2px;
+    --accent-color: theme('colors.accent.DEFAULT');
+    accent-color: var(--accent-color);
   }
 
   *:focus:not(:focus-visible) {
@@ -13,7 +9,7 @@
   }
 
   *:focus-visible {
-    outline: 2px solid theme('colors.accent.DEFAULT') !important;
+    outline: 2px solid var(--outline-color, var(--accent-color)) !important;
     outline-offset: 2px;
   }
 }

@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-import type {PropType} from 'vue';
 import {computed, ref, watch} from 'vue';
-import type {AnimeCollection} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
 import GenresSelector from '/@/pages/Home/AnimeCollection/GenresSelector.vue';
 import {useVModel} from '@vueuse/core';
 
@@ -48,19 +46,6 @@ const props = defineProps({
     required: false,
     default: '',
   },
-
-  requestParams: {
-    type: Object as PropType<AnimeCollection['requestParams']>,
-    required: false,
-    default: () => ({
-      limit: 0,
-      status: '',
-      kind: '',
-      order: '',
-      mylist: '',
-      genre: '',
-    }),
-  },
 });
 
 const emit = defineEmits({
@@ -71,6 +56,7 @@ const emit = defineEmits({
   'update:order': null,
   'update:mylist': null,
   'update:genre': null,
+  // 'submit': null,
 });
 
 const statusRef = computed({

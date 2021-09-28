@@ -4,12 +4,12 @@ import {defineAsyncComponent, ref} from 'vue';
 import type {Anime} from '/@/pages/Home/AnimeCollection/Anime';
 import {apiFetch} from '/@/utils/shikimori-api';
 import type {AnimeCollection} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
-import HorizontalScroller from '/@/pages/Home/HorizontalScroller.vue';
-import CustomListSingleCard from '/@/pages/Home/AnimeCollection/AnimeCollectionSingleCard.vue';
 import {
   deleteCollection as deleteCollectionFromDB,
   putCollection,
 } from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
+import HorizontalScroller from '/@/pages/Home/HorizontalScroller.vue';
+import CustomListSingleCard from '/@/pages/Home/AnimeCollection/AnimeCollectionSingleCard.vue';
 
 
 const AnimeCollectionEditor = defineAsyncComponent(() => import('/@/pages/Home/AnimeCollection/AnimeCollectionEditor.vue'));
@@ -65,8 +65,9 @@ const searchAnime = (params: AnimeCollection['requestParams']) => {
 
 searchAnime(props.requestParams);
 
-const updateCollection = (newCollection: AnimeCollection) => {
-  isEditorOpened.value = false;
+const updateCollection = (newCollectionData: AnimeCollection['requestParams'] & {title: AnimeCollection['title']}) => {
+  const {title, ...requestParams} = newCollectionData;
+  const newCollection = {title, requestParams};
   putCollection(newCollection, props.id);
 
   localTitle.value = newCollection.title;
@@ -84,12 +85,8 @@ const updateCollection = (newCollection: AnimeCollection) => {
   searchAnime(newCollection.requestParams);
 };
 
-const deleteCollection = () => {
-  isEditorOpened.value = false;
-  deleteCollectionFromDB(props.id).then(() => emit('deleted', props.id));
-};
+const deleteCollection = () => deleteCollectionFromDB(props.id).then(() => emit('deleted', props.id));
 </script>
-
 
 
 <template>
@@ -102,13 +99,11 @@ const deleteCollection = () => {
     </h3>
 
     <anime-collection-editor
-      v-if="isEditorOpened"
-      :request-params="localSearchParams"
+      v-model:isOpen="isEditorOpened"
+      v-bind="localSearchParams"
       header="Редактирование коллекции"
       :title="localTitle"
-      :aria-label="`Редактирование коллекции ${localTitle}`"
       @save="updateCollection"
-      @close="isEditorOpened = false"
       @delete="deleteCollection"
     />
 

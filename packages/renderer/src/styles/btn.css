@@ -16,4 +16,9 @@
   .btn.bg-accent {
     @apply bg-accent ring-accent hover:bg-accent-500 active:(bg-black bg-opacity-70 text-accent) dark:hover:bg-accent-300 dark:active:(bg-black bg-opacity-70 text-accent)
   }
+
+  .btn.bg-red {
+    @apply bg-red-600 text-white hover:bg-red-700 dark:(bg-red-700 hover:bg-red-600 active:bg-red-200 active:text-red-900) active:bg-red-900;
+    --outline-color: theme('colors.red.600');
+  }
 }
