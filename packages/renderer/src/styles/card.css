@@ -12,14 +12,14 @@
   }
 
   .card-header {
-    @apply card-inset;
+    @apply card-inset bg-black bg-opacity-10 dark:(bg-white bg-opacity-10);
     margin-top: calc(0px - var(--card-padding));
     margin-bottom: calc(var(--card-padding) / 2);
   }
 
 
   .card-footer {
-    @apply card-inset;
+    @apply card-inset bg-black bg-opacity-10 dark:(bg-white bg-opacity-10);
     margin-bottom: calc(0px - var(--card-padding));
     margin-top: calc(var(--card-padding) / 2);
   }

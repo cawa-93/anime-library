@@ -149,7 +149,7 @@ const deleteHandler = () => {
             style="overflow: unset"
           >
             <div
-              class="card-header bg-black bg-opacity-5 dark:(bg-white bg-opacity-5) flex justify-between items-center"
+              class="card-header flex justify-between items-center"
             >
               <DialogTitle
                 as="h3"
@@ -186,7 +186,7 @@ const deleteHandler = () => {
               v-model:genre="formData.genre"
             />
 
-            <div class="card-footer flex flex-row-reverse justify-between gap-4 bg-black bg-opacity-5 dark:(bg-white bg-opacity-5)">
+            <div class="card-footer flex flex-row-reverse justify-between gap-4">
               <button
                 ref="cancelButtonRef"
                 type="submit"

@@ -25,7 +25,7 @@ const disliked = () => {
 
 
 <template>
-  <footer class="text-center p-3 grid grid-cols-2 gap-x-4 gap-y-2">
+  <footer class="text-center p-3 grid grid-cols-2 gap-x-4 gap-y-2 card shadow-none rounded-none border-b-0 border-l-0 border-r-0">
     <p class="col-span-full">
       {{
         state === STATES.INITIAL

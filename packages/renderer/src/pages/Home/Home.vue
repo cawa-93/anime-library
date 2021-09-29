@@ -2,7 +2,7 @@
 import {ref} from 'vue';
 import {useTitle} from '@vueuse/core';
 import HomeSearch from '/@/pages/Home/HomeSearch.vue';
-import HomeFooter from '/@/pages/Home/HomeFooter.vue';
+import HomeFooter from '/@/components/HomeFooter.vue';
 import type {AnimeCollection as AnimeCollectionType} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
 import {getAllCollections, getCollectionById} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
 import AnimeCollection from '/@/pages/Home/AnimeCollection/AnimeCollection.vue';
@@ -68,6 +68,6 @@ const onCollectionDeleted = (deletedId: number) => {
       </template>
     </anime-collection-create-button>
 
-    <home-footer class="mt-auto card shadow-none rounded-none border-b-0 border-l-0 border-r-0" />
+    <home-footer class="mt-auto" />
   </main>
 </template>
