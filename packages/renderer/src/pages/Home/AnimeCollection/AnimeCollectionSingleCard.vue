@@ -85,7 +85,7 @@ const isOverlayVisible = ref(false);
       name: 'Watch',
       params: {seriesId: anime.id}
     }"
-    class="card block h-[320px] relative leading-relaxed shadow-md border-['#fff']"
+    class="card overflow-hidden block h-[320px] relative leading-relaxed shadow-md border-['#fff']"
     :style="{
       '--anime-poster-original': anime.image.original ? `url('https://shikimori.one${anime.image.original}')` : '',
       '--anime-poster-preview': anime.image.preview ? `url('https://shikimori.one${anime.image.preview}')` : '',

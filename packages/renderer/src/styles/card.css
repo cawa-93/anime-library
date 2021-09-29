@@ -2,7 +2,7 @@
   .card {
     --card-padding: theme('spacing.5');
     padding: var(--card-padding);
-    @apply overflow-hidden rounded shadow bg-white dark:bg-true-gray-800 border border-opacity-25 border-black dark:border-white dark:border-opacity-25;
+    @apply rounded shadow bg-white dark:bg-true-gray-800 border border-opacity-25 border-black dark:border-white dark:border-opacity-25;
   }
 
   .card-inset {
