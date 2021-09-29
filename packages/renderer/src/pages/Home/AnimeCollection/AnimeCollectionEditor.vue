@@ -96,7 +96,6 @@ const closePopup = () => {
 
 const saveHandler = () => {
   const clearedData = Object.fromEntries(Object.entries(formData.value).filter((i) => !!i[1]));
-  console.log(clearedData);
   emit('save', clearedData);
 
   closePopup();
