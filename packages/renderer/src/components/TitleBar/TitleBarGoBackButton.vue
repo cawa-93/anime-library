@@ -36,6 +36,7 @@ const goBack = () => {
 
 <template>
   <button
+    type="button"
     :disabled="isDisabled"
     title="Вернутся назад"
     aria-label="Вернутся назад"

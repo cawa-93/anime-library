@@ -46,11 +46,9 @@ const onSelected = (event: Event) => {
 
 <template>
   <div
-    class="relative btn-title-bar"
+    class="relative btn-title-bar text-xs"
   >
-    <small class="text-truncate">
-      Помощь
-    </small>
+    Помощь
 
     <select
       aria-label="Помощь"
@@ -71,15 +69,4 @@ const onSelected = (event: Event) => {
 
 <style scoped>
 @import "./btn-titlebar.css";
-
-/*select {*/
-/*  opacity: 0;*/
-/*  cursor: pointer;*/
-/*  color: inherit;*/
-/*  background: var(--body-bg);*/
-/*}*/
-
-/*.btn:focus-within {*/
-/*  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);*/
-/*}*/
 </style>

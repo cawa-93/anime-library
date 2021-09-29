@@ -1,5 +1,5 @@
 <template>
-  <small class="flex-1 self-center select-none truncate">{{ title }}</small>
+  <small class="text-xs flex-1 self-center select-none truncate opacity-70">{{ title }}</small>
 </template>
 
 <script lang="ts" setup>

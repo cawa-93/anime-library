@@ -15,10 +15,10 @@ const openSeriesOnShikimori = () => openURL(`https://shikimori.one/animes/${watc
   <a
     v-if="watchingSeriesId"
     href=""
-    class="btn-title-bar"
+    class="btn-title-bar text-xs"
     @click.prevent="openSeriesOnShikimori"
   >
-    <small>Открыть на Шикимори</small>
+    Открыть Шикимори
   </a>
 </template>
 

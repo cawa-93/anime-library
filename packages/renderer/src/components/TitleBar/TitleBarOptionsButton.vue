@@ -1,7 +1,7 @@
 <template>
   <router-link
     draggable="false"
-    class="win-icon btn-title-bar"
+    class="btn-title-bar win-icon"
     :to="{name: 'Options'}"
     title="Параметры"
     aria-label="Параметры"

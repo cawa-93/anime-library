@@ -18,4 +18,9 @@ export default defineConfig({
       },
     },
   },
+  shortcuts: {
+    'square': {
+      'aspect-ratio': '1',
+    },
+  },
 });

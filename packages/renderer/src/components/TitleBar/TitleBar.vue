@@ -12,7 +12,7 @@ import OpenShikimori from '/@/components/TitleBar/TitleBarGoToShikimori.vue';
 
 
 <template>
-  <header class="flex region-drag">
+  <header class="flex region-drag max-w-screen h-8">
     <back-button />
     <home-button />
     <help-button />
@@ -24,10 +24,3 @@ import OpenShikimori from '/@/components/TitleBar/TitleBarGoToShikimori.vue';
     <close-button />
   </header>
 </template>
-
-<style scoped>
-header {
-  --title-bar-height: 34px;
-  height: var(--title-bar-height);
-}
-</style>
