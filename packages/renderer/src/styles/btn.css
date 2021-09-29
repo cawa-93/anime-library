@@ -3,10 +3,11 @@
     @apply
     py-2
     px-3
-    hover:(bg-black bg-opacity-5 dark:(bg-white bg-opacity-5))
-    active:(bg-black bg-opacity-70 text-white dark:(bg-white bg-opacity-70 text-black))
+    hover:not-disabled:(bg-black bg-opacity-5 dark:(bg-white bg-opacity-5))
+    active:not-disabled:(bg-black bg-opacity-70 text-white dark:(bg-white bg-opacity-70 text-black))
     rounded
-    transition-colors;
+    transition-colors
+    disabled:(opacity-50 cursor-default);
   }
 
   .btn-outline {

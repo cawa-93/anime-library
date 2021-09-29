@@ -38,7 +38,14 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
           Подключение аккаунтов
         </h2>
         <option-anime365 class="my-3" />
-        <shiki-oauth class="my-3" />
+
+        <div class="card">
+          <h3 class="card-header text-base">
+            Шикимори
+          </h3>
+
+          <shiki-oauth />
+        </div>
       </section>
 
       <section
@@ -50,7 +57,7 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
         </h2>
         <section class="card mt-3">
           <p class="card-header">
-            Настройки видеоплеера
+            Настройки видеоплейера
           </p>
           <timeline-thumbnails />
         </section>
