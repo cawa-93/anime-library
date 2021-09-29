@@ -14,10 +14,10 @@ import ColorSchemeHost from '/@/ipc/ColorSchemeHost';
 const isSingleInstance = app.requestSingleInstanceLock();
 
 
-// if (!isSingleInstance) {
-//   app.quit();
-//   process.exit(0);
-// }
+if (!isSingleInstance) {
+  app.quit();
+  process.exit(0);
+}
 
 
 const PROTOCOL = 'anime-lib';
