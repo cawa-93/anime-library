@@ -23,7 +23,7 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
             <a
               class="list-group-item list-group-item-action"
               href="#connections"
-            >Подключене аккаунтов</a>
+            >Подключение аккаунтов</a>
 
             <a
               class="list-group-item list-group-item-action"
@@ -39,7 +39,7 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
         <div class="col">
           <section id="connections">
             <h2>
-              Подключене аккаунтов
+              Подключение аккаунтов
             </h2>
             <option-anime365 class="my-3" />
             <shiki-oauth class="my-3" />
