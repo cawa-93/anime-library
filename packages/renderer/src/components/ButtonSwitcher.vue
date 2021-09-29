@@ -25,33 +25,23 @@ defineEmits({
 </script>
 
 <template>
-  <span class="relative">
+  <fieldset class="relative">
     <input
       v-for="state of states"
       :key="state"
+      class="absolute top-0 left-0 w-full h-full m-0 p-0 cursor-pointer appearance-none"
       :checked="state === modelValue"
       :value="state"
+      :aria-label="state === 'include' ? 'Обязательно' : state === 'exclude' ? 'Исключить' : 'Без предпочтений'"
       type="radio"
       :name="groupName"
       @change="$emit('update:modelValue', state)"
     >
     <slot />
-  </span>
+  </fieldset>
 </template>
 
 <style scoped>
-input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  appearance: none;
-  cursor: pointer;
-}
-
 input + input {
   z-index: -1;
 }

@@ -54,6 +54,7 @@ const update = (id: number, state: '' | 'include' | 'exclude') => {
       :states="['', 'include', 'exclude']"
       :model-value="selectedGenres.get(genre.id) || ''"
       :group-name="genre.id + genre.name"
+      :aria-label="genre.russian"
       @update:modelValue="state => update(genre.id, state)"
     >
       {{ genre.russian }}
