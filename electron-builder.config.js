@@ -17,6 +17,10 @@ const config = {
   extraMetadata: {
     version: getAppVersion(),
   },
+  nsis: {
+    installerLanguages: 'ru',
+    language: '1049',
+  },
 };
 
 module.exports = config;
