@@ -32,14 +32,7 @@ const config = {
     target: `node${node}`,
     outDir: 'dist',
     assetsDir: '.',
-    minify: process.env.MODE === 'development' ? false : 'terser',
-    terserOptions: {
-      ecma: 2020,
-      compress: {
-        passes: 2,
-      },
-      safari10: false,
-    },
+    minify: process.env.MODE === 'development' ? false : 'esbuild',
     lib: {
       entry: 'src/index.ts',
       formats: ['cjs'],
