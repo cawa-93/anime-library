@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type {PropType} from 'vue';
-import {computed, ref} from 'vue';
+import {computed} from 'vue';
 import type {Anime as AnimeType} from '/@/pages/Home/AnimeCollection/Anime';
 import {useElectron} from '/@/use/electron';
 import {formatDate} from '/@/utils/formatDate';
@@ -66,6 +66,11 @@ const kindRussian = computed(() => {
 
 const airedOnFormat = computed(() => props.anime.aired_on ? formatDate(Date.parse(props.anime.aired_on)) : null);
 
+const poster = computed(() => {
+  const imagePath = props.anime.image.original || props.anime.image.preview;
+  return imagePath ? `https://shikimori.one${imagePath}` : '';
+});
+
 const {openURL} = useElectron();
 const openAnime = (event: MouseEvent, anime: AnimeType) => {
   if (event.ctrlKey || event.button === 1) {
@@ -73,8 +78,6 @@ const openAnime = (event: MouseEvent, anime: AnimeType) => {
     return openURL('https://shikimori.one' + anime.url);
   }
 };
-
-const isOverlayVisible = ref(false);
 </script>
 
 
@@ -87,18 +90,12 @@ const isOverlayVisible = ref(false);
     }"
     class="card overflow-hidden block h-[320px] relative leading-relaxed shadow-md border-['#fff']"
     :style="{
-      '--anime-poster-original': anime.image.original ? `url('https://shikimori.one${anime.image.original}')` : '',
-      '--anime-poster-preview': anime.image.preview ? `url('https://shikimori.one${anime.image.preview}')` : '',
       '--anime-status-color': statusColor,
       '--anime-status-color-rgb': statusColorRGB,
     }"
     :aria-label="anime.russian || anime.name"
     @click="openAnime($event, anime)"
     @auxclick="openAnime($event, anime)"
-    @mouseenter="isOverlayVisible = true"
-    @mouseleave="isOverlayVisible = false"
-    @focusin="isOverlayVisible = true"
-    @focusout="isOverlayVisible = false"
   >
     <h3
       class="card-header text-white text-base font-normal leading-snug font-light !mb-0"
@@ -135,6 +132,14 @@ const isOverlayVisible = ref(false);
     >
       Рейтинг: {{ anime.score }}
     </div>
+
+    <img
+      v-if="poster"
+      role="presentation"
+      :src="poster"
+      alt=""
+      class="poster p-0 absolute top-0 left-0 w-full h-full"
+    >
   </router-link>
 </template>
 
@@ -149,31 +154,26 @@ const isOverlayVisible = ref(false);
   padding-bottom: 0;
 }
 
-.card:after {
-  content: "";
-  display: block;
-  background-image: var(--anime-poster-original);
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: calc(100% - 5px);
-  background-size: cover;
-  transition: all 300ms;
+.card img[role="presentation"] {
   transform: translateY(5px);
-  top: 0;
+  transition: transform 350ms cubic-bezier(0.54, 0.22, 0.59, 1.13);
 }
 
-.card:hover:after,
-.card:focus:after {
-  top: 100%;
+.card:hover img[role="presentation"],
+.card:focus img[role="presentation"] {
+  transform: translateY(100%);
 }
+
 
 @media (prefers-reduced-motion: reduce) {
-  .card:hover:after,
-  .card:focus:after {
-    top: 0;
+  .card img[role="presentation"] {
+    transition-property: opacity;
+  }
+
+  .card:hover img[role="presentation"],
+  .card:focus img[role="presentation"] {
+    transform: translateY(0);
     opacity: 0;
-    transition-duration: 400ms;
   }
 }
 
@@ -192,11 +192,11 @@ const isOverlayVisible = ref(false);
 }
 
 .card > div:not(:first-of-type) {
-  @apply border-t-1 border-opacity-30 border-true-gray-500
+  @apply border-t-1 border-opacity-30 border-true-gray-500;
 }
 
 .card > div.inset {
-  margin-left:  calc(var(--card-padding)/1.5 + var(--bullet-gap) - var(--card-padding));
+  margin-left: calc(var(--card-padding) / 1.5 + var(--bullet-gap) - var(--card-padding));
   padding-left: 0;
 }
 
