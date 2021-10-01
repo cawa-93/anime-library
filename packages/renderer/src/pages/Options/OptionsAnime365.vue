@@ -91,10 +91,7 @@ const saveAccessTokenOption = async () => {
 </script>
 
 <template>
-  <form
-    class="card"
-    @submit.prevent="saveAccessTokenOption"
-  >
+  <form @submit.prevent="saveAccessTokenOption">
     <p>
       Для доступа к видео необходимо подключить ваш аккаунт видео-провайдера
       <a
