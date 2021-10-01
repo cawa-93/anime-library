@@ -102,7 +102,7 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
           >
             Тема приложения
           </h3>
-          <color-scheme />
+          <color-scheme aria-labelledby="app-theme-head" />
         </section>
       </section>
 
@@ -129,16 +129,19 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
             <br>
             Исходный код на GitHub:
             <a
+              class="underline"
               href="#"
               @click.prevent="openGitHub()"
             >cawa-93/anime-library</a>
             <br>
             Сообщество пользователей в
             <a
+              class="underline"
               href="#"
               @click.prevent="openVK()"
             >Вконтакте</a> и в
             <a
+              class="underline"
               href="#"
               @click.prevent="openTG()"
             >Telegram</a>
