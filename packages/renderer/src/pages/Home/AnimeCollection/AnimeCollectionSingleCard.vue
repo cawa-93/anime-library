@@ -157,6 +157,7 @@ const openAnime = (event: MouseEvent, anime: AnimeType) => {
 .card img[role="presentation"] {
   transform: translateY(5px);
   transition: transform 350ms cubic-bezier(0.54, 0.22, 0.59, 1.13);
+  object-fit: cover;
 }
 
 .card:hover img[role="presentation"],
