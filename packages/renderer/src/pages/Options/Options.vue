@@ -42,12 +42,12 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
         </h2>
 
         <section
-          class="card"
+          class="card border-accent !shadow-accent"
           aria-labelledby="connections-anime365-head"
         >
           <h3
             id="connections-anime365-head"
-            class="card-header text-base"
+            class="card-header text-base bg-accent font-bold dark:bg-accent-600"
           >
             Anime.365
           </h3>
@@ -165,7 +165,7 @@ section:target {
 }
 
 section.card {
-  @apply mt-4;
+  @apply mt-4 shadow-lg;
 }
 
 @keyframes shake {
