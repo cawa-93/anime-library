@@ -32,16 +32,15 @@ export function isFailureResponse(response: unknown): response is sm.ApiResponse
 }
 
 
-export async function searchSeries<RequestedFields extends keyof sm.Series>(searchParams: URLSearchParams): Promise<Pick<sm.Series, RequestedFields>[]> {
-  const requestURL = new URL('series', API_BASE);
-  searchParams.forEach((v, k) => requestURL.searchParams.set(k, v));
+export async function searchSeries<RequestedFields extends keyof sm.Series>(searchParams: URLSearchParams, options?: RequestInit): Promise<Pick<sm.Series, RequestedFields>[]> {
+  const requestURL = new URL('series?' + searchParams, API_BASE);
 
   requestURL.searchParams.set('isActive', '1');
 
-  const apiResponse = await request<Pick<sm.Series, RequestedFields>[]>(requestURL);
+  const apiResponse = await request<Pick<sm.Series, RequestedFields>[]>(requestURL, undefined, options);
 
   if (isFailureResponse(apiResponse)) {
-    throw apiResponse.error;
+    throw apiResponse;
   }
 
   return apiResponse.data;
@@ -49,7 +48,7 @@ export async function searchSeries<RequestedFields extends keyof sm.Series>(sear
 
 
 export async function getSeries(myAnimeListId: number): Promise<Series | undefined> {
-  const fields = ['titleLines', 'myAnimeListId', 'posterUrl'] as const;
+  const fields = ['titleLines', 'myAnimeListId', 'posterUrl', 'numberOfEpisodes'] as const;
   type RequestedFields = typeof fields[number]
 
   const searchParams = new URLSearchParams({
@@ -76,6 +75,7 @@ export async function getSeries(myAnimeListId: number): Promise<Series | undefin
     id: targetSeries.myAnimeListId,
     title: targetSeries.titleLines[0],
     poster: targetSeries.posterUrl,
+    numberOfEpisodes: targetSeries.numberOfEpisodes,
   };
 }
 

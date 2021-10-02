@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import {useTitle} from '@vueuse/core';
-import HomeSearch from '/@/pages/Home/HomeSearch.vue';
+import HomeSearch from '/@/pages/Home/HomeSearch/HomeSearch.vue';
 import HomeFooter from '/@/components/HomeFooter.vue';
 import type {AnimeCollection as AnimeCollectionType} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
 import {getAllCollections, getCollectionById} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
