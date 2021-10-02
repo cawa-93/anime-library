@@ -6,7 +6,6 @@ import {openGitHub, openTG, openVK} from '/@/use/socialLinks';
 import TimelineThumbnails from '/@/pages/Options/OptionsTimelineThumbnails.vue';
 import ColorScheme from '/@/pages/Options/OptionsColorScheme.vue';
 import HomeFooter from '/@/components/HomeFooter.vue';
-import OptionsAnime365_LEGACY from '/@/pages/Options/OptionsAnime365_LEGACY.vue';
 
 
 useTitle('Параметры');

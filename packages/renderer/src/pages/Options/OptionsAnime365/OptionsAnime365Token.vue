@@ -6,6 +6,11 @@ import {useTokenValidator} from '/@/pages/Options/OptionsAnime365/useTokenValida
 import ButtonSpinner from '/@/components/ButtonSpinner.vue';
 import {useElectron} from '/@/use/electron';
 
+
+const emit = defineEmits({
+  'save': null,
+});
+
 const {openURL} = useElectron();
 
 const inputStrValue = ref(getAccessToken() || '');
@@ -53,7 +58,12 @@ const token = computed(() =>
 const {isValid, isLoading, check} = useTokenValidator(token);
 
 
-const save = () => isValid.value !== false && saveAccessToken(token.value ? token.value : null);
+const save = () => {
+  if (isValid.value === true || isValid.value === undefined) {
+    saveAccessToken(token.value ? token.value : null);
+    emit('save');
+  }
+};
 </script>
 
 <template>

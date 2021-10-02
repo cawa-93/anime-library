@@ -1,15 +1,9 @@
 <script lang="ts" setup>
-import {
-  Dialog as Dialog,
-  DialogDescription as DialogDescription,
-  DialogOverlay as DialogOverlay,
-  DialogTitle as DialogTitle,
-  TransitionChild as TransitionChild,
-  TransitionRoot as TransitionRoot,
-} from '@headlessui/vue';
+import {DialogDescription as DialogDescription} from '@headlessui/vue';
 import AnimeCollectionEditorForm from '/@/pages/Home/AnimeCollection/AnimeCollectionEditorForm.vue';
 import {ref} from 'vue';
 import type {AnimeCollection} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
+import AppDialog from '/@/components/AppDialog.vue';
 
 
 const props = defineProps({
@@ -112,100 +106,50 @@ const deleteHandler = () => {
 </script>
 
 <template>
-  <TransitionRoot
-    as="template"
-    :show="isOpen"
+  <app-dialog
+    :title="header"
+    :is-open="isOpen"
+    @update:isOpen="v => $emit('update:isOpen', v)"
   >
-    <Dialog
-      as="div"
-      class="fixed z-10 inset-0 overflow-y-auto"
-      @close="closePopup"
+    <DialogDescription
+      as="p"
+      class="text-sm opacity-80 mb-3"
     >
-      <div class="h-full grid justify-center items-center">
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          enter-from="opacity-0"
-          enter-to="opacity-100"
-          leave="ease-in duration-200"
-          leave-from="opacity-100"
-          leave-to="opacity-0"
-        >
-          <DialogOverlay class="fixed inset-0 bg-true-gray-500 bg-opacity-75 transition-opacity" />
-        </TransitionChild>
+      Укажите критерии для коллекции. Все аниме будут автоматически собираться по этим критериям и обновляться
+      раз в
+      несколько дней.
+    </DialogDescription>
 
-        <TransitionChild
-          as="template"
-          enter="ease-out duration-300"
-          enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-          enter-to="opacity-100 translate-y-0 sm:scale-100"
-          leave="ease-in duration-200"
-          leave-from="opacity-100 translate-y-0 sm:scale-100"
-          leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        >
-          <div
-            class="card inline-block align-center rounded-lg shadow-xl transform transition-all max-w-2xl w-full my-2"
-            style="overflow: unset"
-          >
-            <div
-              class="card-header flex justify-between items-center"
-            >
-              <DialogTitle
-                as="h3"
-                class="text-lg leading-6 font-medium"
-              >
-                {{ header }}
-              </DialogTitle>
-              <button
-                type="button"
-                class="btn win-icon"
-                aria-label="Отменить изменения"
-                @click="closePopup"
-              >
-                &#xE8BB;
-              </button>
-            </div>
+    <anime-collection-editor-form
+      v-model:title="formData.title"
+      v-model:limit.number="formData.limit"
+      v-model:kind="formData.kind"
+      v-model:status="formData.status"
+      v-model:order="formData.order"
+      v-model:mylist="formData.mylist"
+      v-model:genre="formData.genre"
+    />
 
-            <DialogDescription
-              as="p"
-              class="text-sm opacity-80 mb-3"
-            >
-              Укажите критерии для коллекции. Все аниме будут автоматически собираться по этим критериям и обновляться
-              раз в
-              несколько дней.
-            </DialogDescription>
 
-            <anime-collection-editor-form
-              v-model:title="formData.title"
-              v-model:limit.number="formData.limit"
-              v-model:kind="formData.kind"
-              v-model:status="formData.status"
-              v-model:order="formData.order"
-              v-model:mylist="formData.mylist"
-              v-model:genre="formData.genre"
-            />
-
-            <div class="card-footer flex flex-row-reverse justify-between gap-4">
-              <button
-                ref="cancelButtonRef"
-                type="submit"
-                class="btn bg-accent rounded-md shadow-sm text-sm text-black"
-                @click="saveHandler"
-              >
-                Сохранить
-              </button>
-              <button
-                v-if="onDelete"
-                type="button"
-                class="btn bg-red rounded-md text-sm font-medium"
-                @click="deleteHandler"
-              >
-                Удалить
-              </button>
-            </div>
-          </div>
-        </TransitionChild>
-      </div>
-    </Dialog>
-  </TransitionRoot>
+    <div
+      class="card-footer flex flex-row-reverse justify-between gap-4"
+    >
+      <button
+        ref="cancelButtonRef"
+        type="submit"
+        class="btn bg-accent rounded-md shadow-sm text-sm text-black"
+        @click="saveHandler"
+      >
+        Сохранить
+      </button>
+      <button
+        v-if="onDelete"
+        type="button"
+        class="btn bg-red rounded-md text-sm font-medium"
+        @click="deleteHandler"
+      >
+        Удалить
+      </button>
+    </div>
+  </app-dialog>
 </template>

@@ -3,6 +3,10 @@ import {TabList as TabList, TabGroup as TabGroup, Tab as Tab, TabPanel as TabPan
 import OptionsAnime365Status from '/@/pages/Options/OptionsAnime365/OptionsAnime365Status.vue';
 import OptionsAnime365Token from '/@/pages/Options/OptionsAnime365/OptionsAnime365Token.vue';
 import OptionsAnime365Login from '/@/pages/Options/OptionsAnime365/OptionsAnime365Login.vue';
+
+defineEmits({
+  'save': null,
+});
 </script>
 
 <template>
@@ -45,7 +49,7 @@ import OptionsAnime365Login from '/@/pages/Options/OptionsAnime365/OptionsAnime3
     <TabPanels>
       <TabPanel><options-anime365-status /></TabPanel>
       <TabPanel><options-anime365-login /></TabPanel>
-      <TabPanel><options-anime365-token /></TabPanel>
+      <TabPanel><options-anime365-token @save="$emit('save')" /></TabPanel>
     </TabPanels>
   </TabGroup>
 </template>
