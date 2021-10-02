@@ -1,11 +1,12 @@
 <script lang="ts" setup>
 import {useTitle} from '@vueuse/core';
 import ShikiOauth from '/@/pages/Options/OptionsShikiOauth.vue';
-import OptionAnime365 from '/@/pages/Options/OptionsAnime365.vue';
+import OptionAnime365 from '/@/pages/Options/OptionsAnime365/OptionsAnime365.vue';
 import {openGitHub, openTG, openVK} from '/@/use/socialLinks';
 import TimelineThumbnails from '/@/pages/Options/OptionsTimelineThumbnails.vue';
 import ColorScheme from '/@/pages/Options/OptionsColorScheme.vue';
 import HomeFooter from '/@/components/HomeFooter.vue';
+import OptionsAnime365_LEGACY from '/@/pages/Options/OptionsAnime365_LEGACY.vue';
 
 
 useTitle('Параметры');
@@ -54,7 +55,6 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
 
           <option-anime365 />
         </section>
-
 
         <section
           class="card"

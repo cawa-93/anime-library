@@ -15,7 +15,7 @@
   }
 
   .btn.bg-accent {
-    @apply bg-accent ring-accent hover:bg-accent-500 active:(bg-black bg-opacity-70 text-accent) dark:hover:bg-accent-300 dark:active:(bg-black bg-opacity-70 text-accent)
+    @apply bg-accent ring-accent hover:bg-accent-500 active:(bg-black bg-opacity-70 text-accent) dark:bg-accent-600 dark:hover:bg-accent-500 dark:active:(bg-black bg-opacity-70 text-accent)
   }
 
   .btn.bg-red {

@@ -11,7 +11,6 @@
       <excludeFolder url="file://$MODULE_DIR$/packages/main/dist" />
       <excludeFolder url="file://$MODULE_DIR$/packages/preload/dist" />
       <excludeFolder url="file://$MODULE_DIR$/node_modules/@vueuse/core/node_modules/vue-demi" />
-      <excludeFolder url="file://$MODULE_DIR$/node_modules/@vueuse/core/node_modules/@vueuse/shared" />
     </content>
     <content url="file://$MODULE_DIR$/node_modules/@vueuse/core/node_modules/@vueuse/shared" />
     <content url="file://$MODULE_DIR$/node_modules/@vueuse/core/node_modules/vue-demi" />

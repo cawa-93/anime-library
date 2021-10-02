@@ -1,0 +1,34 @@
+<script lang="ts" setup>
+import {getAccessToken} from '/@/utils/videoProvider/providers/anime365/anime365';
+import {useElectron} from '/@/use/electron';
+
+
+const isConnected = !!getAccessToken();
+const {openURL} = useElectron();
+</script>
+
+<template>
+  <div>
+    <p class="mb-2">
+      Все серии в этом приложении загружаются с сайта
+      <a
+        class="underline"
+        href=""
+        @click.prevent="openURL('https://smotret-anime.online')"
+      >Anime.365</a>.
+      Этот сайт требует наличие аккаунта и оплаченной
+      <a
+        class="underline"
+        href=""
+        @click.prevent="openURL('https://smotret-anime.online/support/index')"
+      >премиум подписки</a>.
+      Без этого вы не сможете просматривать аниме ни на самом сайте ни в этом приложении 😓.
+    </p>
+    <p>
+      В настоящий момент ваш аккаунт Anime365:
+      <strong :class="[isConnected ? 'text-green-500' : 'text-red-500']">{{
+        isConnected ? 'Подключен' : 'Не Подключен'
+      }}</strong>
+    </p>
+  </div>
+</template>

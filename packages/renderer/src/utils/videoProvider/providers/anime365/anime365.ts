@@ -8,18 +8,17 @@ const HOST_ROOT = 'https://smotret-anime.online';
 const API_BASE = `${HOST_ROOT}/api/`;
 
 
-async function request<T>(url: string | URL): Promise<sm.ApiResponse<T>> {
+export async function request<T>(url: string | URL, access_token = getAccessToken(), options?: RequestInit): Promise<sm.ApiResponse<T>> {
 
   if (!(url instanceof URL)) {
     url = new URL(url);
   }
 
-  const access_token = getAccessToken();
   if (access_token) {
     url.searchParams.set('access_token', access_token);
   }
 
-  const response = await fetch(String(url));
+  const response = await fetch(String(url), options);
   if (!response.ok) {
     throw await response.text();
   }
@@ -28,8 +27,8 @@ async function request<T>(url: string | URL): Promise<sm.ApiResponse<T>> {
 }
 
 
-export function isFailureResponse(response: sm.ApiResponseFailure | sm.ApiResponseSuccess<unknown>): response is sm.ApiResponseFailure {
-  return (response as sm.ApiResponseSuccess<unknown>).data === undefined;
+export function isFailureResponse(response: unknown): response is sm.ApiResponseFailure {
+  return typeof response === 'object' && response !== null && (response as sm.ApiResponseSuccess<unknown>).data === undefined;
 }
 
 
@@ -170,16 +169,16 @@ export async function getTranslations(episodeId: number | string): Promise<Trans
 }
 
 
-export async function getStream(translationId: number | string): Promise<Video | undefined> {
+export async function getStream(translationId: number | string, access_token?: string | null, options?: RequestInit): Promise<Video | undefined> {
   type ExpectedResponse = sm.Video
 
   const requestURL = new URL(`translations/embed/${translationId}`, API_BASE);
 
 
-  const apiResponse = await request<ExpectedResponse>(requestURL);
+  const apiResponse = await request<ExpectedResponse>(requestURL, access_token, options);
 
   if (isFailureResponse(apiResponse)) {
-    throw apiResponse.error;
+    throw apiResponse;
   }
 
   const {stream, subtitlesUrl} = apiResponse.data;

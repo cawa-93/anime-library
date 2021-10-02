@@ -18,7 +18,7 @@ const colorScheme = computed({
 </script>
 
 <template>
-  <fildset>
+  <fieldset>
     <label>
       <input
         v-model="colorScheme"
@@ -48,7 +48,7 @@ const colorScheme = computed({
       >
       Тёмная
     </label>
-  </fildset>
+  </fieldset>
 </template>
 
 <style scoped>
