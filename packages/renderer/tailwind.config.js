@@ -2,6 +2,7 @@ import {defineConfig} from 'windicss/helpers';
 import colors from 'windicss/colors';
 
 export default defineConfig({
+  prefixer: false,
   darkMode: 'media',
   extract: {
     include: ['./index.html', './src/**/*.vue', './src/**/*.css'],
