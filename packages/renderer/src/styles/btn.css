@@ -3,7 +3,8 @@
     @apply
     py-2
     px-3
-    hover:not-disabled:(bg-black bg-opacity-5 dark:(bg-white bg-opacity-5))
+    hover:not-disabled:(bg-black bg-opacity-5)
+    dark:hover:not-disabled:(bg-white bg-opacity-5)
     active:not-disabled:(bg-black bg-opacity-70 text-white dark:(bg-white bg-opacity-70 text-black))
     rounded
     transition-colors

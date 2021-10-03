@@ -1,8 +1,9 @@
-import type {Ref} from 'vue';
+import type {ComputedRef, Ref} from 'vue';
 import {ref, unref} from 'vue';
 import {getHistoryItems} from '/@/utils/history-views';
-import {asyncComputed} from '@vueuse/core';
+import {asyncComputed, useDebounce} from '@vueuse/core';
 import {searchSeries} from '/@/utils/videoProvider/providers/anime365/anime365';
+import {SECOND_MS} from '/@/utils/time';
 
 
 interface SearchResult {
@@ -11,44 +12,46 @@ interface SearchResult {
 }
 
 
-export function useSearchResults(input: Ref<string>) {
+export function useSearchResults(input: Ref<string>): { results: ComputedRef<SearchResult[]>, evaluating: Ref<boolean> } {
   const evaluating = ref(false);
 
-  const results = asyncComputed<SearchResult[]>(async () => {
-    const query = unref(input);
+  const debounced = useDebounce(input, SECOND_MS);
+
+  const results = asyncComputed(() => {
+    const query = unref(debounced);
 
     if (query !== '') {
-      const params = new URLSearchParams({
-        query,
-      });
-      const series = await searchSeries(params);
-      return series.map(s => ({
-        id: s.id,
-        title: s.title,
-      }));
-    } else {
-      return getResultsFromHistory();
+      return getResultsFromSearch(query);
     }
 
-    return [];
-  }, [], {evaluating});
+    return getResultsFromHistory();
+  }, [] as SearchResult[], {evaluating});
 
 
 
-  return {results};
+  return {results, evaluating};
 }
 
 
-async function getResultsFromHistory() {
+async function getResultsFromSearch(query: string): Promise<SearchResult[]> {
+  const params = new URLSearchParams({
+    query,
+  });
+  const series = await searchSeries(params);
+  return series.map(s => ({
+    id: s.myAnimeListId,
+    title: s.title,
+  }));
+}
+
+
+async function getResultsFromHistory(): Promise<SearchResult[]> {
   const history = await getHistoryItems();
   const params = new URLSearchParams([
     ...history.map(i => ['myAnimeListId[]', String(i.seriesId)]),
   ]);
 
   const response = await searchSeries(params);
-
-  console.log({history, params: params.toString(), response});
-
 
   return response.filter(s => {
     const relevantHistoryItem = history.find(i => i.seriesId === s.myAnimeListId);
@@ -59,5 +62,8 @@ async function getResultsFromHistory() {
       && relevantHistoryItem.episode.duration
       && relevantHistoryItem.episode.number === s.numberOfEpisodes
     );
-  });
+  }).map(r => ({
+    id: r.myAnimeListId,
+    title: r.title,
+  }));
 }

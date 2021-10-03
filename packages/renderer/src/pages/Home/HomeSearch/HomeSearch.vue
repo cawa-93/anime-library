@@ -3,81 +3,62 @@ import {ref} from 'vue';
 
 import {Popover as Popover, PopoverPanel as PopoverPanel} from '@headlessui/vue';
 import {useSearchResults} from '/@/pages/Home/HomeSearch/useSearchResults';
+import {useRouter} from 'vue-router';
 
-// const router = useRouter();
+
+/**
+ * Находится ли фокус в поле поиска.
+ * Используется чтобы скрывать выпадающее меню с результатами когда поле не в фокусе
+ */
+const isFocusin = ref(false);
+
+/**
+ * Текст поиска
+ */
 const searchText = ref('');
 
-
-const {results} = useSearchResults(searchText);
-
-const isFocusin = ref(false);
-// navigator.clipboard.readText().then(t => {
-//   if (getSeriesId(t)) { // Простой способ проверить текст в буфере
-//     searchText.value = t;
-//   }
-// }).catch(() => ({})); // Если прочитать буфер не удалось просто заглушить сообщение об ошибке
-
-
-// const animeID = computed(() => getSeriesId(searchText.value));
-
-// const history = ref<Series[]>([]);
-//
-// getHistoryItems()
-//   .then(items => Promise.all(items.map((i) => getSeries(i.seriesId))))
-//   .then(series => history.value = series.filter(<T>(s?: T): s is T => s !== undefined));
-
-
-// const onDatalistOptionSelect = () => {
-//   if (history.value.length === 0) {
-//     return;
-//   }
-//
-//   const searchTextTrimmed = searchText.value.trim();
-//   const target = history.value.find(i => i && i.title.toLowerCase() === searchTextTrimmed.toLowerCase());
-//   if (!target) {
-//     return;
-//   }
-//
-//   return open(target.id);
-// };
-
+/**
+ * Результаты поиска
+ */
+const {results, evaluating: isLoading} = useSearchResults(searchText);
 
 /**
- * Если удалось определить ID аниме -- выполнить загрузку серий, чтобы они кэшировались
+ * Индекс активного элемента в результатах
+ *
+ * Используется для поддержки навигации с клавиатуры по результатам поиска.
+ *
+ * Изменяется стрелками вверх/вниз.
  */
-// watch(animeID, () => {
-//   if (animeID.value) getEpisodes(animeID.value);
-// });
-
-// const title = asyncComputed(async () => {
-//   if (!animeID.value) {
-//     return '';
-//   }
-//
-//   const anime = await getSeries(animeID.value);
-//
-//   return anime?.title || '';
-// }, '');
+const activeIndex = ref(0);
 
 /**
- * Вместо `Event` нужно использовать `SubmitEvent`
- * Но `SubmitEvent` не добавлен в TypeScript
- * @see https://github.com/microsoft/TypeScript-DOM-lib-generator/pull/1005
+ * Переключает активный элемент на следующий
  */
-// const onSearch = () => {
-//   if (animeID.value) {
-//     open(animeID.value);
-//   }
-// };
+const activateNextItem = () => {
+  activeIndex.value = activeIndex.value + 1 === results.value.length ? activeIndex.value = 0 : activeIndex.value + 1;
+};
 
-// const open = (seriesId: number) => router.push({name: 'Watch', params: {seriesId}});
+/**
+ * Переключает активный элемент на предыдущий
+ */
+const activatePrevItem = () => {
+  activeIndex.value = activeIndex.value === 0 ? results.value.length - 1 : activeIndex.value - 1;
+};
+
+const getRoute = (seriesId: string | number) => ({name: 'Watch', params: {seriesId}});
+
+const router = useRouter();
+const handlerSubmit = () => {
+  const activeElement = results.value[activeIndex.value];
+  router.push(getRoute(activeElement.id));
+};
 </script>
 
 
 <template>
   <form
     class="card grid grid-cols-[1fr,auto] grid-rows-[auto] relative"
-    @submit.prevent="onSearch"
+    @submit.prevent="handlerSubmit"
   >
     <label
       for="search-field"
@@ -89,12 +70,13 @@ const isFocusin = ref(false);
       autofocus
       autocomplete="on"
       placeholder="Поиск аниме по названию или по ссылке"
-      required
-      type="text"
+      type="search"
       class="border-r-0 rounded-tr-none rounded-br-none focus:ring-accent focus:ring-opacity-30 focus:border-accent"
       aria-describedby="search-field-help"
       @focusin="isFocusin = true"
       @focusout="isFocusin = false"
+      @keydown.down="activateNextItem"
+      @keydown.up="activatePrevItem"
     >
 
 
@@ -117,18 +99,25 @@ const isFocusin = ref(false);
         leave-to-class="translate-y-1 opacity-0"
       >
         <PopoverPanel
-          v-if="isFocusin"
+          v-if="isFocusin && (isLoading || results.length || searchText !== '')"
           static
           class="card shadow-none search-results"
         >
-          <router-link
-            v-for="result of results"
-            :key="result.id"
-            :to="{name: 'Watch', params: {seriesId: result.id}}"
-            class="btn block"
-          >
-            {{ result.title }}
-          </router-link>
+          <template v-if="results.length">
+            <router-link
+              v-for="(result, index) of results"
+              :key="result.id"
+              :ref="activeIndex === index ? 'activeElement' : ''"
+              :to="getRoute(result.id)"
+              class="btn block"
+              :class="{'active': activeIndex === index}"
+            >
+              {{ result.title }}
+            </router-link>
+          </template>
+          <p v-else-if="!isLoading && searchText !== ''">
+            Ничего не найдено
+          </p>
         </PopoverPanel>
       </transition>
     </Popover>
@@ -137,11 +126,17 @@ const isFocusin = ref(false);
 
 <style scoped>
 .search-results {
-  @apply absolute z-10 absolute z-10 rounded-t-none border-t-0;
+  @apply absolute z-10 absolute z-10 rounded-t-none border-t-0 overflow-y-auto;
   transform: translateY(-2px);
   width: calc(100% - var(--card-padding) * 2);
+  max-height: calc(100vh - 150px);
 }
 
+.search-results:not(:hover) .btn.active {
+  @apply bg-black bg-opacity-5 dark:(bg-white bg-opacity-5);
+}
+
+form:focus-within #search-field,
 form:focus-within .search-results,
 form:focus-within .btn.btn-outline {
   border-color: theme('colors.accent.DEFAULT');
