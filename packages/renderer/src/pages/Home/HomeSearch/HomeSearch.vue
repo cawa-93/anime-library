@@ -4,6 +4,7 @@ import {ref} from 'vue';
 import {Popover as Popover, PopoverPanel as PopoverPanel} from '@headlessui/vue';
 import {useSearchResults} from '/@/pages/Home/HomeSearch/useSearchResults';
 import {useRouter} from 'vue-router';
+import ButtonSpinner from '/@/components/ButtonSpinner.vue';
 
 
 /**
@@ -79,7 +80,6 @@ const handlerSubmit = () => {
       @keydown.up="activatePrevItem"
     >
 
-
     <button
       class="btn btn-outline border-l-0 rounded-tl-none rounded-bl-none win-icon focus:ring-accent focus:ring-opacity-30 focus:border-accent"
       type="submit"
@@ -99,9 +99,11 @@ const handlerSubmit = () => {
         leave-to-class="translate-y-1 opacity-0"
       >
         <PopoverPanel
-          v-if="isFocusin && (isLoading || results.length || searchText !== '')"
+          v-if="isFocusin"
           static
           class="card shadow-none search-results"
+          aria-live="polite"
+          :aria-busy="isLoading"
         >
           <template v-if="results.length">
             <router-link
@@ -115,8 +117,19 @@ const handlerSubmit = () => {
               {{ result.title }}
             </router-link>
           </template>
-          <p v-else-if="!isLoading && searchText !== ''">
-            Ничего не найдено
+          <p
+            v-else
+            class="opacity-80"
+          >
+            <template v-if="isLoading">
+              <button-spinner class="mr-4" />
+              {{ searchText !== '' ? 'Поиск ...' : 'Загрузка недавних просмотров ...' }}
+            </template>
+            <template v-else>
+              {{
+                searchText !== '' ? 'По вашему запросу ничего не найдено' : 'Список недавних просмотров пока что пуст'
+              }}
+            </template>
           </p>
         </PopoverPanel>
       </transition>
@@ -129,7 +142,7 @@ const handlerSubmit = () => {
   @apply absolute z-10 absolute z-10 rounded-t-none border-t-0 overflow-y-auto;
   transform: translateY(-2px);
   width: calc(100% - var(--card-padding) * 2);
-  max-height: calc(100vh - 150px);
+  max-height: calc(100vh - 180px);
 }
 
 .search-results:not(:hover) .btn.active {

@@ -1,7 +1,7 @@
-import type {ComputedRef, Ref} from 'vue';
-import {ref, unref} from 'vue';
+import type {Ref} from 'vue';
+import {ref, unref, watch} from 'vue';
 import {getHistoryItems} from '/@/utils/history-views';
-import {asyncComputed, useDebounce} from '@vueuse/core';
+import {useDebounceFn} from '@vueuse/core';
 import {searchSeries} from '/@/utils/videoProvider/providers/anime365/anime365';
 import {SECOND_MS} from '/@/utils/time';
 
@@ -12,22 +12,33 @@ interface SearchResult {
 }
 
 
-export function useSearchResults(input: Ref<string>): { results: ComputedRef<SearchResult[]>, evaluating: Ref<boolean> } {
+export function useSearchResults(input: Ref<string>): { results: Ref<SearchResult[]>, evaluating: Ref<boolean> } {
   const evaluating = ref(false);
+  const results = ref<SearchResult[]>([]);
 
-  const debounced = useDebounce(input, SECOND_MS);
+  const updateResultsDebounced = useDebounceFn(async () => {
+    const query = unref(input);
 
-  const results = asyncComputed(() => {
-    const query = unref(debounced);
-
-    if (query !== '') {
-      return getResultsFromSearch(query);
+    try {
+      if (query !== '') {
+        results.value = await getResultsFromSearch(query);
+      } else {
+        results.value = await getResultsFromHistory();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      evaluating.value = false;
     }
 
-    return getResultsFromHistory();
-  }, [] as SearchResult[], {evaluating});
+  }, SECOND_MS / 2);
 
-
+  watch(input, () => {
+    results.value = [];
+    evaluating.value = true;
+    // noinspection JSIgnoredPromiseFromCall
+    updateResultsDebounced();
+  }, {immediate: true});
 
   return {results, evaluating};
 }

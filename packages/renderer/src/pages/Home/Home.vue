@@ -46,7 +46,13 @@ const onCollectionDeleted = (deletedId: number) => {
 <template>
   <main class="grid auto-rows-min grid-cols-1 gap-6 pt-6 content-between">
     <user-rating />
-    <home-search class="max-w-screen-md w-11/12 mx-auto" />
+
+    <div class="grid auto-rows-min grid-cols-1 gap-4">
+      <h2 class="text-center text-lg opacity-50">
+        Начните просмотр аниме:
+      </h2>
+      <home-search class="max-w-screen-md w-11/12 mx-auto" />
+    </div>
 
     <template v-if="userCollections !== null">
       <anime-collection
@@ -58,16 +64,7 @@ const onCollectionDeleted = (deletedId: number) => {
       />
     </template>
 
-    <anime-collection-create-button @created="onCollectionCreated">
-      <template #activator="{openModal}">
-        <button
-          class="btn btn-outline mx-auto"
-          @click="openModal"
-        >
-          Добавить коллекцию аниме
-        </button>
-      </template>
-    </anime-collection-create-button>
+    <anime-collection-create-button @created="onCollectionCreated" />
 
     <home-footer class="mt-auto" />
 

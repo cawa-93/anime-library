@@ -22,17 +22,12 @@ const openModal = () => isModalVisible.value = !isModalVisible.value;
 
 
 <template>
-  <slot
-    name="activator"
-    :openModal="openModal"
+  <button
+    class="btn btn-outline mx-auto"
+    @click="openModal"
   >
-    <button
-      class="btn btn-outline"
-      @click="openModal"
-    >
-      Создать коллекцию
-    </button>
-  </slot>
+    Создать коллекцию аниме
+  </button>
   <anime-collection-editor
     v-model:is-open="isModalVisible"
     header="Создание коллекции"
