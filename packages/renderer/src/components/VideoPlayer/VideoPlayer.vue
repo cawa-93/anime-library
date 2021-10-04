@@ -1,135 +1,3 @@
-<template>
-  <div
-    ref="videoPlayerRoot"
-    class="component-root"
-    :class="{hideCursor: isFullscreen && idle}"
-  >
-    <transition name="fade">
-      <slot
-        v-if="controlsVisible"
-        name="header"
-      />
-    </transition>
-    <loading-spinner v-if="waiting || !isVideoLoaded" />
-    <video
-      ref="videoElement"
-      preload="auto"
-      autoplay
-      crossorigin="anonymous"
-      @click="playing = !playing"
-      @dblclick="toggleFullscreen"
-      @progress="onProgressHandler"
-      @ended="$emit('go-to-next-episode')"
-    >
-      <source
-        :src="videoSource"
-        @error="errorHandler"
-      >
-    </video>
-    <lib-ass-subtitles-renderer
-      v-if="tracks.length > 0 && isSubtitlesEnabled"
-      :time="$currentTime"
-      :track="tracks[0]"
-      :video-element="videoElement"
-      :playing="playing"
-      :waiting="waiting"
-    />
-    <transition name="fade">
-      <section
-        v-if="controlsVisible"
-        class="control-panel position-absolute d-grid bottom-0 w-100 text-white"
-      >
-        <progress-bar
-          v-model:time="$currentTime"
-          :frames="frames"
-          class="progress-bar-container"
-          :duration="$duration"
-          :buffered="buffered"
-        />
-
-        <button
-          class="play-button win-icon"
-          :title="`${playing ? 'Пауза' : 'Смотреть'} (k)`"
-          :aria-label="`${playing ? 'Пауза' : 'Смотреть'} (k)`"
-          @click="playing = !playing"
-        >
-          {{ playing ? '&#xE769;' : '&#xE768;' }}
-        </button>
-
-        <button
-          :disabled="!hasNextEpisode"
-          class="next-button win-icon"
-          title="Следующий эпизод"
-          aria-label="Следующий эпизод"
-          @click="$emit('go-to-next-episode')"
-        >
-          &#xE893;
-        </button>
-
-        <volume-control
-          v-model:muted="muted"
-          v-model:volume="volume"
-          class="volume-control"
-        />
-
-        <time-code
-          class="time-code"
-          :current-time="$currentTime"
-          :duration="$duration"
-        />
-
-        <button
-          v-if="tracks.length > 0"
-          title="Субтитры"
-          aria-label="Субтитры"
-          class="subtitles"
-          @click="isSubtitlesEnabled = !isSubtitlesEnabled"
-        >
-          <span
-            class="win-icon"
-            :style="!isSubtitlesEnabled ? 'opacity: 0.5' : ''"
-            aria-hidden="true"
-          >
-            &#xED1E;
-          </span>
-        </button>
-
-        <select
-          v-if="qualities.length > 0"
-          v-model="selectedQuality"
-          title="Качество видео"
-          aria-label="Качество видео"
-          class="settings"
-        >
-          <option
-            v-for="quality of qualities"
-            :key="quality"
-            :value="quality"
-          >
-            {{ quality }}p
-          </option>
-        </select>
-
-
-        <toggle-pip-button
-          class="picture-in-picture"
-          :video="videoElement"
-        />
-
-        <button
-          :title="`${isFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
-          :aria-label="`${isFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
-          class="toggle-fullscreen-button win-icon"
-          @click="toggleFullscreen"
-        >
-          {{ isFullscreen ? '&#xE73F;' : '&#xE740;' }}
-        </button>
-      </section>
-    </transition>
-    <slot v-if="controlsVisible" />
-  </div>
-</template>
-
 <script lang="ts" setup>
 import type {PropType} from 'vue';
 import {
@@ -445,6 +313,138 @@ const onProgressHandler = () => {
 
 
 </script>
+
+<template>
+  <div
+    ref="videoPlayerRoot"
+    class="component-root"
+    :class="{hideCursor: isFullscreen && idle}"
+  >
+    <transition name="fade">
+      <slot
+        v-if="controlsVisible"
+        name="header"
+      />
+    </transition>
+    <loading-spinner v-if="waiting || !isVideoLoaded" />
+    <video
+      ref="videoElement"
+      preload="auto"
+      autoplay
+      crossorigin="anonymous"
+      @click="playing = !playing"
+      @dblclick="toggleFullscreen"
+      @progress="onProgressHandler"
+      @ended="$emit('go-to-next-episode')"
+    >
+      <source
+        :src="videoSource"
+        @error="errorHandler"
+      >
+    </video>
+    <lib-ass-subtitles-renderer
+      v-if="tracks.length > 0 && isSubtitlesEnabled"
+      :time="$currentTime"
+      :track="tracks[0]"
+      :video-element="videoElement"
+      :playing="playing"
+      :waiting="waiting"
+    />
+    <transition name="fade">
+      <section
+        v-if="controlsVisible"
+        class="control-panel absolute grid bottom-0 w-full text-white"
+      >
+        <progress-bar
+          v-model:time="$currentTime"
+          :frames="frames"
+          class="progress-bar-container"
+          :duration="$duration"
+          :buffered="buffered"
+        />
+
+        <button
+          class="play-button win-icon"
+          :title="`${playing ? 'Пауза' : 'Смотреть'} (k)`"
+          :aria-label="`${playing ? 'Пауза' : 'Смотреть'} (k)`"
+          @click="playing = !playing"
+        >
+          {{ playing ? '&#xE769;' : '&#xE768;' }}
+        </button>
+
+        <button
+          :disabled="!hasNextEpisode"
+          class="next-button win-icon"
+          title="Следующий эпизод"
+          aria-label="Следующий эпизод"
+          @click="$emit('go-to-next-episode')"
+        >
+          &#xE893;
+        </button>
+
+        <volume-control
+          v-model:muted="muted"
+          v-model:volume="volume"
+          class="volume-control"
+        />
+
+        <time-code
+          class="time-code"
+          :current-time="$currentTime"
+          :duration="$duration"
+        />
+
+        <button
+          v-if="tracks.length > 0"
+          title="Субтитры"
+          aria-label="Субтитры"
+          class="subtitles"
+          @click="isSubtitlesEnabled = !isSubtitlesEnabled"
+        >
+          <span
+            class="win-icon"
+            :style="!isSubtitlesEnabled ? 'opacity: 0.5' : ''"
+            aria-hidden="true"
+          >
+            &#xED1E;
+          </span>
+        </button>
+
+        <select
+          v-if="qualities.length > 0"
+          v-model="selectedQuality"
+          title="Качество видео"
+          aria-label="Качество видео"
+          class="settings"
+        >
+          <option
+            v-for="quality of qualities"
+            :key="quality"
+            :value="quality"
+          >
+            {{ quality }}p
+          </option>
+        </select>
+
+
+        <toggle-pip-button
+          class="picture-in-picture"
+          :video="videoElement"
+        />
+
+        <button
+          :title="`${isFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
+          :aria-label="`${isFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
+          class="toggle-fullscreen-button win-icon"
+          @click="toggleFullscreen"
+        >
+          {{ isFullscreen ? '&#xE73F;' : '&#xE740;' }}
+        </button>
+      </section>
+    </transition>
+    <slot v-if="controlsVisible" />
+  </div>
+</template>
 
 <style scoped>
 @import "video-control-button.css";

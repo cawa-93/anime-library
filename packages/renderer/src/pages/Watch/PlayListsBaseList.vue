@@ -7,7 +7,7 @@ export interface PlayListItem {
   id: number,
   label: string,
   title?: string,
-  badges?: { text: string, style: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark' }[]
+  badges?: { text: string, class: string }[]
 }
 
 
@@ -46,34 +46,34 @@ onMounted(() => {
       v-for="item of items"
       :key="item.id"
       href="#"
-      :class="{active: item.id === selectedItemId}"
-      class="list-group-item d-flex align-items-center"
+      :class="{'bg-accent': item.id === selectedItemId}"
+      class="btn rounded-none flex items-center"
       :title="item.title || ''"
       @click.prevent="$emit('item-click', item)"
     >
-      <span class="flex-fill d-inline-block text-truncate">{{ item.label }}</span>
+      <span class="flex-grow inline-block truncate">{{ item.label }}</span>
       <small
         v-for="b of item.badges"
         :key="b.text"
         style="margin-left: 0.1em"
-        class="badge align-self-center"
-        :class="`bg-${b.style} ${['warning', 'info', 'light'].includes(b.style) ? 'text-dark' : ''}`"
+        class="badge self-center"
+        :class="b.class"
       >{{ b.text }}</small>
     </a>
   </nav>
 </template>
 
 <style scoped>
-.list-group-item {
-  content-visibility: auto;
-  contain-intrinsic-size: 24px;
-}
+/*.list-group-item {*/
+/*  content-visibility: auto;*/
+/*  contain-intrinsic-size: 24px;*/
+/*}*/
 
-.list-group-item:not(.active) {
-  background: none;
-}
+/*.list-group-item:not(.active) {*/
+/*  background: none;*/
+/*}*/
 
-.list-group-item:hover:not(.active), .list-group-item:focus-visible:not(.active) {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-}
+/*.list-group-item:hover:not(.active), .list-group-item:focus-visible:not(.active) {*/
+/*  background-color: rgba(0, 0, 0, 0.05) !important;*/
+/*}*/
 </style>

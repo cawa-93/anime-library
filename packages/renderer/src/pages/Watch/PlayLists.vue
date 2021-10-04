@@ -2,9 +2,15 @@
 import type {PropType} from 'vue';
 import type {Episode, Translation} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/SidePanel.vue';
-import TabsSection from '/@/components/TabsSection.vue';
 import PlayListsEpisodes from '/@/pages/Watch/PlayListsEpisodes.vue';
 import PlayListsTranslations from '/@/pages/Watch/PlayListsTranslations.vue';
+import {
+  Tab as Tab,
+  TabGroup as TabGroup,
+  TabList as TabList,
+  TabPanel as TabPanel,
+  TabPanels as TabPanels,
+} from '@headlessui/vue';
 
 
 defineProps({
@@ -47,59 +53,55 @@ defineEmits({
     :is-opened="isOpened"
     @update:is-opened="v => $emit('update:is-opened', v)"
   >
-    <tabs-section default-active-slot="translations">
-      <template #tab-header="{tabName, isActive, activate}">
-        <input
-          :id="`${tabName}-tab-header`"
-          value="episodes"
-          type="radio"
-          class="btn-check"
-          name="active-tab"
-          autocomplete="off"
-          :checked="isActive"
-          @input="activate"
+    <TabGroup :default-index="1">
+      <TabList class="flex">
+        <Tab
+          v-slot="{ selected }"
+          :disabled="episodes.length <= 1"
+          as="template"
         >
-        <label
-          class="btn rounded-0"
-          :for="`${tabName}-tab-header`"
-        >
-          <span
-            class="border-initial px-2 pb-2"
-            :class="{'border-bottom': isActive}"
+          <button
+            class="btn flex-grow rounded-none border-current"
+            :class="{
+              'border-b-1 ': selected
+            }"
           >
-            {{ tabName === 'episodes' ? 'Эпизоды' : tabName === 'translations' ? 'Переводы' : tabName }}
-          </span>
-        </label>
-      </template>
-      <template
-        v-if="episodes.length > 1"
-        #episodes
-      >
-        <play-lists-episodes
-          :selected-episode="selectedEpisode"
-          :series-id="seriesId"
-          :episodes="episodes"
-          @update:selectedEpisode="v => $emit('update:selectedEpisode', v)"
-        />
-      </template>
-
-      <template
-        v-if="translations.length && selectedEpisode !== undefined"
-        #translations
-      >
-        <play-lists-translations
-          :selected-translation="selectedTranslation"
-          :series-id="seriesId"
-          :translations="translations"
-          @update:selectedTranslation="v => $emit('update:selectedTranslation', v)"
-        />
-      </template>
-    </tabs-section>
+            Эпизоды
+          </button>
+        </Tab>
+        <Tab
+          v-slot="{ selected }"
+          :disabled="translations.length === 0"
+          as="template"
+        >
+          <button
+            class="btn flex-grow rounded-none border-current"
+            :class="{
+              'border-b-1 ': selected
+            }"
+          >
+            Переводы
+          </button>
+        </Tab>
+      </TabList>
+      <TabPanels>
+        <TabPanel>
+          <play-lists-episodes
+            :selected-episode="selectedEpisode"
+            :series-id="seriesId"
+            :episodes="episodes"
+            @update:selectedEpisode="v => $emit('update:selectedEpisode', v)"
+          />
+        </TabPanel>
+        <TabPanel>
+          <play-lists-translations
+            :selected-translation="selectedTranslation"
+            :series-id="seriesId"
+            :translations="translations"
+            @update:selectedTranslation="v => $emit('update:selectedTranslation', v)"
+          />
+        </TabPanel>
+      </TabPanels>
+    </TabGroup>
   </side-panel>
 </template>
-
-<style scoped>
-.border-initial {
-  border-color: initial;
-}
-</style>

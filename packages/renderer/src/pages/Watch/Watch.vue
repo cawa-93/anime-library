@@ -8,9 +8,9 @@ import {useTranslations} from '/@/pages/Watch/useTranslations';
 import {useVideos} from '/@/pages/Watch/useVideos';
 import {useWatchHistory} from '/@/pages/Watch/useWatchHistory';
 import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
+import PlayLists from '/@/pages/Watch/PlayLists.vue';
 
-
-const PlayLists = defineAsyncComponent(() => import('/@/pages/Watch/PlayLists.vue'));
+// const PlayLists = defineAsyncComponent(() => import('/@/pages/Watch/PlayLists.vue'));
 const ErrorMessage = defineAsyncComponent(() => import('/@/pages/Watch/ErrorMessage.vue'));
 
 
@@ -140,54 +140,54 @@ useTitle(
 </script>
 
 <template>
-  <main class="position-relative">
-    <video-player
-      id="video-container"
-      v-model:current-time="currentTime"
-      v-model:duration="duration"
-      :video="video"
-      :has-next-episode="!!nextEpisode"
-      @goToNextEpisode="selectNextEpisode"
-      @source-error="onSourceError"
-    >
-      <template #header>
-        <header class="position-absolute top-0 text-white w-100 p-3 d-flex align-items-start">
-          <h2 class="h5 flex-fill m-0 fw-normal">
-            {{ displayedTitle }}
+  <main class="relative">
+    <header class="absolute top-0 text-white w-full p-3 flex items-start">
+      <h2 class="text-lg flex-grow m-0 fw-normal z-1">
+        {{ displayedTitle }}
 
-            <small
-              v-if="selectedEpisodeMeta?.filler"
-              class="badge bg-danger"
-            >filler</small>
+        <small
+          v-if="selectedEpisodeMeta?.filler"
+          class="badge bg-red-500"
+        >Филлер</small>
 
-            <small
-              v-if="selectedEpisodeMeta?.recap"
-              class="badge bg-info text-dark"
-            >recap</small>
-          </h2>
+        <small
+          v-if="selectedEpisodeMeta?.recap"
+          class="badge bg-info text-dark"
+        >Рекап</small>
+      </h2>
 
-          <button
-            v-if="episodes.length > 1 || translations.length"
-            title="Выбор эпизода и перевода"
-            aria-label="Выбор эпизода и перевода"
-            class="open-playlist btn btn-dark ignore-prefers-color-scheme win-icon border-0 bg-transparent"
-            @click="isSidePanelOpenedFlag = !isSidePanelOpenedFlag"
-          >
-            &#xE8FD;
-          </button>
-        </header>
-      </template>
+      <button
+        v-if="episodes.length > 1 || translations.length"
+        title="Выбор эпизода и перевода"
+        aria-label="Выбор эпизода и перевода"
+        class="open-playlist btn win-icon"
+        @click="isSidePanelOpenedFlag = !isSidePanelOpenedFlag"
+      >
+        &#xE8FD;
+      </button>
+    </header>
 
-      <play-lists
-        v-if="isSidePanelOpenedFlag"
-        v-model:is-opened="isSidePanelOpenedFlag"
-        v-model:selected-episode="selectedEpisode"
-        v-model:selected-translation="selectedTranslation"
-        :series-id="seriesIdNumber"
-        :episodes="episodes"
-        :translations="translations"
-      />
-    </video-player>
+    <play-lists
+      v-if="isSidePanelOpenedFlag"
+      v-model:is-opened="isSidePanelOpenedFlag"
+      v-model:selected-episode="selectedEpisode"
+      v-model:selected-translation="selectedTranslation"
+      :series-id="seriesIdNumber"
+      :episodes="episodes"
+      :translations="translations"
+    />
+
+    <!--    <video-player-->
+    <!--      id="video-container"-->
+    <!--      v-model:current-time="currentTime"-->
+    <!--      v-model:duration="duration"-->
+    <!--      :video="video"-->
+    <!--      :has-next-episode="!!nextEpisode"-->
+    <!--      @goToNextEpisode="selectNextEpisode"-->
+    <!--      @source-error="onSourceError"-->
+    <!--    >-->
+
+    <!--    </video-player>-->
     <error-message
       v-if="loadWatchDataError"
       :message="loadWatchDataError"
@@ -206,7 +206,6 @@ header {
   --offset-right: 1rem;
   background-image: linear-gradient(360deg, transparent, rgba(0, 0, 0, .75));
   pointer-events: none;
-  z-index: 10;
 }
 
 header h2 {
