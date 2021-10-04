@@ -4,7 +4,7 @@ import './styles/index.css';
 import {createApp} from 'vue';
 import App from '/@/App.vue';
 import router from '/@/router';
-import {startTrackingWindowVisibility} from '/@/utils/telemetry';
+// import {startTrackingWindowVisibility} from '/@/utils/telemetry';
 
 
 createApp(App)
@@ -16,4 +16,4 @@ createApp(App)
  * Отслеживание момента когда пользователь сворачивает или закрывает приложение.
  * Необходимо чтобы правильно определять длительность сеанса.
  */
-startTrackingWindowVisibility('hidden');
+// startTrackingWindowVisibility('hidden');

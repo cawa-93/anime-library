@@ -2,9 +2,8 @@
 import type {PropType} from 'vue';
 import {computed} from 'vue';
 import type {Anime as AnimeType} from '/@/pages/Home/AnimeCollection/Anime';
-import {useElectron} from '/@/use/electron';
 import {formatDate} from '/@/utils/formatDate';
-import AnimeLink from '/@/components/anime-link.vue';
+import AnimeLink from '/@/components/AnimeLink.vue';
 
 
 const props = defineProps({
@@ -71,14 +70,6 @@ const poster = computed(() => {
   const imagePath = props.anime.image.original || props.anime.image.preview;
   return imagePath ? `https://shikimori.one${imagePath}` : '';
 });
-
-const {openURL} = useElectron();
-const openAnime = (event: MouseEvent, anime: AnimeType) => {
-  if (event.ctrlKey || event.button === 1) {
-    event.preventDefault();
-    return openURL('https://shikimori.one' + anime.url);
-  }
-};
 </script>
 
 

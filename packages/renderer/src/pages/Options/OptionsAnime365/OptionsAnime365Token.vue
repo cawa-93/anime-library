@@ -4,17 +4,14 @@ import type * as sm from '/@/utils/videoProvider/providers/anime365/anime365-int
 import {getAccessToken, isFailureResponse, saveAccessToken} from '/@/utils/videoProvider/providers/anime365/anime365';
 import {useTokenValidator} from '/@/pages/Options/OptionsAnime365/useTokenValidator';
 import ButtonSpinner from '/@/components/ButtonSpinner.vue';
-import {useElectron} from '/@/use/electron';
+import ExternalLink from '/@/components/ExternalLink.vue';
 
 
 const emit = defineEmits({
   'save': null,
 });
 
-const {openURL} = useElectron();
-
 const inputStrValue = ref(getAccessToken() || '');
-
 
 interface Token {
   access_token: string;
@@ -72,11 +69,13 @@ const save = () => {
     @submit.prevent="save"
   >
     <p class="col-span-full">
-      <a
+      <external-link
         class="font-bold underline"
-        href=""
-        @click.prevent="openURL('https://smotret-anime.online/api/accessToken?app=play-shikimori-online')"
-      >Нажмите сюда</a>,
+        href="https://smotret-anime.online/api/accessToken?app=play-shikimori-online"
+      >
+        Нажмите сюда
+      </external-link>
+      ,
       скопируйте полученный от сайта ключ и вставьте его в поле ниже.
     </p>
 
@@ -122,11 +121,10 @@ const save = () => {
       <span v-if="isValid">✔ Введённый ключ валидный</span>
       <span v-else>
         ❌ Введённый ключ не валидный.
-        Возможно вы не авторизованы или авторизованы в аккаунте в котором не оформлена <a
+        Возможно вы не авторизованы или авторизованы в аккаунте в котором не оформлена <external-link
           class="underline"
           href="https://smotret-anime.online/support/index"
-          @click.prevent="openURL('https://smotret-anime.online/support/index')"
-        >премиум подписка</a>.
+        >премиум подписка</external-link>.
       </span>
     </p>
   </form>

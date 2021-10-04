@@ -1,27 +1,26 @@
 <script lang="ts" setup>
-import {useElectron} from '/@/use/electron';
-
-
-const {openURL} = useElectron();
+import ExternalLink from '/@/components/ExternalLink.vue';
 </script>
 
 <template>
   <p class="mb-2">
     Откройте страницу авторизации в вашем браузере
-    <a
+    <external-link
       class="underline"
-      href=""
-      @click.prevent="openURL('https://smotret-anime.online/users/login')"
-    >smotret-anime.online</a>
+      href="https://smotret-anime.online/users/login"
+    >
+      smotret-anime.online
+    </external-link>
     и авторизуйтесь. Если вы уже авторизованы — можете перейти к следующему шагу.
   </p>
   <p>
     <strong>Важно</strong>: вы должны авторизоваться в аккаунте в котором оформлена
-    <a
+    <external-link
       class="underline"
-      href=""
-      @click.prevent="openURL('https://smotret-anime.online/support/index')"
-    >премиум подписка</a>.
+      href="https://smotret-anime.online/support/index"
+    >
+      премиум подписка
+    </external-link>.
   </p>
 </template>
 

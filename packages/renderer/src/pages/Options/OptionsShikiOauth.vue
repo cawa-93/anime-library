@@ -6,6 +6,7 @@ import {clearCredentials, getAuthUrl, getUser, isLoggedIn, refreshCredentials} f
 import {useRouter} from 'vue-router';
 import {unknownToString} from '/@/utils/unknownToString';
 import ButtonSpinner from '/@/components/ButtonSpinner.vue';
+import ExternalLink from '/@/components/ExternalLink.vue';
 
 
 const {openURL} = useElectron();
@@ -17,7 +18,7 @@ const isLoading = ref(false);
 const profile = ref<ShikiUser | null>(null);
 
 const error = ref<string | null>(null);
-const login = () => openURL(getAuthUrl());
+const authURL = getAuthUrl();
 const logOut = () => {
   clearCredentials();
   profile.value = null;
@@ -91,24 +92,23 @@ const logOut = () => {
       </button>
       <span v-if="profile">
         Подключенный аккаунт:
-        <a
+        <external-link
           class="font-semibold underline"
           :href="profile.url"
-          @click.prevent="() => profile && profile.url && openURL(profile.url)"
-        >{{ profile.nickname }}</a>
+        >{{ profile.nickname }}</external-link>
       </span>
     </template>
-    <button
+    <external-link
       v-else
       class="btn btn-outline"
       :class="{
         '!cursor-wait': isLoading
       }"
       :disabled="isLoading"
-      @click="login"
+      :href="authURL"
     >
       <button-spinner v-if="isLoading" />
       Подключить аккаунт Шикимори
-    </button>
+    </external-link>
   </div>
 </template>

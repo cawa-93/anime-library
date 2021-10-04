@@ -1,25 +1,21 @@
 <script lang="ts" setup>
 import {computed} from 'vue';
-import {useElectron} from '/@/use/electron';
 import {useRoute} from 'vue-router';
+import ExternalLink from '/@/components/ExternalLink.vue';
 
-
-const {openURL} = useElectron();
 const route = useRoute();
 const watchingSeriesId = computed(() => route.name === 'Watch' && route?.params?.seriesId ? route.params.seriesId : undefined);
-
-const openSeriesOnShikimori = () => openURL(`https://shikimori.one/animes/${watchingSeriesId.value}`);
+const href = computed(() => `https://shikimori.one/animes/${watchingSeriesId.value}`);
 </script>
 
 <template>
-  <a
+  <external-link
     v-if="watchingSeriesId"
-    href=""
     class="btn-title-bar text-xs"
-    @click.prevent="openSeriesOnShikimori"
+    :href="href"
   >
     Открыть Шикимори
-  </a>
+  </external-link>
 </template>
 
 

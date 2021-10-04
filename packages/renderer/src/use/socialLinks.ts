@@ -2,10 +2,11 @@ import {useElectron} from '/@/use/electron';
 import {trackEvent} from '/@/utils/telemetry';
 
 
-const {openURL} = useElectron();
 
 
 export function openVK(mustOpenChat = false): Promise<void> {
+  const {openURL} = useElectron();
+
   trackEvent('Social', 'Click on social link', 'VK');
   return openURL(mustOpenChat
     ? 'https://vk.com/im?sel=-185683833'
@@ -15,6 +16,8 @@ export function openVK(mustOpenChat = false): Promise<void> {
 
 
 export function openTG(mustOpenChat = false): Promise<void> {
+  const {openURL} = useElectron();
+
   trackEvent('Social', 'Click on social link', 'TG');
   return openURL(mustOpenChat
     ? 'https://t.me/playshikionline_chat'
@@ -24,6 +27,8 @@ export function openTG(mustOpenChat = false): Promise<void> {
 
 
 export function openGitHub(subpage = ''): Promise<void> {
+  const {openURL} = useElectron();
+
   trackEvent('Social', 'Click on social link', 'GitHub');
 
   return openURL('https://github.com/cawa-93/anime-library' + (subpage.startsWith('/') ? subpage : '/' + subpage));

@@ -12,8 +12,8 @@ const TRACKING_ENABLED = TRACKING_ID !== undefined;
  * Необходимо заранее загрузить его значение, чтобы в дальнейшем использовать в синхронных функциях
  * Параметр не изменяется без перезагрузки страницы
  */
-let _isEnableHardwareAccelerationEnabled: boolean | undefined = undefined;
-isEnableHardwareAccelerationEnabled().then(v => _isEnableHardwareAccelerationEnabled = v);
+const _isEnableHardwareAccelerationEnabled: boolean | undefined = undefined;
+// isEnableHardwareAccelerationEnabled().then(v => _isEnableHardwareAccelerationEnabled = v);
 
 
 function getBaseParams() {
