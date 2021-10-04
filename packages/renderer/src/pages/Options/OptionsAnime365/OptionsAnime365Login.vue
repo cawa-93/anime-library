@@ -6,7 +6,7 @@ const {openURL} = useElectron();
 </script>
 
 <template>
-  <p>
+  <p class="mb-2">
     Откройте страницу авторизации в вашем браузере
     <a
       class="underline"
@@ -16,12 +16,12 @@ const {openURL} = useElectron();
     и авторизуйтесь. Если вы уже авторизованы — можете перейти к следующему шагу.
   </p>
   <p>
-    <strong>Важно</strong>: вы должны авторизоватся в аккаунте в котором оформлена
+    <strong>Важно</strong>: вы должны авторизоваться в аккаунте в котором оформлена
     <a
       class="underline"
       href=""
       @click.prevent="openURL('https://smotret-anime.online/support/index')"
-    >премиум подписки</a>.
+    >премиум подписка</a>.
   </p>
 </template>
 

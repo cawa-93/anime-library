@@ -76,8 +76,8 @@ const save = () => {
         class="font-bold underline"
         href=""
         @click.prevent="openURL('https://smotret-anime.online/api/accessToken?app=play-shikimori-online')"
-      >Нажмите сюда</a>
-      и скопируйте полученный от сайта ключ и вставьте его в поле ниже.
+      >Нажмите сюда</a>,
+      скопируйте полученный от сайта ключ и вставьте его в поле ниже.
     </p>
 
     <label class="col-span-full flex gap-3 items-center">

@@ -8,7 +8,7 @@ import {getAllCollections, getCollectionById} from '/@/pages/Home/AnimeCollectio
 import AnimeCollection from '/@/pages/Home/AnimeCollection/AnimeCollection.vue';
 import AnimeCollectionCreateButton from '/@/pages/Home/AnimeCollection/AnimeCollectionCreateButton.vue';
 import UserRating from '/@/components/UserRating.vue';
-import WellcomeDialog from '/@/pages/Home/WellcomeDialog.vue';
+import WelcomeDialog from '/@/pages/Home/WelcomeDialog.vue';
 
 
 //
@@ -68,6 +68,6 @@ const onCollectionDeleted = (deletedId: number) => {
 
     <home-footer class="mt-auto" />
 
-    <wellcome-dialog />
+    <WelcomeDialog />
   </main>
 </template>
