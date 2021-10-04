@@ -4,6 +4,7 @@ import {computed} from 'vue';
 import type {Anime as AnimeType} from '/@/pages/Home/AnimeCollection/Anime';
 import {useElectron} from '/@/use/electron';
 import {formatDate} from '/@/utils/formatDate';
+import AnimeLink from '/@/components/anime-link.vue';
 
 
 const props = defineProps({
@@ -82,20 +83,14 @@ const openAnime = (event: MouseEvent, anime: AnimeType) => {
 
 
 <template>
-  <router-link
-    title="Удерживайте Ctrl, чтобы открыть Шикимори"
-    :to="{
-      name: 'Watch',
-      params: {seriesId: anime.id}
-    }"
+  <anime-link
+    :id="anime.id"
     class="card overflow-hidden block h-[320px] relative leading-relaxed shadow-md border-['#fff']"
     :style="{
       '--anime-status-color': statusColor,
       '--anime-status-color-rgb': statusColorRGB,
     }"
     :aria-label="anime.russian || anime.name"
-    @click="openAnime($event, anime)"
-    @auxclick="openAnime($event, anime)"
   >
     <h3
       class="card-header text-white text-base font-normal leading-snug font-light !mb-0"
@@ -140,7 +135,7 @@ const openAnime = (event: MouseEvent, anime: AnimeType) => {
       alt=""
       class="poster p-0 absolute top-0 left-0 w-full h-full"
     >
-  </router-link>
+  </anime-link>
 </template>
 
 <style scoped>

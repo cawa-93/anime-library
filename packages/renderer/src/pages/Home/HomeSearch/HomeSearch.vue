@@ -5,6 +5,7 @@ import {Popover as Popover, PopoverPanel as PopoverPanel} from '@headlessui/vue'
 import {useSearchResults} from '/@/pages/Home/HomeSearch/useSearchResults';
 import {useRouter} from 'vue-router';
 import ButtonSpinner from '/@/components/ButtonSpinner.vue';
+import AnimeLink from '/@/components/anime-link.vue';
 
 
 /**
@@ -106,16 +107,16 @@ const handlerSubmit = () => {
           :aria-busy="isLoading"
         >
           <template v-if="results.length">
-            <router-link
+            <anime-link
               v-for="(result, index) of results"
+              :id="result.id"
               :key="result.id"
               :ref="activeIndex === index ? 'activeElement' : ''"
-              :to="getRoute(result.id)"
               class="btn block"
               :class="{'active': activeIndex === index}"
             >
               {{ result.title }}
-            </router-link>
+            </anime-link>
           </template>
           <p
             v-else
