@@ -1,9 +1,10 @@
 import type {Ref} from 'vue';
+import {computed, ref, unref, watch} from 'vue';
 import type {Episode} from '/@/utils/videoProvider';
 import {getEpisodes} from '/@/utils/videoProvider';
 import {getViewHistoryItem} from '/@/utils/history-views';
 import {asyncComputed} from '@vueuse/core';
-import {computed, ref, unref, watch} from 'vue';
+
 
 type useEpisodesReturn = {
   readonly episodes: Ref<Episode[]>,
@@ -26,7 +27,14 @@ export function useEpisodes(seriesId: Ref<number | string>, episodeNumRaw?: numb
    */
   const selectEpisode = (num: number) => {
     if ($episodes.value && $episodes.value.length > 0) {
-      $selectedEpisodeIndex.value = $episodes.value.findIndex((e: Episode) => e.number === num);
+      const targetIndex = $episodes.value.findIndex((e: Episode) => e.number === num);
+
+      if (targetIndex !== -1) {
+        $selectedEpisodeIndex.value = targetIndex;
+      } else {
+        $selectedEpisodeIndex.value = num > $episodes.value.length ? $episodes.value.length - 1 : 0;
+      }
+
     }
   };
 
