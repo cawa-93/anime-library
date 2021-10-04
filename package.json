@@ -50,7 +50,7 @@
     "autoprefixer": "10.3.6",
     "concurrently": "6.3.0",
     "cross-env": "7.0.3",
-    "electron": "15.1.0",
+    "electron": "15.1.1",
     "electron-builder": "22.11.7",
     "electron-devtools-installer": "3.2.0",
     "eslint": "7.32.0",
