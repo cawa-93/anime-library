@@ -123,7 +123,7 @@ const handlerSubmit = () => {
             :id="result.id"
             :key="result.id"
             :ref="activeIndex === index ? 'activeElement' : ''"
-            class="btn block"
+            class="btn block transition-none"
             :class="{'active': activeIndex === index}"
           >
             {{ result.title }}
