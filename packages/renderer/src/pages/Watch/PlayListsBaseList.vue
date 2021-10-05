@@ -30,7 +30,7 @@ defineEmits({
 const root = ref<HTMLElement>();
 
 onMounted(() => {
-  const activeElement = root.value?.querySelector<HTMLElement>('.active');
+  const activeElement = root.value?.querySelector<HTMLElement>('.bg-accent');
   if (activeElement) {
     activeElement.scrollIntoViewIfNeeded();
   }
@@ -38,10 +38,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <nav
-    ref="root"
-    class="list-group list-group-flush"
-  >
+  <nav ref="root">
     <a
       v-for="item of items"
       :key="item.id"
