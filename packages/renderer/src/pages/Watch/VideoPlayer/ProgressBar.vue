@@ -193,7 +193,7 @@ progress::-webkit-progress-bar {
 
 
 progress::-webkit-progress-value {
-  @apply bg-red-500;
+  @apply bg-red-600;
 }
 
 [role="tooltip"] {
