@@ -14,20 +14,20 @@ import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, use
 import type {Video, VideoTrack} from '/@/utils/videoProvider';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 import {useMediaHotKeys} from '/@/use/useMediaHotKeys';
-import TimeCode from '/@/components/VideoPlayer/time-code.vue';
-import VolumeControl from '/@/components/VideoPlayer/VolumeControl.vue';
-import ProgressBar from '/@/components/VideoPlayer/ProgressBar.vue';
-import TogglePipButton from '/@/components/VideoPlayer/TogglePipButton.vue';
+import TimeCode from '/@/pages/Watch/VideoPlayer/time-code.vue';
+import VolumeControl from '/@/pages/Watch/VideoPlayer/VolumeControl.vue';
+import ProgressBar from '/@/pages/Watch/VideoPlayer/ProgressBar.vue';
+import TogglePipButton from '/@/pages/Watch/VideoPlayer/TogglePipButton.vue';
 import {isMediaMetadataLoaded} from '/@/use/isMediaMetadataLoaded';
-import {getFramesFromVideo} from '/@/components/VideoPlayer/getFramesFromVideo';
+import {getFramesFromVideo} from '/@/pages/Watch/VideoPlayer/getFramesFromVideo';
 import {HOUR, SECOND_MS} from '/@/utils/time';
 import {trackTime} from '/@/utils/telemetry';
-import type {ActionsHandlers as UseMediaSessionHandlers} from '/@/components/VideoPlayer/useMediaSession';
-import {useMediaSessionActionsHandlers} from '/@/components/VideoPlayer/useMediaSession';
+import type {ActionsHandlers as UseMediaSessionHandlers} from '/@/pages/Watch/VideoPlayer/useMediaSession';
+import {useMediaSessionActionsHandlers} from '/@/pages/Watch/VideoPlayer/useMediaSession';
 import {isEnabled as isTimelineThumbnailsEnabled} from '/@/pages/Options/settingTimelineThumbnails';
 
 
-const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/VideoPlayer/LibAssSubtitlesRenderer.vue'));
+const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/pages/Watch/VideoPlayer/LibAssSubtitlesRenderer.vue'));
 
 const props = defineProps({
   currentTime: {

@@ -1,16 +1,15 @@
 <script lang="ts" setup>
 import {useEpisodes} from '/@/pages/Watch/useEpisodes';
 import {computed, defineAsyncComponent, ref, watch} from 'vue';
-import VideoPlayer from '/@/components/VideoPlayer/VideoPlayer.vue';
+import VideoPlayer from '/@/pages/Watch/VideoPlayer/VideoPlayer.vue';
 import {asyncComputed, useTitle} from '@vueuse/core';
 import {getEpisodeMeta, getSeries} from '/@/utils/videoProvider';
 import {useTranslations} from '/@/pages/Watch/useTranslations';
 import {useVideos} from '/@/pages/Watch/useVideos';
 import {useWatchHistory} from '/@/pages/Watch/useWatchHistory';
 import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
-import PlayLists from '/@/pages/Watch/PlayLists.vue';
 
-// const PlayLists = defineAsyncComponent(() => import('/@/pages/Watch/PlayLists.vue'));
+const PlayLists = defineAsyncComponent(() => import('/@/pages/Watch/PlayLists.vue'));
 const ErrorMessage = defineAsyncComponent(() => import('/@/pages/Watch/ErrorMessage.vue'));
 
 
@@ -177,17 +176,15 @@ useTitle(
       :translations="translations"
     />
 
-    <!--    <video-player-->
-    <!--      id="video-container"-->
-    <!--      v-model:current-time="currentTime"-->
-    <!--      v-model:duration="duration"-->
-    <!--      :video="video"-->
-    <!--      :has-next-episode="!!nextEpisode"-->
-    <!--      @goToNextEpisode="selectNextEpisode"-->
-    <!--      @source-error="onSourceError"-->
-    <!--    >-->
-
-    <!--    </video-player>-->
+    <video-player
+      id="video-container"
+      v-model:current-time="currentTime"
+      v-model:duration="duration"
+      :video="video"
+      :has-next-episode="!!nextEpisode"
+      @goToNextEpisode="selectNextEpisode"
+      @source-error="onSourceError"
+    />
     <error-message
       v-if="loadWatchDataError"
       :message="loadWatchDataError"
