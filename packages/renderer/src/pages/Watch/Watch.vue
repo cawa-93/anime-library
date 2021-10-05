@@ -140,8 +140,8 @@ useTitle(
 
 <template>
   <main class="relative">
-    <header class="absolute top-0 text-white w-full p-3 flex items-start">
-      <h2 class="text-lg flex-grow m-0 fw-normal z-1">
+    <header class="absolute top-0 text-white w-full p-3 flex items-start  z-2">
+      <h2 class="text-lg flex-grow m-0 fw-normal">
         {{ displayedTitle }}
 
         <small
@@ -199,8 +199,8 @@ main {
 }
 
 header {
-  --offset-top: 1rem;
-  --offset-right: 1rem;
+  --offset-top: 0.75rem;
+  --offset-right: 0.75rem;
   background-image: linear-gradient(360deg, transparent, rgba(0, 0, 0, .75));
   pointer-events: none;
 }
@@ -211,6 +211,7 @@ header h2 {
 }
 
 header .btn {
+  @apply hover:(bg-white bg-opacity-30);
   pointer-events: auto;
   position: relative;
 }

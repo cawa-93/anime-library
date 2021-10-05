@@ -320,12 +320,6 @@ const onProgressHandler = () => {
     class="component-root"
     :class="{hideCursor: isFullscreen && idle}"
   >
-    <transition name="fade">
-      <slot
-        v-if="controlsVisible"
-        name="header"
-      />
-    </transition>
     <loading-spinner v-if="waiting || !isVideoLoaded" />
     <video
       ref="videoElement"
@@ -415,7 +409,7 @@ const onProgressHandler = () => {
           v-model="selectedQuality"
           title="Качество видео"
           aria-label="Качество видео"
-          class="settings"
+          class="settings w-auto px-1 py-0"
         >
           <option
             v-for="quality of qualities"
@@ -474,6 +468,7 @@ video {
   --control-panel-bottom-padding: 8px;
   --control-panel-left-padding: 10px;
   --control-panel-right-padding: 10px;
+  @apply absolute grid bottom-0 w-full text-white z-1;
   grid-template-columns: repeat(4, min-content) 1fr repeat(4, min-content);
   grid-template-rows: 15px min-content;
   gap: 5px 10px;
@@ -481,7 +476,6 @@ video {
     "progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar"
     "play-button next-button volume-area time space subtitles settings picture-in-picture fullscreen";
   padding: 0 var(--control-panel-right-padding) var(--control-panel-bottom-padding) var(--control-panel-left-padding);
-  z-index: 1;
 }
 
 .control-panel, .control-panel > * {

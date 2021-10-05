@@ -1,7 +1,7 @@
 <template>
   <span
     v-if="duration > 0"
-    class="d-flex gap-1 align-items-center text-nowrap pe-none"
+    class="flex gap-1 items-center whitespace-nowrap"
   >
     <span aria-label="Текущее время">{{ formattedCurrentTime }}</span>
     /
