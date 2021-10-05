@@ -4,6 +4,8 @@ import {getHistoryItems} from '/@/utils/history-views';
 import {useDebounceFn} from '@vueuse/core';
 import {searchSeries} from '/@/utils/videoProvider/providers/anime365/anime365';
 import {SECOND_MS} from '/@/utils/time';
+import {getSeriesId} from '/@shared/utils/getSeriesId';
+import {getSeries} from '/@/utils/videoProvider';
 
 
 interface SearchResult {
@@ -19,12 +21,15 @@ export function useSearchResults(input: Ref<string>): { results: Ref<SearchResul
   const updateResultsDebounced = useDebounceFn(async () => {
     const query = unref(input);
 
+    type ResolverFn = (query: string) => SearchResult[] | Promise<SearchResult[]>
+    const resolver: ResolverFn = query === ''
+      ? getResultsFromHistory
+      : query.startsWith('http')
+        ? getResultsFromURL
+        : getResultsFromSearch;
+
     try {
-      if (query !== '') {
-        results.value = await getResultsFromSearch(query);
-      } else {
-        results.value = await getResultsFromHistory();
-      }
+      results.value = await resolver(query);
     } catch (e) {
       console.error(e);
     } finally {
@@ -77,4 +82,19 @@ async function getResultsFromHistory(): Promise<SearchResult[]> {
     id: r.myAnimeListId,
     title: r.title,
   }));
+}
+
+
+async function getResultsFromURL(query: string): Promise<SearchResult[]> {
+  const id = getSeriesId(query);
+
+  if (!id) return [];
+
+  const series = await getSeries(id);
+
+  if (!series) return [];
+  return [{
+    id,
+    title: series.title,
+  }];
 }
