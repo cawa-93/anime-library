@@ -59,7 +59,7 @@ const handlerSubmit = () => {
 
 <template>
   <form
-    class="card grid grid-cols-[1fr,auto] grid-rows-[auto] relative"
+    class="card grid grid-cols-[1fr,auto] grid-rows-[auto] relative shadow-xl"
     @submit.prevent="handlerSubmit"
   >
     <label
@@ -73,7 +73,6 @@ const handlerSubmit = () => {
       autocomplete="on"
       placeholder="Поиск аниме по названию или по ссылке"
       type="search"
-      class="border-r-0 rounded-tr-none rounded-br-none focus:ring-accent focus:ring-opacity-30 focus:border-accent"
       aria-describedby="search-field-help"
       @focusin="isFocusin = true"
       @focusout="isFocusin = false"
@@ -91,63 +90,64 @@ const handlerSubmit = () => {
     </button>
 
     <Popover>
-      <transition
-        enter-active-class="transition duration-200 ease-out"
-        enter-from-class="translate-y-1 opacity-0"
-        enter-to-class="translate-y-0 opacity-100"
-        leave-active-class="transition duration-150 ease-in"
-        leave-from-class="translate-y-0 opacity-100"
-        leave-to-class="translate-y-1 opacity-0"
+      <PopoverPanel
+        v-if="isFocusin"
+        static
+        class="card shadow-none search-results"
+        aria-live="polite"
+        :aria-busy="isLoading"
       >
-        <PopoverPanel
-          v-if="isFocusin"
-          static
-          class="card shadow-none search-results"
-          aria-live="polite"
-          :aria-busy="isLoading"
-        >
-          <template v-if="results.length">
-            <anime-link
-              v-for="(result, index) of results"
-              :id="result.id"
-              :key="result.id"
-              :ref="activeIndex === index ? 'activeElement' : ''"
-              class="btn block"
-              :class="{'active': activeIndex === index}"
-            >
-              {{ result.title }}
-            </anime-link>
-          </template>
-          <p
-            v-else
-            class="opacity-80"
+        <template v-if="results.length">
+          <anime-link
+            v-for="(result, index) of results"
+            :id="result.id"
+            :key="result.id"
+            :ref="activeIndex === index ? 'activeElement' : ''"
+            class="btn block"
+            :class="{'active': activeIndex === index}"
           >
-            <template v-if="isLoading">
-              <button-spinner class="mr-4" />
-              {{ searchText !== '' ? 'Поиск ...' : 'Загрузка недавних просмотров ...' }}
-            </template>
-            <template v-else>
-              {{
-                searchText !== '' ? 'По вашему запросу ничего не найдено' : 'Список недавних просмотров пока что пуст'
-              }}
-            </template>
-          </p>
-        </PopoverPanel>
-      </transition>
+            {{ result.title }}
+          </anime-link>
+        </template>
+        <p
+          v-else
+          class="opacity-80"
+        >
+          <template v-if="isLoading">
+            <button-spinner class="mr-4" />
+            {{ searchText !== '' ? 'Поиск ...' : 'Загрузка недавних просмотров ...' }}
+          </template>
+          <template v-else>
+            {{
+              searchText !== '' ? 'По вашему запросу ничего не найдено' : 'Список недавних просмотров пока что пуст'
+            }}
+          </template>
+        </p>
+      </PopoverPanel>
     </Popover>
   </form>
 </template>
 
 <style scoped>
+
+#search-field {
+  @apply border-r-0 rounded-tr-none rounded-br-none focus:border-accent z-2;
+}
+
 .search-results {
-  @apply absolute z-10 absolute z-10 rounded-t-none border-t-0 overflow-y-auto;
-  transform: translateY(-2px);
+  @apply absolute absolute z-1 rounded-t-none border-t-0 overflow-y-auto shadow-xl;
   width: calc(100% - var(--card-padding) * 2);
   max-height: calc(100vh - 180px);
 }
 
 .search-results:not(:hover) .btn.active {
   @apply bg-black bg-opacity-5 dark:(bg-white bg-opacity-5);
+}
+
+form:focus-within #search-field,
+form:focus-within .btn.btn-outline {
+  @apply rounded-b-none z-2;
+  border-bottom-color: transparent !important;
 }
 
 form:focus-within #search-field,
