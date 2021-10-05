@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {ref} from 'vue';
+import {nextTick, ref, watch} from 'vue';
 
 import {Popover as Popover, PopoverPanel as PopoverPanel} from '@headlessui/vue';
 import {useSearchResults} from '/@/pages/Home/HomeSearch/useSearchResults';
@@ -34,10 +34,32 @@ const {results, evaluating: isLoading} = useSearchResults(searchText);
 const activeIndex = ref(0);
 
 /**
+ * При обновлении результатов сбросить активный индекс
+ */
+watch(results, () => {
+  activeIndex.value = 0;
+  nextTick(scrollToActive);
+});
+
+/**
+ * Прокручивает область просмотра к активному элементу
+ */
+const scrollToActive = () => {
+  const activeEl = document.body.querySelector<HTMLAnchorElement>('.search-results a.active');
+  if (activeEl) {
+    activeEl.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
+  }
+};
+
+/**
  * Переключает активный элемент на следующий
  */
 const activateNextItem = () => {
   activeIndex.value = activeIndex.value + 1 === results.value.length ? activeIndex.value = 0 : activeIndex.value + 1;
+  nextTick(scrollToActive);
 };
 
 /**
@@ -45,6 +67,7 @@ const activateNextItem = () => {
  */
 const activatePrevItem = () => {
   activeIndex.value = activeIndex.value === 0 ? results.value.length - 1 : activeIndex.value - 1;
+  nextTick(scrollToActive);
 };
 
 const getRoute = (seriesId: string | number) => ({name: 'Watch', params: {seriesId}});
@@ -61,6 +84,8 @@ const handlerSubmit = () => {
   <form
     class="card grid grid-cols-[1fr,auto] grid-rows-[auto] relative shadow-xl"
     @submit.prevent="handlerSubmit"
+    @keydown.down="activateNextItem"
+    @keydown.up="activatePrevItem"
   >
     <label
       for="search-field"
@@ -74,14 +99,10 @@ const handlerSubmit = () => {
       placeholder="Поиск аниме по названию или по ссылке"
       type="search"
       aria-describedby="search-field-help"
-      @focusin="isFocusin = true"
-      @focusout="isFocusin = false"
-      @keydown.down="activateNextItem"
-      @keydown.up="activatePrevItem"
     >
 
     <button
-      class="btn btn-outline border-l-0 rounded-tl-none rounded-bl-none win-icon focus:ring-accent focus:ring-opacity-30 focus:border-accent"
+      class="btn btn-outline border-l-0 rounded-tl-none rounded-bl-none win-icon focus:ring-accent focus:ring-opacity-30 focus:border-accent dark:bg-dark-900"
       type="submit"
       title="Найти"
       aria-label="Найти"
@@ -91,9 +112,8 @@ const handlerSubmit = () => {
 
     <Popover>
       <PopoverPanel
-        v-if="isFocusin"
         static
-        class="card shadow-none search-results"
+        class="card search-results"
         aria-live="polite"
         :aria-busy="isLoading"
       >
@@ -135,9 +155,13 @@ const handlerSubmit = () => {
 }
 
 .search-results {
-  @apply absolute absolute z-1 rounded-t-none border-t-0 overflow-y-auto shadow-xl;
+  @apply absolute absolute z-1 rounded-t-none border-t-0 overflow-y-auto shadow-xl dark:bg-dark-900 invisible;
   width: calc(100% - var(--card-padding) * 2);
   max-height: calc(100vh - 180px);
+}
+
+form:focus-within .search-results {
+  @apply visible;
 }
 
 .search-results:not(:hover) .btn.active {
