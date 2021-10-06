@@ -7,13 +7,6 @@ import {useRouter} from 'vue-router';
 import ButtonSpinner from '/@/components/ButtonSpinner.vue';
 import AnimeLink from '/@/components/AnimeLink.vue';
 
-
-/**
- * Находится ли фокус в поле поиска.
- * Используется чтобы скрывать выпадающее меню с результатами когда поле не в фокусе
- */
-const isFocusin = ref(false);
-
 /**
  * Текст поиска
  */
@@ -82,7 +75,7 @@ const handlerSubmit = () => {
 
 <template>
   <form
-    class="card grid grid-cols-[1fr,auto] grid-rows-[auto] relative shadow-xl"
+    class="grid grid-cols-[1fr,auto] grid-rows-[auto] relative shadow-lg bg-white dark:bg-dark-900"
     @submit.prevent="handlerSubmit"
     @keydown.down="activateNextItem"
     @keydown.up="activatePrevItem"
@@ -90,7 +83,7 @@ const handlerSubmit = () => {
     <label
       for="search-field"
       class="sr-only"
-    >Поиск</label>
+    >Поиск аниме по названию или по ссылке</label>
     <input
       id="search-field"
       v-model="searchText"
@@ -102,7 +95,7 @@ const handlerSubmit = () => {
     >
 
     <button
-      class="btn btn-outline border-l-0 rounded-tl-none rounded-bl-none win-icon focus:ring-accent focus:ring-opacity-30 focus:border-accent dark:bg-dark-900"
+      class="btn btn-outline border-l-0 rounded-tl-none rounded-bl-none win-icon focus:ring-accent focus:ring-opacity-30 focus:border-accent transition-none"
       type="submit"
       title="Найти"
       aria-label="Найти"
@@ -151,12 +144,12 @@ const handlerSubmit = () => {
 <style scoped>
 
 #search-field {
-  @apply border-r-0 rounded-tr-none rounded-br-none focus:border-accent z-2;
+  @apply border-r-0 rounded-tr-none rounded-br-none focus:border-accent z-2 transition-none;
 }
 
 .search-results {
-  @apply absolute absolute z-1 rounded-t-none border-t-0 overflow-y-auto shadow-xl dark:bg-dark-900 invisible;
-  width: calc(100% - var(--card-padding) * 2);
+  @apply absolute absolute z-1 rounded-t-none border-t-0 overflow-y-auto shadow-lg dark:bg-dark-900 invisible;
+  width: 100%;
   max-height: calc(100vh - 180px);
 }
 
