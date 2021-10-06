@@ -13,6 +13,19 @@ import AnimeLink from '/@/components/AnimeLink.vue';
 const searchText = ref('');
 
 /**
+ * Пытается прочитать буфер обмена. Это невозможно если окно не в фокусе.
+ * Если удалось прочитать буфер обмена и в нем находится ссылка на аниме -- вставляет его в поисковое поле
+ */
+const setSearchTextFromClipboardIfPossible = () => {
+  navigator.clipboard.readText().then(text => {
+    if (searchText.value === '' && text.trim().startsWith('https://shikimori.one/animes/')) {
+      searchText.value = text.trim();
+    }
+  });
+};
+
+
+/**
  * Результаты поиска
  */
 const {results, evaluating: isLoading} = useSearchResults(searchText);
@@ -79,6 +92,7 @@ const handlerSubmit = () => {
     @submit.prevent="handlerSubmit"
     @keydown.down="activateNextItem"
     @keydown.up="activatePrevItem"
+    @focusin="setSearchTextFromClipboardIfPossible"
   >
     <label
       for="search-field"
