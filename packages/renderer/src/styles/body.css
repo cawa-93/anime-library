@@ -1,0 +1,25 @@
+@layer base {
+  html {
+    @apply h-full
+  }
+
+  body {
+    @apply grid grid-rows-[min-content,auto] bg-true-gray-100 dark:bg-true-gray-900 h-full overflow-hidden
+  }
+
+  /**
+   Этот элемент вставляется в body сразу после main
+   Это заставляет main сжаться и выделить в grid body ещё один ряд.
+
+   Этот хак позволяет обойти эту проблему
+   */
+  #headlessui-portal-root {
+    position: absolute;
+  }
+
+  body > main {
+    @apply overflow-auto;
+    scroll-behavior: smooth;
+  }
+}
+

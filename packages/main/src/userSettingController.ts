@@ -52,6 +52,7 @@ export function getSync<K extends keyof UserSettings>(name: K, defaultValue?: Us
 
 export function get<K extends keyof UserSettings>(name: K, defaultValue?: UserSettings[K]): Promise<UserSettings[K] | undefined> {
   return loadSettings().then(settings => {
+
     return settings
       ? (settings.get(name) as UserSettings[K]) || defaultValue
       : defaultValue;

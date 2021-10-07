@@ -8,18 +8,17 @@ const HOST_ROOT = 'https://smotret-anime.online';
 const API_BASE = `${HOST_ROOT}/api/`;
 
 
-async function request<T>(url: string | URL): Promise<sm.ApiResponse<T>> {
+export async function request<T>(url: string | URL, access_token = getAccessToken(), options?: RequestInit): Promise<sm.ApiResponse<T>> {
 
   if (!(url instanceof URL)) {
     url = new URL(url);
   }
 
-  const access_token = getAccessToken();
   if (access_token) {
     url.searchParams.set('access_token', access_token);
   }
 
-  const response = await fetch(String(url));
+  const response = await fetch(String(url), options);
   if (!response.ok) {
     throw await response.text();
   }
@@ -28,21 +27,20 @@ async function request<T>(url: string | URL): Promise<sm.ApiResponse<T>> {
 }
 
 
-export function isFailureResponse(response: sm.ApiResponseFailure | sm.ApiResponseSuccess<unknown>): response is sm.ApiResponseFailure {
-  return (response as sm.ApiResponseSuccess<unknown>).data === undefined;
+export function isFailureResponse(response: unknown): response is sm.ApiResponseFailure {
+  return typeof response === 'object' && response !== null && (response as sm.ApiResponseSuccess<unknown>).data === undefined;
 }
 
 
-export async function searchSeries<RequestedFields extends keyof sm.Series>(searchParams: URLSearchParams): Promise<Pick<sm.Series, RequestedFields>[]> {
-  const requestURL = new URL('series', API_BASE);
-  searchParams.forEach((v, k) => requestURL.searchParams.set(k, v));
+export async function searchSeries<RequestedFields extends keyof sm.Series>(searchParams: URLSearchParams, options?: RequestInit): Promise<Pick<sm.Series, RequestedFields>[]> {
+  const requestURL = new URL('series?' + searchParams, API_BASE);
 
   requestURL.searchParams.set('isActive', '1');
 
-  const apiResponse = await request<Pick<sm.Series, RequestedFields>[]>(requestURL);
+  const apiResponse = await request<Pick<sm.Series, RequestedFields>[]>(requestURL, undefined, options);
 
   if (isFailureResponse(apiResponse)) {
-    throw apiResponse.error;
+    throw apiResponse;
   }
 
   return apiResponse.data;
@@ -50,7 +48,7 @@ export async function searchSeries<RequestedFields extends keyof sm.Series>(sear
 
 
 export async function getSeries(myAnimeListId: number): Promise<Series | undefined> {
-  const fields = ['titleLines', 'myAnimeListId', 'posterUrl'] as const;
+  const fields = ['titleLines', 'myAnimeListId', 'posterUrl', 'numberOfEpisodes'] as const;
   type RequestedFields = typeof fields[number]
 
   const searchParams = new URLSearchParams({
@@ -77,6 +75,7 @@ export async function getSeries(myAnimeListId: number): Promise<Series | undefin
     id: targetSeries.myAnimeListId,
     title: targetSeries.titleLines[0],
     poster: targetSeries.posterUrl,
+    numberOfEpisodes: targetSeries.numberOfEpisodes,
   };
 }
 
@@ -170,16 +169,16 @@ export async function getTranslations(episodeId: number | string): Promise<Trans
 }
 
 
-export async function getStream(translationId: number | string): Promise<Video | undefined> {
+export async function getStream(translationId: number | string, access_token?: string | null, options?: RequestInit): Promise<Video | undefined> {
   type ExpectedResponse = sm.Video
 
   const requestURL = new URL(`translations/embed/${translationId}`, API_BASE);
 
 
-  const apiResponse = await request<ExpectedResponse>(requestURL);
+  const apiResponse = await request<ExpectedResponse>(requestURL, access_token, options);
 
   if (isFailureResponse(apiResponse)) {
-    throw apiResponse.error;
+    throw apiResponse;
   }
 
   const {stream, subtitlesUrl} = apiResponse.data;

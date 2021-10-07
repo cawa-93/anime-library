@@ -1,13 +1,14 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
 import {useTitle} from '@vueuse/core';
-import HomeSearch from '/@/pages/Home/HomeSearch.vue';
-import HomeFooter from '/@/pages/Home/HomeFooter.vue';
+import HomeSearch from '/@/pages/Home/HomeSearch/HomeSearch.vue';
+import HomeFooter from '/@/components/HomeFooter.vue';
 import type {AnimeCollection as AnimeCollectionType} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
 import {getAllCollections, getCollectionById} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
 import AnimeCollection from '/@/pages/Home/AnimeCollection/AnimeCollection.vue';
-import AnimeCollectionCreate from '/@/pages/Home/AnimeCollection/AnimeCollectionCreateButton.vue';
+import AnimeCollectionCreateButton from '/@/pages/Home/AnimeCollection/AnimeCollectionCreateButton.vue';
 import UserRating from '/@/components/UserRating.vue';
+import WelcomeDialog from '/@/pages/Home/WelcomeDialog.vue';
 
 
 //
@@ -43,10 +44,14 @@ const onCollectionDeleted = (deletedId: number) => {
 </script>
 
 <template>
-  <main>
+  <main class="grid auto-rows-min grid-cols-1 gap-6 pt-6 content-between">
     <user-rating />
-    <div class="p-3 container-fluid">
-      <home-search />
+
+    <div class="grid auto-rows-min grid-cols-1 gap-4">
+      <h2 class="text-center text-lg opacity-50">
+        Начните просмотр аниме:
+      </h2>
+      <home-search class="max-w-screen-md w-11/12 mx-auto" />
     </div>
 
     <template v-if="userCollections !== null">
@@ -59,18 +64,10 @@ const onCollectionDeleted = (deletedId: number) => {
       />
     </template>
 
-    <anime-collection-create @created="onCollectionCreated">
-      <template #activator="{openModal}">
-        <button
-          class="btn btn-lg btn-outline-info d-block m-auto mt-4"
-          @click="openModal"
-        >
-          Добавить коллекцию аниме
-        </button>
-      </template>
-    </anime-collection-create>
+    <anime-collection-create-button @created="onCollectionCreated" />
 
+    <home-footer class="mt-auto" />
 
-    <home-footer class="mt-5 border-top" />
+    <WelcomeDialog />
   </main>
 </template>

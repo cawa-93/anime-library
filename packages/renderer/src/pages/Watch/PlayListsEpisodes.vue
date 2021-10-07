@@ -68,15 +68,15 @@ const playListItems = computed<EpisodePlayListItem[]>(
 
     if (meta?.recap) {
       badges.push({
-        text: 'recap',
-        style: 'info',
+        text: 'Рекап',
+        class: 'bg-blue-500 dark:bg-blue-600',
       });
     }
 
     if (meta?.filler) {
       badges.push({
-        text: 'filler',
-        style: 'danger',
+        text: 'Филлер',
+        class: 'bg-red-500 dark:bg-red-600',
       });
     }
 
@@ -96,15 +96,9 @@ const onManualSelect = (item: EpisodePlayListItem) => {
 
 <template>
   <play-lists-base-list
-    class="my-3 episode-list"
+    class="my-3 max-w-[500px]"
     :items="playListItems"
     :selected-item-id="selectedEpisode.id"
     @item-click="onManualSelect"
   />
 </template>
-
-<style scoped>
-.episode-list {
-  max-width: 500px;
-}
-</style>

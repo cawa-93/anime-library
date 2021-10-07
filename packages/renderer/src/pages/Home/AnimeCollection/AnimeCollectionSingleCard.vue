@@ -1,160 +1,205 @@
 <script lang="ts" setup>
 import type {PropType} from 'vue';
-import {ref} from 'vue';
+import {computed} from 'vue';
 import type {Anime as AnimeType} from '/@/pages/Home/AnimeCollection/Anime';
-import {useElectron} from '/@/use/electron';
+import {formatDate} from '/@/utils/formatDate';
+import AnimeLink from '/@/components/AnimeLink.vue';
 
+declare module 'csstype' {
+  interface Properties {
+    '--bullet-color'?: string;
+  }
+}
 
-defineProps({
+const props = defineProps({
   anime: {
     type: Object as PropType<AnimeType>,
     required: true,
   },
 });
 
-const {openURL} = useElectron();
-const openAnime = (event: MouseEvent, anime: AnimeType) => {
-  if (event.ctrlKey || event.button === 1) {
-    event.preventDefault();
-    return openURL('https://shikimori.one' + anime.url);
+const title = computed(() => props.anime.russian || props.anime.name);
+const statusRussian = computed(() => {
+  switch (props.anime.status) {
+    case 'released' :
+      return 'Вышло';
+    case 'ongoing' :
+      return 'Онгоинг';
+    case 'anons' :
+      return 'Анонс';
+    default :
+      return props.anime.status;
   }
-};
+});
 
-const isOverlayVisible = ref(false);
+const statusColorRGB = computed(() => {
+  switch (props.anime.status) {
+    case 'released' :
+      return '65, 149, 65'; //'#419541';
+    case 'ongoing' :
+      return '29, 120, 183';//'#1d78b7';
+    case 'anons' :
+      return '202, 73, 41';//'#ca4929';
+    default :
+      return '';
+  }
+});
+
+const statusColor = computed(() => statusColorRGB.value ? `rgb(${statusColorRGB.value})` : '');
+
+const scoreColor = computed(() => {
+  const score = parseFloat(props.anime.score);
+  return score > 9.5 ? '#c026d3'
+    : score > 8.5 ? '#65a30d'
+      : score > 7.5 ? '#4f46e5'
+        : score > 6.5 ? '#d97706'
+          : '#ef4444';
+});
+
+const kindRussian = computed(() => {
+  switch (props.anime.kind) {
+    case 'tv' :
+      return 'TV Сериал';
+    case 'movie' :
+      return 'Фильм';
+    case 'special' :
+      return 'Спешл';
+    default :
+      return props.anime.kind?.toUpperCase();
+  }
+});
+
+const airedOnFormat = computed(() => props.anime.aired_on ? formatDate(Date.parse(props.anime.aired_on)) : null);
+
+const poster = computed(() => {
+  const imagePath = props.anime.image.original || props.anime.image.preview;
+  return imagePath ? `https://shikimori.one${imagePath}` : '';
+});
 </script>
 
 
 <template>
-  <router-link
-    :to="{
-      name: 'Watch',
-      params: {seriesId: anime.id}
+  <anime-link
+    :id="anime.id"
+    class="card overflow-hidden block h-[320px] relative leading-relaxed shadow-md border-['#fff']"
+    :style="{
+      '--anime-status-color': statusColor,
+      '--anime-status-color-rgb': statusColorRGB,
     }"
-    class="card position-relative h-100 d-block"
     :aria-label="anime.russian || anime.name"
-    @click="openAnime($event, anime)"
-    @auxclick="openAnime($event, anime)"
-    @mouseenter="isOverlayVisible = true"
-    @mouseleave="isOverlayVisible = false"
-    @focusin="isOverlayVisible = true"
-    @focusout="isOverlayVisible = false"
   >
-    <img
-      loading="lazy"
-      class="border-5 border border-bottom-0 border-start-0 border-end-0"
-      :class="{
-        'border-primary': anime.status === 'ongoing',
-        'border-success': anime.status === 'released',
-        'border-danger': anime.status === 'anons',
-      }"
-      :src="anime.image.original ? 'https://shikimori.one' + anime.image.original : `https://fakeimg.pl/250x400/282828/eae0d0/?text=${anime.name.replaceAll(' ', '%0A')}`"
-      alt="Постер"
+    <h3
+      class="card-header text-white text-base font-normal leading-snug font-light !mb-0"
+      style="background-color: var(--anime-status-color);"
     >
-    <transition name="fade">
-      <div
-        v-if="isOverlayVisible"
-        class="overlay h-100 w-100"
-      >
-        <h3
-          class="card-header text-white fs-6 fw-normal"
-          :class="{
-            'bg-primary': anime.status === 'ongoing',
-            'bg-success': anime.status === 'released',
-          }"
-        >
-          {{ anime.russian || anime.name }}
-        </h3>
-        <section>
-          <ul class="list-group list-group-flush">
-            <li
-              class="list-group-item anime-status d-flex gap-1"
-              :class="{
-                'released': anime.status === 'released',
-                'anons': anime.status === 'anons',
-                'ongoing': anime.status === 'ongoing',
-              }"
-            >
-              {{ anime.status === 'ongoing' ? 'Выходит' : anime.status === 'released' ? 'Вышло' : 'Анонс' }}
-            </li>
-            <li
-              v-if="anime.kind"
-              class="list-group-item"
-            >
-              {{
-                anime.kind === 'tv' ? 'TV Сериал' : anime.kind === 'movie' ? 'Фильм' : anime.kind === 'special' ? 'Спешл' : anime.kind.toUpperCase()
-              }}
-            </li>
-            <li
-              v-if="anime.status === 'ongoing'"
-              class="list-group-item"
-            >
-              Эпизоды: {{ anime.episodes_aired }} / {{ anime.episodes ? anime.episodes : '?' }}
-            </li>
-            <li
-              v-else-if="anime.status === 'released' && anime.kind !== 'movie'"
-              class="list-group-item"
-            >
-              Эпизодов: {{ anime.episodes ? anime.episodes : '?' }}
-            </li>
-            <li class="list-group-item">
-              Оценка: {{ anime.score }}
-            </li>
-          </ul>
-        </section>
-      </div>
-    </transition>
-  </router-link>
+      {{ title }}
+    </h3>
+    <div v-if="kindRussian">
+      {{ kindRussian }}
+    </div>
+    <div
+      v-if="airedOnFormat"
+      class="inset"
+    >
+      {{ airedOnFormat }}
+    </div>
+    <div
+      v-if="statusRussian"
+      :style="{'--bullet-color': statusColor}"
+    >
+      {{ statusRussian }}
+    </div>
+    <div
+      v-if="anime.episodes || anime.episodes_aired"
+      class="inset"
+    >
+      Эпизодов: {{
+        anime.status === 'released' ? anime.episodes : `${anime.episodes_aired}&nbsp;из&nbsp;${anime.episodes > 0 ? anime.episodes : '?'}`
+      }}
+    </div>
+    <div
+      v-if="anime.score"
+      :style="{'--bullet-color': scoreColor}"
+    >
+      Рейтинг: {{ anime.score }}
+    </div>
+
+    <img
+      v-if="poster"
+      role="presentation"
+      :src="poster"
+      alt=""
+      class="poster p-0 absolute top-0 left-0 w-full h-full"
+    >
+  </anime-link>
 </template>
 
 <style scoped>
+/*noinspection CssUnresolvedCustomProperty*/
 .card {
-  min-width: auto;
-  scroll-snap-align: start;
+  --card-padding: theme('spacing.4');
+  aspect-ratio: 209 / 300;
+  --tw-shadow-color: var(--anime-status-color-rgb);
+  border-color: rgba(var(--anime-status-color-rgb), var(--tw-border-opacity));
+  display: grid;
+  grid-template-rows: min-content;
+  padding-bottom: 0;
 }
 
-img {
-  height: var(--size, 100%);
+.card img[role="presentation"] {
+  transform: translateY(5px);
+  transition: transform 350ms cubic-bezier(0.54, 0.22, 0.59, 1.13);
+  object-fit: cover;
+}
+
+.card:hover img[role="presentation"],
+.card:focus img[role="presentation"] {
+  transform: translateY(100%);
 }
 
 
-.card .overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: var(--card-bg, #fff);
+@media (prefers-reduced-motion: reduce) {
+  .card img[role="presentation"] {
+    transition-property: opacity;
+  }
+
+  .card:hover img[role="presentation"],
+  .card:focus img[role="presentation"] {
+    transform: translateY(0);
+    opacity: 0;
+  }
 }
 
-.list-group-item {
-  background: none;
-  color: var(--body-color);
+.card > div {
+  @apply relative;
+  --bullet-size: 0.4em;
+  --bullet-gap: 0.9em;
+  margin-left: calc(0px - var(--card-padding));
+  margin-right: calc(0px - var(--card-padding));
+  padding: 0.2em var(--card-padding) 0.2em calc(var(--card-padding) / 1.5 + var(--bullet-gap));
+  display: flex;
+  align-items: center;
 }
 
-
-/*noinspection CssUnusedSymbol*/
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 200ms ease;
+.card > div:not(:first-of-type) {
+  @apply border-t-1 border-opacity-30 border-true-gray-500;
 }
 
-.anime-status:before {
+.card > div.inset {
+  margin-left: calc(var(--card-padding) / 1.5 + var(--bullet-gap) - var(--card-padding));
+  padding-left: 0;
+}
+
+/*noinspection CssUnresolvedCustomProperty*/
+.card > div:not(.inset):before {
+  @apply rounded-1 absolute;
   content: "";
-  display: inline-block;
-  width: 7px;
-  height: 7px;
-  background: red;
-  align-self: center;
-  border-radius: 50%;
-}
-
-.anime-status.released:before {
-  background-color: var(--bs-success);
-}
-
-.anime-status.ongoing:before {
-  background-color: var(--bs-primary);
-}
-
-.anime-status.anons:before {
-  background-color: var(--bs-danger);
+  display: block;
+  width: var(--bullet-size);
+  height: var(--bullet-size);
+  background-color: var(--bullet-color, currentColor);
+  top: calc(50% - var(--bullet-size) / 2);
+  transform: translateX(calc(0px - var(--bullet-gap)));
+  box-shadow: 0 0 10px 0px var(--bullet-color, currentColor);
 }
 </style>

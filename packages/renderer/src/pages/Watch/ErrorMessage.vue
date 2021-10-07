@@ -7,26 +7,17 @@ defineProps({
 });
 
 const reloadPage = () => location.reload();
-
 </script>
 
 <template>
-  <p class="text-danger position-absolute text-center w-100 fw-bold lead m-0 py-2">
-    {{ message }}
+  <p class="text-red-500 text-center font-medium w-full py-2">
+    <span>{{ message }}</span>
     <br>
     <button
-      class="btn btn-link"
+      class="btn btn-outline bg-red-500 mt-6 text-white"
       @click="reloadPage"
     >
       Повторить попытку
     </button>
   </p>
 </template>
-
-<style scoped>
-p {
-  top: 50%;
-  transform: translateY(-50%);
-  background: #000;
-}
-</style>

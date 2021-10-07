@@ -4,12 +4,12 @@ import {defineAsyncComponent, ref} from 'vue';
 import type {Anime} from '/@/pages/Home/AnimeCollection/Anime';
 import {apiFetch} from '/@/utils/shikimori-api';
 import type {AnimeCollection} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
-import HorizontalScroller from '/@/pages/Home/HorizontalScroller.vue';
-import CustomListSingleCard from '/@/pages/Home/AnimeCollection/AnimeCollectionSingleCard.vue';
 import {
   deleteCollection as deleteCollectionFromDB,
   putCollection,
 } from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
+import HorizontalScroller from '/@/pages/Home/HorizontalScroller.vue';
+import CustomListSingleCard from '/@/pages/Home/AnimeCollection/AnimeCollectionSingleCard.vue';
 
 
 const AnimeCollectionEditor = defineAsyncComponent(() => import('/@/pages/Home/AnimeCollection/AnimeCollectionEditor.vue'));
@@ -46,13 +46,14 @@ const anime = ref<(Anime | null)[]>(Array(Number(props.requestParams.limit)).fil
 const errorText = ref('');
 const isLoading = ref(true);
 
-const searchAnime = (params: AnimeCollection['requestParams']) => {
+const searchAnime = async (params: AnimeCollection['requestParams']) => {
   isLoading.value = true;
   const paramsNormalized = new URLSearchParams({
     ...params,
     limit: params.limit + '',// Convert to string for TS
     censored: 'false',
   });
+
   return apiFetch<Anime[]>(`animes?${paramsNormalized}`)
     .then(_anime => anime.value = _anime)
     .catch(e => {
@@ -65,8 +66,9 @@ const searchAnime = (params: AnimeCollection['requestParams']) => {
 
 searchAnime(props.requestParams);
 
-const updateCollection = (newCollection: AnimeCollection) => {
-  isEditorOpened.value = false;
+const updateCollection = (newCollectionData: AnimeCollection['requestParams'] & { title: AnimeCollection['title'] }) => {
+  const {title, ...requestParams} = newCollectionData;
+  const newCollection = {title, requestParams};
   putCollection(newCollection, props.id);
 
   localTitle.value = newCollection.title;
@@ -84,34 +86,24 @@ const updateCollection = (newCollection: AnimeCollection) => {
   searchAnime(newCollection.requestParams);
 };
 
-const deleteCollection = () => {
-  isEditorOpened.value = false;
-  deleteCollectionFromDB(props.id).then(() => emit('deleted', props.id));
-};
+const deleteCollection = () => deleteCollectionFromDB(props.id).then(() => emit('deleted', props.id));
 </script>
-
 
 
 <template>
   <section>
-    <h3
-      v-if="localTitle"
-      class="m-0"
-    >
+    <h3 v-if="localTitle">
       {{ localTitle }}
     </h3>
 
     <anime-collection-editor
-      v-if="isEditorOpened"
-      :request-params="localSearchParams"
+      v-model:isOpen="isEditorOpened"
+      v-bind="localSearchParams"
       header="Редактирование коллекции"
       :title="localTitle"
-      :aria-label="`Редактирование коллекции ${localTitle}`"
       @save="updateCollection"
-      @close="isEditorOpened = false"
       @delete="deleteCollection"
     />
-
 
     <button
       type="button"
@@ -133,22 +125,20 @@ const deleteCollection = () => {
         <custom-list-single-card
           v-if="singleAnime !== null"
           :anime="singleAnime"
-          style="--size: 300px"
         />
         <div
           v-else
-          class="h-100 card bg-gradient skeleton"
-          style="height: 300px; aspect-ratio: 225 / 350"
+          class="h-[320px] card bg-gradient-to-bl from-gray-500 via-transparent to-transparent cursor-wait"
+          style="aspect-ratio: 209 / 300"
         />
       </template>
     </horizontal-scroller>
 
     <p
       v-else
-      class="lead p-3"
-      style="height: 300px"
+      class="not-found-message text-lg px-5 h-[353px]"
       :class="{
-        'text-danger': errorText
+        'text-red-500': errorText
       }"
     >
       {{ errorText ? errorText : 'Ничего не найдено' }}
@@ -158,11 +148,6 @@ const deleteCollection = () => {
 
 
 <style scoped>
-.skeleton {
-  background-color: var(--bs-light);
-  cursor: wait;
-}
-
 section {
   --gap: 1rem;
   display: grid;
@@ -185,13 +170,16 @@ h3 {
   align-self: center;
 }
 
-.animes {
+.animes,
+.not-found-message {
   grid-area: animes;
 }
 
 button {
   grid-area: edit-button;
   align-self: center;
+  margin-inline-end: var(--gap);
+
 }
 
 </style>

@@ -24,27 +24,25 @@ const enable = computed({
 </script>
 
 <template>
-  <div class="form-check">
+  <label>
     <input
-      id="enable-timeline-thumbnails"
       v-model="enable"
-      class="form-check-input"
       type="checkbox"
-      aria-describedby="enable-hardware-acceleration-help"
+      aria-describedby="enable-timeline-thumbnails-help"
     >
-    <label
-      class="form-check-label"
-      for="enable-timeline-thumbnails"
-    >
-      Отображать превью при наведении на таймлайн видео
-    </label>
-    <p
-      id="enable-timeline-thumbnails-help"
-      class="form-text"
-    >
-      В некоторых случаях эта функция может сильно повлиять на скорость загрузки видео, поэтому она выключена
-      по-умолчанию.
-    </p>
-    <enable-hardware-acceleration v-if="enable" />
-  </div>
+    Отображать превью при наведении на тайм лайн видео
+  </label>
+
+  <p
+    id="enable-timeline-thumbnails-help"
+    class="text-sm opacity-60 ml-4"
+  >
+    В некоторых случаях эта функция может сильно повлиять на скорость загрузки видео, поэтому она выключена
+    по-умолчанию.
+  </p>
+
+  <enable-hardware-acceleration
+    v-if="enable"
+    class="mt-3 ml-4"
+  />
 </template>

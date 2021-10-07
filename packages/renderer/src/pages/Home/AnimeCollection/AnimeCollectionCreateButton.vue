@@ -4,7 +4,7 @@ import type {AnimeCollection} from '/@/pages/Home/AnimeCollection/AnimeCollectio
 import {putCollection} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
 
 
-const AnimeCollectionEdit = defineAsyncComponent(() => import('/@/pages/Home/AnimeCollection/AnimeCollectionEditor.vue'));
+const AnimeCollectionEditor = defineAsyncComponent(() => import('/@/pages/Home/AnimeCollection/AnimeCollectionEditor.vue'));
 
 const emit = defineEmits({
   created: null,
@@ -12,8 +12,9 @@ const emit = defineEmits({
 
 const isModalVisible = ref(false);
 
-const saveCollection = (newCollection: AnimeCollection) => {
-  isModalVisible.value = false;
+const saveCollection = (newCollectionData: AnimeCollection['requestParams'] & {title: AnimeCollection['title']}) => {
+  const {title, ...requestParams} = newCollectionData;
+  const newCollection = {title, requestParams};
   return putCollection(newCollection).then(id => emit('created', id));
 };
 const openModal = () => isModalVisible.value = !isModalVisible.value;
@@ -21,19 +22,18 @@ const openModal = () => isModalVisible.value = !isModalVisible.value;
 
 
 <template>
-  <slot
-    name="activator"
-    :openModal="openModal"
+  <button
+    class="btn btn-outline mx-auto"
+    @click="openModal"
   >
-    <button @click="openModal">
-      Создать коллекцию
-    </button>
-  </slot>
-  <anime-collection-edit
-    v-if="isModalVisible"
+    Создать коллекцию аниме
+  </button>
+  <anime-collection-editor
+    v-model:is-open="isModalVisible"
     header="Создание коллекции"
+    :limit="10"
+    order="ranked"
     @save="saveCollection"
-    @close="isModalVisible = false"
   />
 </template>
 

@@ -3,9 +3,10 @@ import type {IpcNameHostsMap} from '/@shared/types/ipc';
 import type {Promisified} from '/@shared/types/utils';
 
 
-const {invoke} = useElectron();
 
 export function createIpcClient<T extends keyof IpcNameHostsMap>(hostName: T): Promisified<IpcNameHostsMap[T]> {
+  const {invoke} = useElectron();
+
   return new Proxy({} as never, {
     get: (obj, methodName) => {
 

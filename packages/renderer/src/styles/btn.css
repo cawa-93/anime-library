@@ -1,0 +1,26 @@
+@layer components {
+  .btn {
+    @apply
+    py-2
+    px-3
+    hover:not-disabled:(bg-black bg-opacity-5)
+    dark:hover:not-disabled:(bg-white bg-opacity-5)
+    active:not-disabled:(bg-black bg-opacity-70 text-white dark:(bg-white bg-opacity-70 text-black))
+    rounded
+    transition-colors
+    disabled:(opacity-50 cursor-default);
+  }
+
+  .btn-outline {
+    @apply border border-opacity-25 border-black dark:border-white dark:border-opacity-25
+  }
+
+  .btn.bg-accent {
+    @apply bg-accent ring-accent hover:bg-accent-500 active:(bg-black bg-opacity-70 text-accent) dark:bg-accent-600 dark:hover:bg-accent-500 dark:active:(bg-black bg-opacity-70 text-accent)
+  }
+
+  .btn.bg-red {
+    @apply bg-red-600 text-white hover:bg-red-700 dark:(bg-red-700 hover:bg-red-600 active:bg-red-200 active:text-red-900) active:bg-red-900;
+    --outline-color: theme('colors.red.600');
+  }
+}

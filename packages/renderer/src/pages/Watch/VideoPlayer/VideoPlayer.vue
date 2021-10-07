@@ -1,165 +1,24 @@
-<template>
-  <div
-    ref="videoPlayerRoot"
-    class="component-root"
-    :class="{hideCursor: isFullscreen && idle}"
-  >
-    <transition name="fade">
-      <slot
-        v-if="controlsVisible"
-        name="header"
-      />
-    </transition>
-    <loading-spinner v-if="waiting || !isVideoLoaded" />
-    <video
-      ref="videoElement"
-      preload="auto"
-      autoplay
-      crossorigin="anonymous"
-      @click="playing = !playing"
-      @dblclick="toggleFullscreen"
-      @progress="onProgressHandler"
-      @ended="$emit('go-to-next-episode')"
-    >
-      <source
-        :src="videoSource"
-        @error="errorHandler"
-      >
-    </video>
-    <lib-ass-subtitles-renderer
-      v-if="tracks.length > 0 && isSubtitlesEnabled"
-      :time="$currentTime"
-      :track="tracks[0]"
-      :video-element="videoElement"
-      :playing="playing"
-      :waiting="waiting"
-    />
-    <transition name="fade">
-      <section
-        v-if="controlsVisible"
-        class="control-panel position-absolute d-grid bottom-0 w-100 text-white"
-      >
-        <progress-bar
-          v-model:time="$currentTime"
-          :frames="frames"
-          class="progress-bar-container"
-          :duration="$duration"
-          :buffered="buffered"
-        />
-
-        <button
-          class="play-button win-icon"
-          :title="`${playing ? 'Пауза' : 'Смотреть'} (k)`"
-          :aria-label="`${playing ? 'Пауза' : 'Смотреть'} (k)`"
-          @click="playing = !playing"
-        >
-          {{ playing ? '&#xE769;' : '&#xE768;' }}
-        </button>
-
-        <button
-          :disabled="!hasNextEpisode"
-          class="next-button win-icon"
-          title="Следующий эпизод"
-          aria-label="Следующий эпизод"
-          @click="$emit('go-to-next-episode')"
-        >
-          &#xE893;
-        </button>
-
-        <volume-control
-          v-model:muted="muted"
-          v-model:volume="volume"
-          class="volume-control"
-        />
-
-        <time-code
-          class="time-code"
-          :current-time="$currentTime"
-          :duration="$duration"
-        />
-
-        <button
-          v-if="tracks.length > 0"
-          title="Субтитры"
-          aria-label="Субтитры"
-          class="subtitles"
-          @click="isSubtitlesEnabled = !isSubtitlesEnabled"
-        >
-          <span
-            class="win-icon"
-            :style="!isSubtitlesEnabled ? 'opacity: 0.5' : ''"
-            aria-hidden="true"
-          >
-            &#xED1E;
-          </span>
-        </button>
-
-        <select
-          v-if="qualities.length > 0"
-          v-model="selectedQuality"
-          title="Качество видео"
-          aria-label="Качество видео"
-          class="settings"
-        >
-          <option
-            v-for="quality of qualities"
-            :key="quality"
-            :value="quality"
-          >
-            {{ quality }}p
-          </option>
-        </select>
-
-
-        <toggle-pip-button
-          class="picture-in-picture"
-          :video="videoElement"
-        />
-
-        <button
-          :title="`${isFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
-          :aria-label="`${isFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
-          class="toggle-fullscreen-button win-icon"
-          @click="toggleFullscreen"
-        >
-          {{ isFullscreen ? '&#xE73F;' : '&#xE740;' }}
-        </button>
-      </section>
-    </transition>
-    <slot v-if="controlsVisible" />
-  </div>
-</template>
-
 <script lang="ts" setup>
 import type {PropType} from 'vue';
-import {
-  computed,
-  defineAsyncComponent,
-  onBeforeUnmount,
-  onMounted,
-  onUnmounted,
-  ref,
-  watch,
-  watchEffect,
-} from 'vue';
-import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
+import {computed, defineAsyncComponent, onBeforeUnmount, onMounted, onUnmounted, ref, watch, watchEffect} from 'vue';
+import {syncRef, useEventListener, useIdle, useMediaControls, useStorage} from '@vueuse/core';
 import type {Video, VideoTrack} from '/@/utils/videoProvider';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 import {useMediaHotKeys} from '/@/use/useMediaHotKeys';
-import TimeCode from '/@/components/VideoPlayer/time-code.vue';
-import VolumeControl from '/@/components/VideoPlayer/VolumeControl.vue';
-import ProgressBar from '/@/components/VideoPlayer/ProgressBar.vue';
-import TogglePipButton from '/@/components/VideoPlayer/TogglePipButton.vue';
+import TimeCode from '/@/pages/Watch/VideoPlayer/time-code.vue';
+import VolumeControl from '/@/pages/Watch/VideoPlayer/VolumeControl.vue';
+import ProgressBar from '/@/pages/Watch/VideoPlayer/ProgressBar.vue';
+import TogglePipButton from '/@/pages/Watch/VideoPlayer/TogglePipButton.vue';
 import {isMediaMetadataLoaded} from '/@/use/isMediaMetadataLoaded';
-import {getFramesFromVideo} from '/@/components/VideoPlayer/getFramesFromVideo';
+import {getFramesFromVideo} from '/@/pages/Watch/VideoPlayer/getFramesFromVideo';
 import {HOUR, SECOND_MS} from '/@/utils/time';
 import {trackTime} from '/@/utils/telemetry';
-import type {ActionsHandlers as UseMediaSessionHandlers} from '/@/components/VideoPlayer/useMediaSession';
-import {useMediaSessionActionsHandlers} from '/@/components/VideoPlayer/useMediaSession';
+import type {ActionsHandlers as UseMediaSessionHandlers} from '/@/pages/Watch/VideoPlayer/useMediaSession';
+import {useMediaSessionActionsHandlers} from '/@/pages/Watch/VideoPlayer/useMediaSession';
 import {isEnabled as isTimelineThumbnailsEnabled} from '/@/pages/Options/settingTimelineThumbnails';
 
 
-const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/components/VideoPlayer/LibAssSubtitlesRenderer.vue'));
+const LibAssSubtitlesRenderer = defineAsyncComponent(() => import('/@/pages/Watch/VideoPlayer/LibAssSubtitlesRenderer.vue'));
 
 const props = defineProps({
   currentTime: {
@@ -182,6 +41,10 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  inFullscreen: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const emit = defineEmits({
@@ -189,6 +52,8 @@ const emit = defineEmits({
   'update:currentTime': (value: unknown) => typeof value === 'number' && !isNaN(value) && isFinite(value),
   'update:duration': (value: unknown) => typeof value === 'number' && !isNaN(value) && isFinite(value),
   'go-to-next-episode': null,
+  'update:controlsVisible': null,
+  'update:inFullscreen': null,
 });
 
 
@@ -205,7 +70,7 @@ const maxQuality = computed(() => Math.max(...qualities.value));
 const selectedQuality = ref(maxQuality.value);
 
 /**
- * Автоматически переключатся на маскимальное качество при смене видео
+ * Автоматически переключатся на максимальное качество при смене видео
  */
 watch(qualities, () => selectedQuality.value = maxQuality.value);
 
@@ -282,9 +147,11 @@ onMounted(() => {
 
 //
 // переключение полноэкранного режима
-const videoPlayerRoot = ref();
-const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(videoPlayerRoot);
+// const mainEl = ref();
+// onUnmounted(() => mainEl.value = document.querySelector('main'));
+// const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(mainEl);
 
+const toggleFullscreen = () => emit('update:inFullscreen', !props.inFullscreen);
 
 //
 // Быстрая перемотка
@@ -330,6 +197,7 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 const {idle} = useIdle(3 * SECOND_MS);
 const controlsVisible = computed(() => !playing.value || !idle.value);
 
+watch(controlsVisible, controlsVisible => emit('update:controlsVisible', controlsVisible));
 
 /**
  * Media Session Actions
@@ -430,7 +298,7 @@ onBeforeUnmount(() => {
   }
 
   if (document.fullscreenElement) {
-    document.exitFullscreen();
+    emit('update:inFullscreen', false);
   }
 
   document.head.querySelectorAll('video').forEach(e => e.remove());
@@ -445,6 +313,132 @@ const onProgressHandler = () => {
 
 
 </script>
+
+<template>
+  <div
+    ref="videoPlayerRoot"
+    class="component-root"
+    :class="{hideCursor: inFullscreen && idle}"
+  >
+    <loading-spinner v-if="waiting || !isVideoLoaded" />
+    <video
+      ref="videoElement"
+      preload="auto"
+      autoplay
+      crossorigin="anonymous"
+      @click="playing = !playing"
+      @dblclick="toggleFullscreen"
+      @progress="onProgressHandler"
+      @ended="$emit('go-to-next-episode')"
+    >
+      <source
+        :src="videoSource"
+        @error="errorHandler"
+      >
+    </video>
+    <lib-ass-subtitles-renderer
+      v-if="tracks.length > 0 && isSubtitlesEnabled"
+      :time="$currentTime"
+      :track="tracks[0]"
+      :video-element="videoElement"
+      :playing="playing"
+      :waiting="waiting"
+    />
+    <transition name="fade">
+      <section
+        v-if="controlsVisible"
+        class="control-panel absolute grid bottom-0 w-full text-white"
+      >
+        <progress-bar
+          v-model:time="$currentTime"
+          :frames="frames"
+          class="progress-bar-container"
+          :duration="$duration"
+          :buffered="buffered"
+        />
+
+        <button
+          class="play-button win-icon"
+          :title="`${playing ? 'Пауза' : 'Смотреть'} (k)`"
+          :aria-label="`${playing ? 'Пауза' : 'Смотреть'} (k)`"
+          @click="playing = !playing"
+        >
+          {{ playing ? '&#xE769;' : '&#xE768;' }}
+        </button>
+
+        <button
+          :disabled="!hasNextEpisode"
+          class="next-button win-icon"
+          title="Следующий эпизод"
+          aria-label="Следующий эпизод"
+          @click="$emit('go-to-next-episode')"
+        >
+          &#xE893;
+        </button>
+
+        <volume-control
+          v-model:muted="muted"
+          v-model:volume="volume"
+          class="volume-control"
+        />
+
+        <time-code
+          class="time-code"
+          :current-time="$currentTime"
+          :duration="$duration"
+        />
+
+        <button
+          v-if="tracks.length > 0"
+          title="Субтитры"
+          aria-label="Субтитры"
+          class="subtitles"
+          @click="isSubtitlesEnabled = !isSubtitlesEnabled"
+        >
+          <span
+            class="win-icon"
+            :style="!isSubtitlesEnabled ? 'opacity: 0.5' : ''"
+            aria-hidden="true"
+          >
+            &#xED1E;
+          </span>
+        </button>
+
+        <select
+          v-if="qualities.length > 0"
+          v-model="selectedQuality"
+          title="Качество видео"
+          aria-label="Качество видео"
+          class="settings w-auto px-1 py-0"
+        >
+          <option
+            v-for="quality of qualities"
+            :key="quality"
+            :value="quality"
+          >
+            {{ quality }}p
+          </option>
+        </select>
+
+
+        <toggle-pip-button
+          class="picture-in-picture"
+          :video="videoElement"
+        />
+
+        <button
+          :title="`${inFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
+          :aria-label="`${inFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
+          class="toggle-fullscreen-button win-icon"
+          @click="toggleFullscreen"
+        >
+          {{ inFullscreen ? '&#xE73F;' : '&#xE740;' }}
+        </button>
+      </section>
+    </transition>
+    <slot v-if="controlsVisible" />
+  </div>
+</template>
 
 <style scoped>
 @import "video-control-button.css";
@@ -474,6 +468,7 @@ video {
   --control-panel-bottom-padding: 8px;
   --control-panel-left-padding: 10px;
   --control-panel-right-padding: 10px;
+  @apply absolute grid bottom-0 w-full text-white z-1;
   grid-template-columns: repeat(4, min-content) 1fr repeat(4, min-content);
   grid-template-rows: 15px min-content;
   gap: 5px 10px;
@@ -481,7 +476,6 @@ video {
     "progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar"
     "play-button next-button volume-area time space subtitles settings picture-in-picture fullscreen";
   padding: 0 var(--control-panel-right-padding) var(--control-panel-bottom-padding) var(--control-panel-left-padding);
-  z-index: 1;
 }
 
 .control-panel, .control-panel > * {

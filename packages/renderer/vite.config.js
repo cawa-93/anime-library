@@ -7,6 +7,7 @@ import vue from '@vitejs/plugin-vue';
 import copy from 'rollup-plugin-copy';
 import {VitePWA} from 'vite-plugin-pwa';
 import {getAppVersion} from '../../getAppVersion.cjs';
+import WindiCSS from 'vite-plugin-windicss';
 
 const PACKAGE_ROOT = __dirname;
 
@@ -38,13 +39,7 @@ const config = {
       root: join(PACKAGE_ROOT, '../../'),
     },
   },
-  optimizeDeps: {
-    exclude: [
-      'libass-wasm',
-      'libass-wasm/dist/js/subtitles-octopus-worker.js',
-      'libass-wasm/dist/js/subtitles-octopus-worker.js?url',
-    ],
-  },
+
   build: {
     sourcemap: true,
     target: `chrome${chrome}`,
@@ -59,6 +54,7 @@ const config = {
   },
   plugins: [
     vue(),
+    WindiCSS(),
 
     VitePWA({
       strategies: 'generateSW',
@@ -106,7 +102,7 @@ const config = {
             },
           },
 
-          /** Лубые другие обращения к API smotret-anime */
+          /** Любые другие обращения к API smotret-anime */
           {
             urlPattern: /^https:\/\/smotret-anime\.online\/api\/.*/,
             handler: 'CacheFirst',
@@ -167,8 +163,8 @@ const config = {
       hook: 'writeBundle',
       targets: [{
         src: [
-          './src/components/VideoPlayer/libass-wasm/subtitles-octopus-worker.data',
-          './src/components/VideoPlayer/libass-wasm/subtitles-octopus-worker.wasm',
+          './src/pages/Watch/VideoPlayer/libass-wasm/subtitles-octopus-worker.data',
+          './src/pages/Watch/VideoPlayer/libass-wasm/subtitles-octopus-worker.wasm',
         ],
         dest: './dist',
       }],

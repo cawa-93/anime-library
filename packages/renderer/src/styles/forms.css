@@ -1,0 +1,36 @@
+@layer base {
+  [type='text'],
+  [type='email'],
+  [type='url'],
+  [type='password'],
+  [type='number'],
+  [type='date'],
+  [type='datetime-local'],
+  [type='month'],
+  [type='search'],
+  [type='tel'],
+  [type='time'],
+  [type='week'],
+  [multiple],
+  textarea,
+  select {
+    @apply
+    focus-visible:!outline-none
+    rounded
+    w-full
+    bg-white
+    dark:bg-dark-900
+    border border-opacity-25 border-black dark:border-white dark:border-opacity-25
+    focus:border-accent
+    text-base
+    text-gray-700
+    dark:text-gray-50
+    py-1
+    px-3
+    leading-8
+    transition-colors
+    duration-200
+    ease-in-out;
+  }
+}
+

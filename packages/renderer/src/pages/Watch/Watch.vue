@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import {useEpisodes} from '/@/pages/Watch/useEpisodes';
 import {computed, defineAsyncComponent, ref, watch} from 'vue';
-import VideoPlayer from '/@/components/VideoPlayer/VideoPlayer.vue';
-import {asyncComputed, useTitle} from '@vueuse/core';
+import VideoPlayer from '/@/pages/Watch/VideoPlayer/VideoPlayer.vue';
+import {asyncComputed, useFullscreen, useTitle} from '@vueuse/core';
 import {getEpisodeMeta, getSeries} from '/@/utils/videoProvider';
 import {useTranslations} from '/@/pages/Watch/useTranslations';
 import {useVideos} from '/@/pages/Watch/useVideos';
@@ -137,59 +137,81 @@ useTitle(
     fallbackPageTitle,
   ),
 );
+
+const isVisibleHeader = ref(true);
+
+
+const handleControlsVisibilityChanged = (isVisible: boolean) => {
+  isVisibleHeader.value = isVisible;
+};
+
+const rootEl = ref();
+const {exit: exitFullscreen, enter: enterFullscreen, isFullscreen: inFullscreen} = useFullscreen(rootEl);
+
+const setInFullScreenState = (v: boolean) => v ? enterFullscreen() : exitFullscreen();
 </script>
 
 <template>
-  <main class="position-relative">
+  <main
+    ref="rootEl"
+    class="relative"
+  >
+    <transition name="fade">
+      <header
+        v-if="isVisibleHeader"
+        class="absolute top-0 text-white w-full p-3 flex items-start z-2"
+      >
+        <h2 class="text-lg flex-grow m-0 fw-normal">
+          {{ displayedTitle }}
+          <small
+            v-if="selectedEpisodeMeta?.filler"
+            class="badge bg-red-500"
+          >Филлер</small>
+
+          <small
+            v-if="selectedEpisodeMeta?.recap"
+            class="badge bg-info text-dark"
+          >Рекап</small>
+        </h2>
+
+        <button
+          v-if="episodes.length > 1 || translations.length"
+          title="Выбор эпизода и перевода"
+          aria-label="Выбор эпизода и перевода"
+          class="open-playlist btn win-icon"
+          @click="isSidePanelOpenedFlag = !isSidePanelOpenedFlag"
+        >
+          &#xE8FD;
+        </button>
+      </header>
+    </transition>
+
+    <play-lists
+      v-if="isSidePanelOpenedFlag"
+      v-model:is-opened="isSidePanelOpenedFlag"
+      v-model:selected-episode="selectedEpisode"
+      v-model:selected-translation="selectedTranslation"
+      :series-id="seriesIdNumber"
+      :episodes="episodes"
+      :translations="translations"
+    />
+
     <video-player
       id="video-container"
       v-model:current-time="currentTime"
       v-model:duration="duration"
+      :in-fullscreen="inFullscreen"
       :video="video"
       :has-next-episode="!!nextEpisode"
       @goToNextEpisode="selectNextEpisode"
       @source-error="onSourceError"
-    >
-      <template #header>
-        <header class="position-absolute top-0 text-white w-100 p-3 d-flex align-items-start">
-          <h2 class="h5 flex-fill m-0 fw-normal">
-            {{ displayedTitle }}
-
-            <small
-              v-if="selectedEpisodeMeta?.filler"
-              class="badge bg-danger"
-            >filler</small>
-
-            <small
-              v-if="selectedEpisodeMeta?.recap"
-              class="badge bg-info text-dark"
-            >recap</small>
-          </h2>
-
-          <button
-            v-if="episodes.length > 1 || translations.length"
-            title="Выбор эпизода и перевода"
-            aria-label="Выбор эпизода и перевода"
-            class="open-playlist btn btn-dark ignore-prefers-color-scheme win-icon border-0 bg-transparent"
-            @click="isSidePanelOpenedFlag = !isSidePanelOpenedFlag"
-          >
-            &#xE8FD;
-          </button>
-        </header>
-      </template>
-
-      <play-lists
-        v-if="isSidePanelOpenedFlag"
-        v-model:is-opened="isSidePanelOpenedFlag"
-        v-model:selected-episode="selectedEpisode"
-        v-model:selected-translation="selectedTranslation"
-        :series-id="seriesIdNumber"
-        :episodes="episodes"
-        :translations="translations"
-      />
-    </video-player>
+      @update:controlsVisible="handleControlsVisibilityChanged"
+      @update:inFullscreen="setInFullScreenState"
+    />
     <error-message
       v-if="loadWatchDataError"
+      class="absolute z-3 bg-black top-1/2"
+      style="transform: translateY(-50%)"
       :message="loadWatchDataError"
     />
   </main>
@@ -202,11 +224,10 @@ main {
 }
 
 header {
-  --offset-top: 1rem;
-  --offset-right: 1rem;
+  --offset-top: 0.75rem;
+  --offset-right: 0.75rem;
   background-image: linear-gradient(360deg, transparent, rgba(0, 0, 0, .75));
   pointer-events: none;
-  z-index: 10;
 }
 
 header h2 {
@@ -215,6 +236,7 @@ header h2 {
 }
 
 header .btn {
+  @apply hover:(bg-white bg-opacity-30);
   pointer-events: auto;
   position: relative;
 }

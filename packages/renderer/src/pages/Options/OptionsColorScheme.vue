@@ -18,46 +18,41 @@ const colorScheme = computed({
 </script>
 
 <template>
-  <div class="form-check">
-    <input
-      id="system-color-scheme"
-      v-model="colorScheme"
-      value="system"
-      class="form-check-input"
-      type="radio"
-      name="color-scheme"
-    >
-    <label
-      class="form-check-label"
-      for="system-color-scheme"
-    >Системная</label>
-  </div>
-  <div class="form-check">
-    <input
-      id="light-color-scheme"
-      v-model="colorScheme"
-      value="light"
-      class="form-check-input"
-      type="radio"
-      name="color-scheme"
-    >
-    <label
-      class="form-check-label"
-      for="light-color-scheme"
-    >Светлая</label>
-  </div>
-  <div class="form-check">
-    <input
-      id="dark-color-scheme"
-      v-model="colorScheme"
-      value="dark"
-      class="form-check-input"
-      type="radio"
-      name="color-scheme"
-    >
-    <label
-      class="form-check-label"
-      for="dark-color-scheme"
-    >Темная</label>
-  </div>
+  <fieldset>
+    <label>
+      <input
+        v-model="colorScheme"
+        value="system"
+        type="radio"
+        name="color-scheme"
+      >
+      Системная
+    </label>
+
+    <label>
+      <input
+        v-model="colorScheme"
+        value="light"
+        type="radio"
+        name="color-scheme"
+      >
+      Светлая
+    </label>
+
+    <label>
+      <input
+        v-model="colorScheme"
+        value="dark"
+        type="radio"
+        name="color-scheme"
+      >
+      Тёмная
+    </label>
+  </fieldset>
 </template>
+
+<style scoped>
+label {
+  @apply block;
+}
+</style>

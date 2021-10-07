@@ -46,15 +46,13 @@ const onSelected = (event: Event) => {
 
 <template>
   <div
-    class="position-relative btn rounded-0 py-0 border-0 text-primary title-bar-github-link d-sm-inline-flex d-none align-items-center justify-content-center"
+    class="relative btn-title-bar text-xs"
   >
-    <small class="text-truncate">
-      Помощь
-    </small>
+    Помощь
 
     <select
       aria-label="Помощь"
-      class="position-absolute top-0 left-0 w-100 h-100"
+      class="absolute top-0 left-0 w-full h-full opacity-0"
       value=""
       @input.prevent="onSelected"
     >
@@ -70,16 +68,5 @@ const onSelected = (event: Event) => {
 </template>
 
 <style scoped>
-@import "base-titlebar-button.css";
-
-select {
-  opacity: 0;
-  cursor: pointer;
-  color: inherit;
-  background: var(--body-bg);
-}
-
-.btn:focus-within {
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
+@import "./btn-titlebar.css";
 </style>

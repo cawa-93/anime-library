@@ -54,7 +54,7 @@ const groups = computed<{ title: string, playListItems: PlayListItem[] }[]>(() =
      */
     if (navigator.language === 'uk' && (/^укр/i.test(t.title) || /^ua/i.test(t.title) || /^uk/i.test(t.title))) {
       badges.push({
-        style: 'light',
+        class: 'light',
         text: '🇺🇦',
       });
     }
@@ -64,7 +64,7 @@ const groups = computed<{ title: string, playListItems: PlayListItem[] }[]>(() =
      */
     if (t.qualityType !== 'tv') {
       badges.push({
-        style: 'success',
+        class: 'bg-green-500 dark:bg-green-600',
         text: t.qualityType.toLocaleUpperCase(),
       });
     }
@@ -74,7 +74,7 @@ const groups = computed<{ title: string, playListItems: PlayListItem[] }[]>(() =
      */
     if (!t.censored) {
       badges.push({
-        style: 'danger',
+        class: 'bg-red-500 dark:bg-red-600',
         text: 'CE',
       });
     }

@@ -12,43 +12,15 @@ import OpenShikimori from '/@/components/TitleBar/TitleBarGoToShikimori.vue';
 
 
 <template>
-  <header>
-    <div
-      id="drag-region"
-      class="d-flex"
-    >
-      <back-button id="back-button" />
-      <home-button />
-      <help-button />
-      <open-shikimori />
-      <window-title class="flex-fill px-3 align-self-center" />
-      <options-button />
-      <minimize-button class="window-control" />
-      <maximize-button class="window-control" />
-      <close-button class="window-control" />
-    </div>
+  <header class="flex region-drag max-w-screen h-8">
+    <back-button />
+    <home-button />
+    <help-button />
+    <open-shikimori />
+    <window-title class="px-3 align-self-center" />
+    <options-button />
+    <minimize-button />
+    <maximize-button />
+    <close-button />
   </header>
 </template>
-
-<style scoped>
-header {
-  --padding: 5px;
-  padding: var(--padding);
-}
-
-#back-button {
-  font-size: 12px;
-}
-
-.window-control {
-  width: 45px;
-  font-size: 10px;
-}
-
-#drag-region {
-  height: calc(24px + var(--padding) * 2);
-  -webkit-app-region: drag;
-  margin: calc(-1 * var(--padding));
-}
-
-</style>

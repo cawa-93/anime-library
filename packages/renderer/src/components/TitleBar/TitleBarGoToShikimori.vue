@@ -1,29 +1,25 @@
 <script lang="ts" setup>
 import {computed} from 'vue';
-import {useElectron} from '/@/use/electron';
 import {useRoute} from 'vue-router';
+import ExternalLink from '/@/components/ExternalLink.vue';
 
-
-const {openURL} = useElectron();
 const route = useRoute();
 const watchingSeriesId = computed(() => route.name === 'Watch' && route?.params?.seriesId ? route.params.seriesId : undefined);
-
-const openSeriesOnShikimori = () => openURL(`https://shikimori.one/animes/${watchingSeriesId.value}`);
+const href = computed(() => `https://shikimori.one/animes/${watchingSeriesId.value}`);
 </script>
 
 <template>
-  <a
+  <external-link
     v-if="watchingSeriesId"
-    href=""
-    class="btn rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
-    @click.prevent="openSeriesOnShikimori"
+    class="btn-title-bar text-xs"
+    :href="href"
   >
-    <small class="text-truncate w-100">Открыть на Шикимори</small>
-  </a>
+    Открыть Шикимори
+  </external-link>
 </template>
 
 
 
 <style scoped>
-@import "base-titlebar-button.css";
+@import "./btn-titlebar.css";
 </style>

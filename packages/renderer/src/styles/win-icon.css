@@ -1,0 +1,21 @@
+@layer base {
+  @font-face {
+    font-family: "Segoe MDL2 Assets";
+    src:
+      local("Segoe MDL2 Assets"),
+      url("Segoe fonts v1710/SegMDL2.ttf") format("opentype");
+  }
+
+  .win-icon {
+    font-family: "Segoe MDL2 Assets", sans-serif;
+  }
+
+  .win-icon-sm {
+    font-size: 0.75rem;
+  }
+
+
+  .win-icon-xs {
+    font-size: 0.6rem;
+  }
+}

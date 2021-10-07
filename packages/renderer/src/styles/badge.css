@@ -1,0 +1,15 @@
+@layer components {
+  .badge {
+    @apply font-normal;
+    display: inline-block;
+    padding: .35em .65em;
+    font-size: .75em;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25rem;
+  }
+
+}

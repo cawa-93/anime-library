@@ -13,7 +13,7 @@ const toggleMaximizeState = () => {
 
 <template>
   <button
-    class="btn win-icon rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
+    class="btn-title-bar win-icon win-icon-xs w-[45px]"
     type="button"
     :title="isMaximized ? 'Восстановить' : 'Развернуть'"
     :aria-label="isMaximized ? 'Восстановить' : 'Развернуть'"
@@ -24,5 +24,5 @@ const toggleMaximizeState = () => {
 </template>
 
 <style scoped>
-@import "base-titlebar-button.css";
+@import "./btn-titlebar.css";
 </style>

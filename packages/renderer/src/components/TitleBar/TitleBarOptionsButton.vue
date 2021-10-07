@@ -1,6 +1,7 @@
 <template>
   <router-link
-    class="win-icon btn rounded-0 py-0 border-0 d-flex align-items-center justify-content-center"
+    draggable="false"
+    class="btn-title-bar win-icon"
     :to="{name: 'Options'}"
     title="Параметры"
     aria-label="Параметры"
@@ -10,5 +11,5 @@
 </template>
 
 <style scoped>
-@import "base-titlebar-button.css";
+@import "btn-titlebar.css";
 </style>
