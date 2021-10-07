@@ -9,6 +9,7 @@ import {useVideos} from '/@/pages/Watch/useVideos';
 import {useWatchHistory} from '/@/pages/Watch/useWatchHistory';
 import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
 
+
 const PlayLists = defineAsyncComponent(() => import('/@/pages/Watch/PlayLists.vue'));
 const ErrorMessage = defineAsyncComponent(() => import('/@/pages/Watch/ErrorMessage.vue'));
 
@@ -136,35 +137,47 @@ useTitle(
     fallbackPageTitle,
   ),
 );
+
+const isVisibleHeader = ref(true);
+
+
+const handleControlsVisibilityChanged = (isVisible: boolean) => {
+  isVisibleHeader.value = isVisible;
+};
 </script>
 
 <template>
   <main class="relative">
-    <header class="absolute top-0 text-white w-full p-3 flex items-start  z-2">
-      <h2 class="text-lg flex-grow m-0 fw-normal">
-        {{ displayedTitle }}
-
-        <small
-          v-if="selectedEpisodeMeta?.filler"
-          class="badge bg-red-500"
-        >Филлер</small>
-
-        <small
-          v-if="selectedEpisodeMeta?.recap"
-          class="badge bg-info text-dark"
-        >Рекап</small>
-      </h2>
-
-      <button
-        v-if="episodes.length > 1 || translations.length"
-        title="Выбор эпизода и перевода"
-        aria-label="Выбор эпизода и перевода"
-        class="open-playlist btn win-icon"
-        @click="isSidePanelOpenedFlag = !isSidePanelOpenedFlag"
+    <transition name="fade">
+      <header
+        v-if="isVisibleHeader"
+        class="absolute top-0 text-white w-full p-3 flex items-start z-2"
       >
-        &#xE8FD;
-      </button>
-    </header>
+        <h2 class="text-lg flex-grow m-0 fw-normal">
+          {{ displayedTitle }}
+
+          <small
+            v-if="selectedEpisodeMeta?.filler"
+            class="badge bg-red-500"
+          >Филлер</small>
+
+          <small
+            v-if="selectedEpisodeMeta?.recap"
+            class="badge bg-info text-dark"
+          >Рекап</small>
+        </h2>
+
+        <button
+          v-if="episodes.length > 1 || translations.length"
+          title="Выбор эпизода и перевода"
+          aria-label="Выбор эпизода и перевода"
+          class="open-playlist btn win-icon"
+          @click="isSidePanelOpenedFlag = !isSidePanelOpenedFlag"
+        >
+          &#xE8FD;
+        </button>
+      </header>
+    </transition>
 
     <play-lists
       v-if="isSidePanelOpenedFlag"
@@ -184,6 +197,7 @@ useTitle(
       :has-next-episode="!!nextEpisode"
       @goToNextEpisode="selectNextEpisode"
       @source-error="onSourceError"
+      @update:controlsVisible="handleControlsVisibilityChanged"
     />
     <error-message
       v-if="loadWatchDataError"

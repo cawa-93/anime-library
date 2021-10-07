@@ -1,15 +1,6 @@
 <script lang="ts" setup>
 import type {PropType} from 'vue';
-import {
-  computed,
-  defineAsyncComponent,
-  onBeforeUnmount,
-  onMounted,
-  onUnmounted,
-  ref,
-  watch,
-  watchEffect,
-} from 'vue';
+import {computed, defineAsyncComponent, onBeforeUnmount, onMounted, onUnmounted, ref, watch, watchEffect} from 'vue';
 import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
 import type {Video, VideoTrack} from '/@/utils/videoProvider';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
@@ -57,6 +48,7 @@ const emit = defineEmits({
   'update:currentTime': (value: unknown) => typeof value === 'number' && !isNaN(value) && isFinite(value),
   'update:duration': (value: unknown) => typeof value === 'number' && !isNaN(value) && isFinite(value),
   'go-to-next-episode': null,
+  'update:controlsVisible': null,
 });
 
 
@@ -73,7 +65,7 @@ const maxQuality = computed(() => Math.max(...qualities.value));
 const selectedQuality = ref(maxQuality.value);
 
 /**
- * Автоматически переключатся на маскимальное качество при смене видео
+ * Автоматически переключатся на максимальное качество при смене видео
  */
 watch(qualities, () => selectedQuality.value = maxQuality.value);
 
@@ -198,6 +190,7 @@ useEventListener('keydown', (event: KeyboardEvent) => {
 const {idle} = useIdle(3 * SECOND_MS);
 const controlsVisible = computed(() => !playing.value || !idle.value);
 
+watch(controlsVisible, controlsVisible => emit('update:controlsVisible', controlsVisible));
 
 /**
  * Media Session Actions
