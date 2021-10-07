@@ -63,25 +63,38 @@ async function getResultsFromSearch(query: string): Promise<SearchResult[]> {
 
 async function getResultsFromHistory(): Promise<SearchResult[]> {
   const history = await getHistoryItems();
+  if (history.length === 0) {
+    return [];
+  }
+
   const params = new URLSearchParams([
     ...history.map(i => ['myAnimeListId[]', String(i.seriesId)]),
   ]);
 
   const response = await searchSeries(params);
 
-  return response.filter(s => {
-    const relevantHistoryItem = history.find(i => i.seriesId === s.myAnimeListId);
-    // Отфильтровать результаты у которых уже просмотрена последняя серия
-    return !(
-      relevantHistoryItem
-      && relevantHistoryItem.episode.time
-      && relevantHistoryItem.episode.duration
-      && relevantHistoryItem.episode.number === s.numberOfEpisodes
-    );
-  }).map(r => ({
-    id: r.myAnimeListId,
-    title: r.title,
-  }));
+  if (response.length === 0) {
+    return [];
+  }
+
+  return history.reduce((accum, item) => {
+    const relevantSeries = response.find(s => s.myAnimeListId === item.seriesId);
+    if (!relevantSeries) {
+      return accum;
+    }
+
+    if (item.episode?.time && item.episode?.duration && item.episode?.number === relevantSeries.numberOfEpisodes) {
+      return accum;
+    }
+
+    accum.push({
+      id: relevantSeries.id,
+      title: relevantSeries.title,
+      // poster: relevantSeries.posterUrlSmall,
+    });
+
+    return accum;
+  }, [] as SearchResult[]);
 }
 
 

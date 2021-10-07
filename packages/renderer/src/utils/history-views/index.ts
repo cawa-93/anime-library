@@ -134,7 +134,7 @@ export async function getViewHistoryItem(seriesId: number, allowNetworkFetch = t
 }
 
 
-export function getHistoryItems(limit = 5): Promise<HistoryViewsItem[]> {
+export function getHistoryItems(limit = 10): Promise<HistoryViewsItem[]> {
   return getDB()
     .then(db => db.getAllFromIndex('history', 'by-updated-at'))
     .then(items => items.splice(-limit).reverse());
