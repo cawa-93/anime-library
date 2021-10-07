@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type {PropType} from 'vue';
 import {computed, defineAsyncComponent, onBeforeUnmount, onMounted, onUnmounted, ref, watch, watchEffect} from 'vue';
-import {syncRef, useEventListener, useFullscreen, useIdle, useMediaControls, useStorage} from '@vueuse/core';
+import {syncRef, useEventListener, useIdle, useMediaControls, useStorage} from '@vueuse/core';
 import type {Video, VideoTrack} from '/@/utils/videoProvider';
 import LoadingSpinner from '/@/components/LoadingSpinner.vue';
 import {useMediaHotKeys} from '/@/use/useMediaHotKeys';
@@ -41,6 +41,10 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  inFullscreen: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const emit = defineEmits({
@@ -49,6 +53,7 @@ const emit = defineEmits({
   'update:duration': (value: unknown) => typeof value === 'number' && !isNaN(value) && isFinite(value),
   'go-to-next-episode': null,
   'update:controlsVisible': null,
+  'update:inFullscreen': null,
 });
 
 
@@ -142,9 +147,11 @@ onMounted(() => {
 
 //
 // переключение полноэкранного режима
-const videoPlayerRoot = ref();
-const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(videoPlayerRoot);
+// const mainEl = ref();
+// onUnmounted(() => mainEl.value = document.querySelector('main'));
+// const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(mainEl);
 
+const toggleFullscreen = () => emit('update:inFullscreen', !props.inFullscreen);
 
 //
 // Быстрая перемотка
@@ -291,7 +298,7 @@ onBeforeUnmount(() => {
   }
 
   if (document.fullscreenElement) {
-    document.exitFullscreen();
+    emit('update:inFullscreen', false);
   }
 
   document.head.querySelectorAll('video').forEach(e => e.remove());
@@ -311,7 +318,7 @@ const onProgressHandler = () => {
   <div
     ref="videoPlayerRoot"
     class="component-root"
-    :class="{hideCursor: isFullscreen && idle}"
+    :class="{hideCursor: inFullscreen && idle}"
   >
     <loading-spinner v-if="waiting || !isVideoLoaded" />
     <video
@@ -420,12 +427,12 @@ const onProgressHandler = () => {
         />
 
         <button
-          :title="`${isFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
-          :aria-label="`${isFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
+          :title="`${inFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
+          :aria-label="`${inFullscreen ? 'Выход из полноэкранного режима' : 'Во весь экран'} (f)`"
           class="toggle-fullscreen-button win-icon"
           @click="toggleFullscreen"
         >
-          {{ isFullscreen ? '&#xE73F;' : '&#xE740;' }}
+          {{ inFullscreen ? '&#xE73F;' : '&#xE740;' }}
         </button>
       </section>
     </transition>

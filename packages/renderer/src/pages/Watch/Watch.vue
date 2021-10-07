@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import {useEpisodes} from '/@/pages/Watch/useEpisodes';
-import {computed, defineAsyncComponent, ref, watch} from 'vue';
+import {computed, defineAsyncComponent, onUnmounted, ref, watch} from 'vue';
 import VideoPlayer from '/@/pages/Watch/VideoPlayer/VideoPlayer.vue';
-import {asyncComputed, useTitle} from '@vueuse/core';
+import {asyncComputed, tryOnBeforeUnmount, useFullscreen, useTitle} from '@vueuse/core';
 import {getEpisodeMeta, getSeries} from '/@/utils/videoProvider';
 import {useTranslations} from '/@/pages/Watch/useTranslations';
 import {useVideos} from '/@/pages/Watch/useVideos';
@@ -144,10 +144,18 @@ const isVisibleHeader = ref(true);
 const handleControlsVisibilityChanged = (isVisible: boolean) => {
   isVisibleHeader.value = isVisible;
 };
+
+const rootEl = ref();
+const {exit: exitFullscreen, enter: enterFullscreen, isFullscreen: inFullscreen} = useFullscreen(rootEl);
+
+const setInFullScreenState = (v: boolean) => v ? enterFullscreen() : exitFullscreen();
 </script>
 
 <template>
-  <main class="relative">
+  <main
+    ref="rootEl"
+    class="relative"
+  >
     <transition name="fade">
       <header
         v-if="isVisibleHeader"
@@ -155,7 +163,7 @@ const handleControlsVisibilityChanged = (isVisible: boolean) => {
       >
         <h2 class="text-lg flex-grow m-0 fw-normal">
           {{ displayedTitle }}
-
+          inFullscreen: {{ inFullscreen }}
           <small
             v-if="selectedEpisodeMeta?.filler"
             class="badge bg-red-500"
@@ -193,11 +201,13 @@ const handleControlsVisibilityChanged = (isVisible: boolean) => {
       id="video-container"
       v-model:current-time="currentTime"
       v-model:duration="duration"
+      :in-fullscreen="inFullscreen"
       :video="video"
       :has-next-episode="!!nextEpisode"
       @goToNextEpisode="selectNextEpisode"
       @source-error="onSourceError"
       @update:controlsVisible="handleControlsVisibilityChanged"
+      @update:inFullscreen="setInFullScreenState"
     />
     <error-message
       v-if="loadWatchDataError"
