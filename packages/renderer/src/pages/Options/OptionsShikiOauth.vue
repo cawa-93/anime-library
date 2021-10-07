@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import {ref} from 'vue';
-import {useElectron} from '/@/use/electron';
 import type {ShikiUser} from '/@/utils/shikimori-api';
 import {clearCredentials, getAuthUrl, getUser, isLoggedIn, refreshCredentials} from '/@/utils/shikimori-api';
 import {useRouter} from 'vue-router';
@@ -8,8 +7,6 @@ import {unknownToString} from '/@/utils/unknownToString';
 import ButtonSpinner from '/@/components/ButtonSpinner.vue';
 import ExternalLink from '/@/components/ExternalLink.vue';
 
-
-const {openURL} = useElectron();
 
 const isShikimoriCredentialsExist = ref(isLoggedIn());
 const updateShikiLoggedState = () => isShikimoriCredentialsExist.value = isLoggedIn();

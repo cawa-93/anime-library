@@ -17,7 +17,7 @@ const translationForChecking = [
 ];
 
 
-export function useTokenValidator(token: Ref<string>) {
+export function useTokenValidator(token: Ref<string>): { isLoading: Ref<boolean>; isValid: Ref<boolean | undefined>; check: () => Promise<void> } {
   const isLoading = ref(false);
   const isValid = ref<true | false | undefined>(undefined);
 
