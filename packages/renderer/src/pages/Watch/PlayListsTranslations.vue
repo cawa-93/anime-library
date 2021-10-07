@@ -74,7 +74,7 @@ const groups = computed<{ title: string, playListItems: PlayListItem[] }[]>(() =
      */
     if (!t.censored) {
       badges.push({
-        style: 'danger',
+        class: 'bg-red-500 dark:bg-red-600',
         text: 'CE',
       });
     }

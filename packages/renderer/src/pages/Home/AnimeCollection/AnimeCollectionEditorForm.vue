@@ -124,7 +124,7 @@ const genreRef = computed({
       <input
         type="text"
         :value="title"
-        @input="$emit('update:title', $event.target.value)"
+        @input="$emit('update:title', ($event.target as HTMLInputElement).value)"
       >
     </label>
 
@@ -135,7 +135,7 @@ const genreRef = computed({
         type="number"
         min="1"
         max="50"
-        @input="$emit('update:limit', $event.target.valueAsNumber)"
+        @input="$emit('update:limit', ($event.target as HTMLInputElement).valueAsNumber)"
       ></label>
 
     <fieldset class="kind">

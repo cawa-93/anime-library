@@ -47,7 +47,7 @@ const update = (id: number, state: '' | 'include' | 'exclude') => {
       :key="genre.id"
       class="py-1 px-2 flex-grow text-center btn transition-colors"
       :class="{
-        'bg-true-gray-200 hover:bg-true-gray-300 active:(bg-black bg-opacity-70) active:hover:(bg-black bg-opacity-80) dark:(bg-true-gray-900 hover:bg-true-gray-700 active:bg-white active:bg-opacity-70 active:hover:bg-white active:hover:bg-opacity-80)': !selectedGenres.has(genre.id) || selectedGenres.get(genre.id) === '',
+        'bg-true-gray-200 hover:bg-true-gray-300 active:(bg-black bg-opacity-70) active:hover:(bg-black bg-opacity-80) dark:(bg-true-gray-900 hover:bg-true-gray-700 active:bg-white active:bg-opacity-70 active:hover:bg-white active:hover:bg-opacity-80)': !selectedGenres.has(genre.id),
         'line-through bg-red-200 text-red-800 hover:bg-red-300 active:(bg-red-900 text-red-100) dark:(bg-red-800 hover:bg-red-700 text-red-200 active:bg-red-200 active:text-red-800)': selectedGenres.get(genre.id) === 'exclude',
         'bg-green-200 hover:bg-green-300 text-green-800 active:(bg-green-900 text-green-100) dark:(bg-green-800 hover:bg-green-700 text-green-200 active:bg-green-200 active:text-green-800)': selectedGenres.get(genre.id) === 'include',
       }"

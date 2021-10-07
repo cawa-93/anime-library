@@ -5,6 +5,11 @@ import type {Anime as AnimeType} from '/@/pages/Home/AnimeCollection/Anime';
 import {formatDate} from '/@/utils/formatDate';
 import AnimeLink from '/@/components/AnimeLink.vue';
 
+declare module 'csstype' {
+  interface Properties {
+    '--bullet-color'?: string;
+  }
+}
 
 const props = defineProps({
   anime: {
@@ -130,6 +135,7 @@ const poster = computed(() => {
 </template>
 
 <style scoped>
+/*noinspection CssUnresolvedCustomProperty*/
 .card {
   --card-padding: theme('spacing.4');
   aspect-ratio: 209 / 300;
@@ -170,10 +176,7 @@ const poster = computed(() => {
   --bullet-gap: 0.9em;
   margin-left: calc(0px - var(--card-padding));
   margin-right: calc(0px - var(--card-padding));
-  padding-top: 0.2em;
-  padding-right: var(--card-padding);
-  padding-left: calc(var(--card-padding) / 1.5 + var(--bullet-gap));
-  padding-bottom: 0.2em;
+  padding: 0.2em var(--card-padding) 0.2em calc(var(--card-padding) / 1.5 + var(--bullet-gap));
   display: flex;
   align-items: center;
 }
@@ -187,6 +190,7 @@ const poster = computed(() => {
   padding-left: 0;
 }
 
+/*noinspection CssUnresolvedCustomProperty*/
 .card > div:not(.inset):before {
   @apply rounded-1 absolute;
   content: "";
