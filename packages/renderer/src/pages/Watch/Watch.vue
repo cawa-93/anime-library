@@ -187,6 +187,8 @@ useTitle(
     />
     <error-message
       v-if="loadWatchDataError"
+      class="absolute z-3 bg-black top-1/2"
+      style="transform: translateY(-50%)"
       :message="loadWatchDataError"
     />
   </main>
