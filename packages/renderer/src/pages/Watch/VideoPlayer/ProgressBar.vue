@@ -176,7 +176,7 @@ const formattedCurrentTime = computed(() => getFormattedVideoTime(props.time));
 progress {
   appearance: none;
   cursor: pointer;
-  transition: padding-top 0.5s;
+  transition: padding-top 0.3s;
 }
 
 progress:not(:hover) {
