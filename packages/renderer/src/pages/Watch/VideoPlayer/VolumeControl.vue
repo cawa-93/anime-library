@@ -1,3 +1,63 @@
+<script lang="ts" setup>
+import {ref, watch} from 'vue';
+import {useDebounceFn} from '@vueuse/core';
+
+
+/**
+ * Хранит последнее значение громкости
+ * Необходима чтобы отслеживать изменилась ли громкость с момента когда компонент был смонтирован в последний раз
+ */
+let lastVolumeValue: null | number = null;
+
+const props = defineProps({
+  volume: {
+    type: Number,
+    required: true,
+  },
+  muted: {
+    type: Boolean,
+    required: true,
+  },
+});
+
+const emit = defineEmits({
+  'update:volume': (v: unknown) => typeof v === 'number',
+  'update:muted': null,
+});
+
+
+
+/**
+ * Если с момента последнего монтирования компонента громкость изменилась
+ * Развернуть ползунок громкости по умолчанию
+ */
+const expanded = ref(lastVolumeValue !== null && lastVolumeValue !== props.volume);
+const collapseAfterTimeout = useDebounceFn(() => expanded.value = false, 1500);
+
+if (expanded.value) {
+  collapseAfterTimeout();
+}
+
+// eslint-disable-next-line vue/no-setup-props-destructure
+lastVolumeValue = props.volume;
+
+watch(() => props.volume, () => {
+  lastVolumeValue = props.volume;
+  expanded.value = true;
+  collapseAfterTimeout();
+});
+
+const volumeUpdateHandler = (event: Event) => {
+  if (!event.target || !(event.target instanceof HTMLInputElement)) {
+    throw new Error(`Got event.target as ${typeof event.target} but HTMLInputElement was expected`);
+  }
+
+  emit('update:muted', false);
+  emit('update:volume', event.target.valueAsNumber);
+};
+</script>
+
+
 <template>
   <div
     class="volume-control flex"
@@ -30,70 +90,6 @@
   </div>
 </template>
 
-<script lang="ts">
-import {defineComponent, ref, watch} from 'vue';
-import {useDebounceFn} from '@vueuse/core';
-
-
-/**
- * Хранит последнее значение громкости
- * Необходима чтобы отслеживать изменилась ли громкость с момента когда компонент был смонтирован в последний раз
- */
-let lastVolumeValue: null | number = null;
-
-export default defineComponent({
-  name: 'VolumeControl',
-  props: {
-    volume: {
-      type: Number,
-      required: true,
-    },
-    muted: {
-      type: Boolean,
-      required: true,
-    },
-  },
-
-  emits: {
-    'update:volume': (v: unknown) => typeof v === 'number',
-    'update:muted': null,
-  },
-
-  setup(props, {emit}) {
-
-    /**
-     * Если с момента последнего монтирования компонента громкость изменилась
-     * Развернуть ползунок громкости по умолчанию
-     */
-    const expanded = ref(lastVolumeValue !== null && lastVolumeValue !== props.volume);
-    const collapseAfterTimeout = useDebounceFn(() => expanded.value = false, 1500);
-
-    if (expanded.value) {
-      collapseAfterTimeout();
-    }
-
-    // eslint-disable-next-line vue/no-setup-props-destructure
-    lastVolumeValue = props.volume;
-
-    watch(() => props.volume, () => {
-      lastVolumeValue = props.volume;
-      expanded.value = true;
-      collapseAfterTimeout();
-    });
-
-    const volumeUpdateHandler = (event: Event) => {
-      if (!event.target || !(event.target instanceof HTMLInputElement)) {
-        throw new Error(`Got event.target as ${typeof event.target} but HTMLInputElement was expected`);
-      }
-
-      emit('update:muted', false);
-      emit('update:volume', event.target.valueAsNumber);
-    };
-
-    return {expanded, volumeUpdateHandler};
-  },
-});
-</script>
 
 <style scoped>
 @import "video-control-button.css";

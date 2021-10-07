@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import {useEpisodes} from '/@/pages/Watch/useEpisodes';
-import {computed, defineAsyncComponent, onUnmounted, ref, watch} from 'vue';
+import {computed, defineAsyncComponent, ref, watch} from 'vue';
 import VideoPlayer from '/@/pages/Watch/VideoPlayer/VideoPlayer.vue';
-import {asyncComputed, tryOnBeforeUnmount, useFullscreen, useTitle} from '@vueuse/core';
+import {asyncComputed, useFullscreen, useTitle} from '@vueuse/core';
 import {getEpisodeMeta, getSeries} from '/@/utils/videoProvider';
 import {useTranslations} from '/@/pages/Watch/useTranslations';
 import {useVideos} from '/@/pages/Watch/useVideos';
