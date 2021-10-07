@@ -163,7 +163,6 @@ const setInFullScreenState = (v: boolean) => v ? enterFullscreen() : exitFullscr
       >
         <h2 class="text-lg flex-grow m-0 fw-normal">
           {{ displayedTitle }}
-          inFullscreen: {{ inFullscreen }}
           <small
             v-if="selectedEpisodeMeta?.filler"
             class="badge bg-red-500"
