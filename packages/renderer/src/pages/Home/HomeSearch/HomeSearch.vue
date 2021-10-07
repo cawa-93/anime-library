@@ -7,6 +7,7 @@ import {useRouter} from 'vue-router';
 import ButtonSpinner from '/@/components/ButtonSpinner.vue';
 import AnimeLink from '/@/components/AnimeLink.vue';
 
+
 /**
  * Текст поиска
  */
@@ -117,7 +118,7 @@ const handlerSubmit = () => {
       &#xF78B;
     </button>
 
-    <Popover>
+    <Popover as="template">
       <PopoverPanel
         static
         class="card search-results"
@@ -130,10 +131,27 @@ const handlerSubmit = () => {
             :id="result.id"
             :key="result.id"
             :ref="activeIndex === index ? 'activeElement' : ''"
-            class="btn block transition-none"
+            class="btn block transition-none  grid-cols-[auto,1fr] grid-rows-[min-content,min-content,1fr] gap-x-4 gap-y-2 items-start"
             :class="{'active': activeIndex === index}"
+            :aria-label="result.title"
           >
+            <!--            <img-->
+            <!--              v-if="result.poster"-->
+            <!--              class="h-[90px] row-span-full"-->
+            <!--              role="presentation"-->
+            <!--              :src="result.poster"-->
+            <!--              alt="Постер"-->
+            <!--            >-->
             {{ result.title }}
+            <!--            <strong>{{ result.title }}</strong>-->
+            <!--            <small>{{ result.altTitle }}</small>-->
+            <!--            <span>-->
+            <!--              <span-->
+            <!--                v-for="genre of result.genres"-->
+            <!--                :key="genre"-->
+            <!--                class="badge bg-gray-200 text-black not-first:ml-1 dark:(bg-gray-800 text-white)"-->
+            <!--              >{{ genre }}</span>-->
+            <!--            </span>-->
           </anime-link>
         </template>
         <p
@@ -158,13 +176,13 @@ const handlerSubmit = () => {
 <style scoped>
 
 #search-field {
-  @apply border-r-0 rounded-tr-none rounded-br-none focus:border-accent z-2 transition-none;
+  @apply border-r-0 rounded-tr-none rounded-br-none focus:border-accent z-2 transition-none ;
 }
 
 .search-results {
-  @apply absolute absolute z-1 rounded-t-none border-t-0 overflow-y-auto shadow-lg dark:bg-dark-900 invisible;
+  @apply absolute top-full z-1 rounded-t-none border-t-0 overflow-y-auto shadow-lg dark:bg-dark-900 invisible ;
   width: 100%;
-  max-height: calc(100vh - 180px);
+  max-height: 70vh;
 }
 
 form:focus-within .search-results {

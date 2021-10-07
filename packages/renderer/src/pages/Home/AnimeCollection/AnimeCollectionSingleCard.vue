@@ -198,9 +198,4 @@ const poster = computed(() => {
   transform: translateX(calc(0px - var(--bullet-gap)));
   box-shadow: 0 0 10px 0px var(--bullet-color, currentColor);
 }
-
-.badge {
-  padding: 0.05em 0.3em;
-  @apply rounded-sm;
-}
 </style>
