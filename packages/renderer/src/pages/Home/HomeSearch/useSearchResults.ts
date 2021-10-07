@@ -88,7 +88,7 @@ async function getResultsFromHistory(): Promise<SearchResult[]> {
     }
 
     accum.push({
-      id: relevantSeries.id,
+      id: relevantSeries.myAnimeListId,
       title: relevantSeries.title,
       // poster: relevantSeries.posterUrlSmall,
     });
