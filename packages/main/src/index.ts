@@ -229,12 +229,13 @@ app.whenReady()
 
       if (details.responseHeaders) {
         delete details.responseHeaders['Access-Control-Allow-Origin'];
+        delete details.responseHeaders['access-control-allow-origin'];
       }
 
       callback({
         responseHeaders: {
           ...details.responseHeaders,
-          'access-control-allow-origin': '*',
+          'Access-Control-Allow-Origin': '*',
         },
       });
     });
