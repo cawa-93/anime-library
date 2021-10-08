@@ -4,6 +4,7 @@ import {computed} from 'vue';
 import type {Anime as AnimeType} from '/@/pages/Home/AnimeCollection/Anime';
 import {formatDate} from '/@/utils/formatDate';
 import AnimeLink from '/@/components/AnimeLink.vue';
+import {getLang} from '/@/pages/Options/OptionsAnimeTitleLang/OptionsAnimeTitleLangController';
 
 declare module 'csstype' {
   interface Properties {
@@ -18,7 +19,10 @@ const props = defineProps({
   },
 });
 
-const title = computed(() => props.anime.russian || props.anime.name);
+const title = computed(() => {
+  const lang = getLang();
+  return lang === 'ru' ? (props.anime.russian || props.anime.name) : props.anime.name;
+});
 const statusRussian = computed(() => {
   switch (props.anime.status) {
     case 'released' :

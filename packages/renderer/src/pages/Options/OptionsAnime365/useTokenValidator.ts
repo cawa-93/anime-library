@@ -1,8 +1,9 @@
 import type {Ref} from 'vue';
 import {ref, unref, watch} from 'vue';
 import {tryOnBeforeUnmount} from '@vueuse/core';
-import {getStream, isFailureResponse} from '/@/utils/videoProvider/providers/anime365/anime365';
+import {getStream} from '/@/utils/videoProvider/providers/anime365/anime365';
 import {showErrorMessage} from '/@/utils/dialogs';
+import {isFailureResponse} from '/@/utils/videoProvider/providers/anime365/utils';
 
 
 const translationForChecking = [

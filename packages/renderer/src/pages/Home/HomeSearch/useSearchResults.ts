@@ -2,10 +2,9 @@ import type {Ref} from 'vue';
 import {ref, unref, watch} from 'vue';
 import {getHistoryItems} from '/@/utils/history-views';
 import {useDebounceFn} from '@vueuse/core';
-import {searchSeries} from '/@/utils/videoProvider/providers/anime365/anime365';
 import {SECOND_MS} from '/@/utils/time';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
-import {getSeries} from '/@/utils/videoProvider';
+import {getSeries, getSeriesByQuery} from '/@/utils/videoProvider';
 
 
 interface SearchResult {
@@ -13,7 +12,7 @@ interface SearchResult {
   title: string;
   altTitle?: string
   poster?: string
-  genres: string[]
+  genres?: string[]
 }
 
 
@@ -66,17 +65,12 @@ export function useSearchResults(input: Ref<string>): { results: Ref<SearchResul
 
 
 async function getResultsFromSearch(query: string): Promise<SearchResult[]> {
-  const params = new URLSearchParams({
-    query,
-    limit: '10',
-  });
-  const series = await searchSeries(params);
+  const series = await getSeriesByQuery(query);
   return series.map(s => ({
-    id: s.myAnimeListId,
-    title: s.titles.ru || s.titles.romaji || s.title,
-    altTitle: s.titles.ru ? s.titles.romaji : '',
-    poster: s.posterUrlSmall,
-    genres: s.genres.map(g => g.title),
+    id: s.id,
+    title: s.title,
+    poster: s.poster,
+    // genres: s.genres.map(g => g.title),
   }));
 }
 
@@ -87,18 +81,16 @@ async function getResultsFromHistory(): Promise<SearchResult[]> {
     return [];
   }
 
-  const params = new URLSearchParams([
-    ...history.map(i => ['myAnimeListId[]', String(i.seriesId)]),
-  ]);
 
-  const response = await searchSeries(params);
+  const targetIds = history.map(i => i.seriesId);
+  const response = await getSeries(targetIds);
 
   if (response.length === 0) {
     return [];
   }
 
   return history.reduce((accum, item) => {
-    const relevantSeries = response.find(s => s.myAnimeListId === item.seriesId);
+    const relevantSeries = response.find(s => s.id === item.seriesId);
     if (!relevantSeries) {
       return accum;
     }
@@ -108,11 +100,10 @@ async function getResultsFromHistory(): Promise<SearchResult[]> {
     }
 
     accum.push({
-      id: relevantSeries.myAnimeListId,
-      title: relevantSeries.titles.ru || relevantSeries.titles.romaji || relevantSeries.titles.en || relevantSeries.title,
-      altTitle: relevantSeries.titles.ru ? relevantSeries.titles.romaji : '',
-      poster: relevantSeries.posterUrlSmall,
-      genres: relevantSeries.genres.map(g => g.title),
+      id: relevantSeries.id,
+      title: relevantSeries.title,
+      poster: relevantSeries.poster,
+      // genres: relevantSeries.genres.map(g => g.title),
     });
 
     return accum;

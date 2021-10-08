@@ -1,7 +1,7 @@
-import {readonly} from 'vue';
 import * as provider from '/@/utils/videoProvider/providers/anime365/anime365';
 import {deDuplicatedRequest} from '/@/utils/deDuplicatedRequest';
 import {getEpisodesMeta} from '/@/utils/videoProvider/providers/mal/getEpisodesMeta';
+import {getSeries as providerGetSeries, getSeriesByQuery as providerGetSeriesByQuery} from '/@/utils/videoProvider/providers/anime365/series';
 
 
 interface HasID {
@@ -74,10 +74,23 @@ export interface TranslationAuthor {
 /**
  * Возвращает {@link Series} по его MyAnimeListID
  */
-export function getSeries(malId: number): Promise<Series | undefined> {
-  return deDuplicatedRequest(
+export function getSeries(malId: number): Promise<Series | undefined>
+export function getSeries(malId: number[]): Promise<Series[]>
+export function getSeries(malId: number | number[]): Promise<Series | Series[] | undefined> {
+  return deDuplicatedRequest<Series | Series[] | undefined>(
     `series-${malId}`,
-    () => provider.getSeries(malId).then(s => s === undefined ? s : readonly(s)),
+    /**
+     * Костыль для исправления ошибки TS
+     * @see https://qna.habr.com/q/1058108
+     */
+    () => typeof malId === 'number' ? providerGetSeries(malId) : providerGetSeries(malId),
+  );
+}
+
+export function getSeriesByQuery(query: string, limit = 10): Promise<Series[]> {
+  return deDuplicatedRequest(
+    `series-${query}${limit}`,
+    () => providerGetSeriesByQuery(query, limit),
   );
 }
 

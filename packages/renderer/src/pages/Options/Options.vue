@@ -6,6 +6,7 @@ import {openGitHub, openTG, openVK} from '/@/use/socialLinks';
 import TimelineThumbnails from '/@/pages/Options/OptionsTimelineThumbnails.vue';
 import ColorScheme from '/@/pages/Options/OptionsColorScheme.vue';
 import HomeFooter from '/@/components/HomeFooter.vue';
+import OptionsAnimeTitleLang from '/@/pages/Options/OptionsAnimeTitleLang/OptionsAnimeTitleLang.vue';
 
 
 useTitle('Параметры');
@@ -78,6 +79,7 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
         <h2 id="app-settings-head">
           Настройки приложения
         </h2>
+
         <section
           class="card"
           aria-labelledby="video-player-head"
@@ -102,6 +104,19 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
             Тема приложения
           </h3>
           <color-scheme aria-labelledby="app-theme-head" />
+        </section>
+
+        <section
+          class="card"
+          aria-labelledby="anime-title-lang-head"
+        >
+          <h3
+            id="anime-title-lang-head"
+            class="card-header text-base"
+          >
+            Названия аниме
+          </h3>
+          <options-anime-title-lang aria-labelledby="anime-title-lang-head" />
         </section>
       </section>
 
