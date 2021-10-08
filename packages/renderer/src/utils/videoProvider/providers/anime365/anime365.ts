@@ -1,83 +1,9 @@
 import type * as sm from '/@/utils/videoProvider/providers/anime365/anime365-interfaces';
-import type {Episode, Series, Translation, Video, VideoTrack} from '/@/utils/videoProvider';
+import type {Episode, Translation, Video, VideoTrack} from '/@/utils/videoProvider';
 import {getAuthor} from '/@/utils/videoProvider/providers/anime365/anime365-authors';
 import {resolveEpisodesList} from '/@/utils/videoProvider/providers/anime365/resolveEpisodesList';
-
-
-const HOST_ROOT = 'https://smotret-anime.online';
-const API_BASE = `${HOST_ROOT}/api/`;
-
-
-export async function request<T>(url: string | URL, access_token = getAccessToken(), options?: RequestInit): Promise<sm.ApiResponse<T>> {
-
-  if (!(url instanceof URL)) {
-    url = new URL(url);
-  }
-
-  if (access_token) {
-    url.searchParams.set('access_token', access_token);
-  }
-
-  const response = await fetch(String(url), options);
-  if (!response.ok) {
-    throw await response.text();
-  }
-
-  return await response.json();
-}
-
-
-export function isFailureResponse(response: unknown): response is sm.ApiResponseFailure {
-  return typeof response === 'object' && response !== null && (response as sm.ApiResponseSuccess<unknown>).data === undefined;
-}
-
-
-export async function searchSeries<RequestedFields extends keyof sm.Series>(searchParams: URLSearchParams, options?: RequestInit): Promise<Pick<sm.Series, RequestedFields>[]> {
-  const requestURL = new URL('series?' + searchParams, API_BASE);
-
-  requestURL.searchParams.set('isActive', '1');
-
-  const apiResponse = await request<Pick<sm.Series, RequestedFields>[]>(requestURL, undefined, options);
-
-  if (isFailureResponse(apiResponse)) {
-    throw apiResponse;
-  }
-
-  return apiResponse.data;
-}
-
-
-export async function getSeries(myAnimeListId: number): Promise<Series | undefined> {
-  const fields = ['titleLines', 'myAnimeListId', 'posterUrl', 'numberOfEpisodes'] as const;
-  type RequestedFields = typeof fields[number]
-
-  const searchParams = new URLSearchParams({
-    fields: fields.join(','),
-    myAnimeListId: String(myAnimeListId),
-  });
-
-  const searchResult = await searchSeries<RequestedFields>(searchParams);
-
-  if (searchResult.length === 0) {
-    return undefined;
-  }
-
-  const targetSeries = searchResult[0];
-  if (searchResult.length > 1) {
-    // TODO: Доработать алгоритм точного совпадения по myAnimeListId
-    console.error(
-      `По запросу {myAnimeListId: ${myAnimeListId}} было возвращено больше одного результата! Результатов возвращено: ${searchResult.length}`,
-      {searchResult},
-    );
-  }
-
-  return {
-    id: targetSeries.myAnimeListId,
-    title: targetSeries.titleLines[0],
-    poster: targetSeries.posterUrl,
-    numberOfEpisodes: targetSeries.numberOfEpisodes,
-  };
-}
+import {API_BASE, HOST_ROOT, isFailureResponse, request} from '/@/utils/videoProvider/providers/anime365/utils';
+import {searchSeries} from '/@/utils/videoProvider/providers/anime365/series';
 
 
 export async function getEpisodes(myAnimeListId: number | string): Promise<Episode[]> {

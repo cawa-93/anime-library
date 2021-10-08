@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import {computed, ref} from 'vue';
 import type * as sm from '/@/utils/videoProvider/providers/anime365/anime365-interfaces';
-import {getAccessToken, isFailureResponse, saveAccessToken} from '/@/utils/videoProvider/providers/anime365/anime365';
+import {getAccessToken, saveAccessToken} from '/@/utils/videoProvider/providers/anime365/anime365';
 import {useTokenValidator} from '/@/pages/Options/OptionsAnime365/useTokenValidator';
 import ButtonSpinner from '/@/components/ButtonSpinner.vue';
 import ExternalLink from '/@/components/ExternalLink.vue';
+import {isFailureResponse} from '/@/utils/videoProvider/providers/anime365/utils';
 
 
 const emit = defineEmits({
