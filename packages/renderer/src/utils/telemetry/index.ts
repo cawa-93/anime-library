@@ -1,4 +1,3 @@
-import {useElectron} from '/@/use/electron';
 import type {EventParams, PageViewParams, ScreenViewParams, TimingParams} from '/@/utils/telemetry/types';
 import {isLoggedIn} from '/@/utils/shikimori-api';
 import {isEnabled as isEnableHardwareAccelerationEnabled} from '/@/pages/Options/settingHardwareAcceleration';
@@ -19,7 +18,7 @@ isEnableHardwareAccelerationEnabled().then(v => _isEnableHardwareAccelerationEna
 function getBaseParams() {
   let cid = localStorage.getItem('uuid');
   if (!cid) {
-    cid = useElectron().uuid();
+    cid = window.uuid();
     localStorage.setItem('uuid', cid);
   }
 
