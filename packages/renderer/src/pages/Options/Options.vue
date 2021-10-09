@@ -2,10 +2,11 @@
 import {useTitle} from '@vueuse/core';
 import ShikiOauth from '/@/pages/Options/OptionsShikiOauth.vue';
 import OptionAnime365 from '/@/pages/Options/OptionsAnime365/OptionsAnime365.vue';
-import {openGitHub, openTG, openVK} from '/@/use/socialLinks';
 import TimelineThumbnails from '/@/pages/Options/OptionsTimelineThumbnails.vue';
 import ColorScheme from '/@/pages/Options/OptionsColorScheme.vue';
 import HomeFooter from '/@/components/HomeFooter.vue';
+import ExternalLink from '/@/components/ExternalLink.vue';
+import {GITHUB, VK, TG} from '/@/utils/social-links';
 import OptionsAnimeTitleLang from '/@/pages/Options/OptionsAnimeTitleLang/OptionsAnimeTitleLang.vue';
 
 
@@ -142,23 +143,27 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
             Версия: <strong>{{ appVersion }}</strong>
             <br>
             Исходный код на GitHub:
-            <a
+            <external-link
               class="underline"
-              href="#"
-              @click.prevent="openGitHub()"
-            >cawa-93/anime-library</a>
+              :href="GITHUB"
+            >
+              cawa-93/anime-library
+            </external-link>
             <br>
             Сообщество пользователей в
-            <a
+            <external-link
+              :href="VK"
               class="underline"
-              href="#"
-              @click.prevent="openVK()"
-            >Вконтакте</a> и в
-            <a
+            >
+              Вконтакте
+            </external-link>
+            и в
+            <external-link
+              :href="TG"
               class="underline"
-              href="#"
-              @click.prevent="openTG()"
-            >Telegram</a>
+            >
+              Telegram
+            </external-link>
           </p>
         </section>
       </section>

@@ -1,6 +1,6 @@
-import {contextBridge, ipcRenderer, shell} from 'electron';
+import {contextBridge, ipcRenderer} from 'electron';
 import {randomUUID} from 'crypto';
-
+import './openExternalURL/index';
 
 const apiKey = 'electron';
 /**
@@ -8,7 +8,6 @@ const apiKey = 'electron';
  */
 const api: ElectronApi = {
   invoke: (...args) => ipcRenderer.invoke(...args),
-  openURL: (url) => shell.openExternal(url),
   uuid: randomUUID,
 };
 

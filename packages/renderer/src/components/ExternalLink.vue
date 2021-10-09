@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import {useElectron} from '/@/use/electron';
+import {openExternalURL} from '/@/use/openExternalURL';
+
 
 defineProps({
   href: {
@@ -14,7 +15,6 @@ defineProps({
   },
 });
 
-const {openURL} = useElectron();
 
 </script>
 
@@ -23,6 +23,6 @@ const {openURL} = useElectron();
     :href="href"
     :title="title"
     target="_blank"
-    @click.prevent="openURL(href)"
+    @click.prevent="openExternalURL(href)"
   ><slot /></a>
 </template>

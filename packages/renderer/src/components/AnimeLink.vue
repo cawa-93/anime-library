@@ -1,7 +1,5 @@
 <script lang="ts" setup>
-
-
-import {useElectron} from '/@/use/electron';
+import {openExternalURL} from '/@/use/openExternalURL';
 
 const props = defineProps({
   id: {
@@ -16,11 +14,10 @@ const props = defineProps({
   },
 });
 
-const {openURL} = useElectron();
 const openAnime = (event: MouseEvent) => {
   if (event.ctrlKey || event.button === 1) {
     event.preventDefault();
-    return openURL('https://shikimori.one/animes/' + props.id);
+    return openExternalURL('https://shikimori.one/animes/' + props.id);
   }
 };
 </script>

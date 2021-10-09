@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import {openGitHub, openTG, openVK} from '/@/use/socialLinks';
 import {trackEvent} from '/@/utils/telemetry';
+import {GITHUB, TG_CHAT, VK_CHAT} from '/@/utils/social-links';
+import {openExternalURL} from '/@/use/openExternalURL';
 
 
 const SELECT_OPTIONS = [{
@@ -16,7 +17,6 @@ const SELECT_OPTIONS = [{
 
 
 const onSelected = (event: Event) => {
-  console.log('onSelected', event);
   const select = event.target;
 
   if (!select || !(select instanceof HTMLSelectElement)) {
@@ -26,13 +26,13 @@ const onSelected = (event: Event) => {
   const socialTarget = select.value as typeof SELECT_OPTIONS[number]['id'];
   switch (socialTarget) {
     case 'vk':
-      openVK(true);
+      openExternalURL(VK_CHAT);
       break;
     case 'telegram':
-      openTG(true);
+      openExternalURL(TG_CHAT);
       break;
     case 'github':
-      openGitHub('discussions');
+      openExternalURL(GITHUB + '/discussions');
       break;
   }
 
