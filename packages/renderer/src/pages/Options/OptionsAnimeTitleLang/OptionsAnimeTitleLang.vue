@@ -29,7 +29,7 @@ const lang = useStorage(KEY, 'ru');
         type="radio"
         name="OptionsAnimeTitleLang"
         value="romaji"
-      > Ромадзи <small class="opacity-80">(Оригинальные названия латиницей)</small>
+      > <dl class="inline"><dt class="inline">Ромадзи</dt> <dd class="text-sm opacity-80 inline">Оригинальные названия латиницей</dd></dl>
     </label>
     <p class="text-sm opacity-60 ml-4">
       Примеры: Ginga Eiyuu Densetsu, Shingeki no Kyojin, JoJo no Kimyou na Bouken.
