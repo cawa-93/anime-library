@@ -91,13 +91,13 @@ export interface Series {
 
 export interface TranslationVoice extends Translation {
   typeKind: 'voice'
-  typeLang: 'rus'
+  typeLang: 'ru'
 }
 
 
 export interface TranslationSub extends Translation {
   typeKind: 'sub'
-  typeLang: 'rus'
+  typeLang: 'ru'
 }
 
 

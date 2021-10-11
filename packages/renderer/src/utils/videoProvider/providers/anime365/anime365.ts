@@ -4,6 +4,11 @@ import {getAuthor} from '/@/utils/videoProvider/providers/anime365/anime365-auth
 import {resolveEpisodesList} from '/@/utils/videoProvider/providers/anime365/resolveEpisodesList';
 import {API_BASE, HOST_ROOT, isFailureResponse, request} from '/@/utils/videoProvider/providers/anime365/utils';
 import {searchSeries} from '/@/utils/videoProvider/providers/anime365/series';
+import type {
+  TranslationRaw,
+  TranslationSub,
+  TranslationVoice,
+} from '/@/utils/videoProvider/providers/anime365/anime365-interfaces';
 
 
 export async function getEpisodes(myAnimeListId: number | string): Promise<Episode[]> {
@@ -38,22 +43,84 @@ export async function getEpisodes(myAnimeListId: number | string): Promise<Episo
 }
 
 
-export async function getTranslations(episodeId: number | string): Promise<Translation[]> {
-  const fields = ['id', 'authorsSummary', 'authorsList', 'episodeId', 'typeKind', 'typeLang', 'isActive', 'qualityType'] as const;
-  type RequestedFields = typeof fields[number]
-  type ResponseItem = Pick<sm.Translation, RequestedFields>
-  type ExpectedResponse = Array<ResponseItem>
+// export async function getTranslations(episodeId: number | string): Promise<Translation[]> {
+//   const fields = ['id', 'authorsSummary', 'authorsList', 'episodeId', 'typeKind', 'typeLang', 'isActive', 'qualityType'] as const;
+//   type RequestedFields = typeof fields[number]
+//   type ResponseItem = Pick<sm.Translation, RequestedFields>
+//   type ExpectedResponse = Array<ResponseItem>
+//
+//   const requestURL = new URL('translations', API_BASE);
+//
+//   requestURL.searchParams.set('fields', fields.join(','));
+//   requestURL.searchParams.set('isActive', '1');
+//   requestURL.searchParams.set('limit', '0');
+//   requestURL.searchParams.set('episodeId', String(episodeId));
+//
+//   // Отфильтровать не нужные переводы
+//   requestURL.searchParams.append('type[]', 'voiceRu');
+//   requestURL.searchParams.append('type[]', 'subRu');
+//
+//   const apiResponse = await request<ExpectedResponse>(requestURL);
+//
+//   if (isFailureResponse(apiResponse)) {
+//     throw apiResponse.error;
+//   }
+//
+//   const isRuVoiceOrRuSub =
+//     (t: ResponseItem):
+//       t is Pick<sm.TranslationSub, RequestedFields> | Pick<sm.TranslationVoice, RequestedFields> =>
+//       t.typeLang === 'ru'
+//       && (
+//         (t as sm.TranslationSub).typeKind === 'sub' || (t as sm.TranslationVoice).typeKind === 'voice'
+//       );
+//
+//
+//   return apiResponse.data
+//     .filter(isRuVoiceOrRuSub)
+//     .map(t => {
+//
+//       const author = getAuthor({
+//         summary: t.authorsSummary,
+//       });
+//
+//       const qualityType = t.qualityType === 'uncensored' ? 'tv' : t.qualityType;
+//       const uncensored = t.qualityType === 'uncensored' || (!!t.authorsSummary && /без *ценз|uncensor/i.test(t.authorsSummary));
+//
+//       return ({
+//         id: t.id,
+//         get title() {
+//           return this.author.team;
+//         },
+//         type: t.typeKind,
+//         author,
+//         qualityType,
+//         censored: !uncensored,
+//       });
+//     });
+// }
 
-  const requestURL = new URL('translations', API_BASE);
+/**
+ * HOTFIX
+ * Альтернативный способ загрузки переводов
+ * @param episodeId
+ * @see https://github.com/cawa-93/anime-library/issues/311
+ */
+export async function getTranslations(episodeId: number | string): Promise<Translation[]> {
+  const fields = ['translations'] as const;
+  type RequestedFields = typeof fields[number]
+  type ExpectedResponse = Pick<sm.Episode, RequestedFields>
+  type ResponseItem = TranslationVoice | TranslationSub | TranslationRaw
+
+  const requestURL = new URL(`episodes/${episodeId}`, API_BASE);
 
   requestURL.searchParams.set('fields', fields.join(','));
-  requestURL.searchParams.set('isActive', '1');
-  requestURL.searchParams.set('limit', '0');
-  requestURL.searchParams.set('episodeId', String(episodeId));
+  // requestURL.searchParams.set('isActive', '1');
+  // requestURL.searchParams.set('limit', '0');
+  // requestURL.searchParams.set('episodeId', String(episodeId));
 
   // Отфильтровать не нужные переводы
-  requestURL.searchParams.append('type[]', 'voiceRu');
-  requestURL.searchParams.append('type[]', 'subRu');
+  // requestURL.searchParams.append('type[]', 'voiceRu');
+  // requestURL.searchParams.append('type[]', 'subRu');
 
   const apiResponse = await request<ExpectedResponse>(requestURL);
 
@@ -61,17 +128,22 @@ export async function getTranslations(episodeId: number | string): Promise<Trans
     throw apiResponse.error;
   }
 
+  if (!apiResponse.data?.translations?.length) {
+    return [];
+  }
+
   const isRuVoiceOrRuSub =
     (t: ResponseItem):
-      t is Pick<sm.TranslationSub, RequestedFields> | Pick<sm.TranslationVoice, RequestedFields> =>
+      t is TranslationVoice | TranslationSub =>
       t.typeLang === 'ru'
       && (
         (t as sm.TranslationSub).typeKind === 'sub' || (t as sm.TranslationVoice).typeKind === 'voice'
       );
 
 
-  return apiResponse.data
+  return apiResponse.data.translations
     .filter(isRuVoiceOrRuSub)
+    .filter(t => t.isActive === 1)
     .map(t => {
 
       const author = getAuthor({
