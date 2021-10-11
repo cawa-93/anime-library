@@ -7,8 +7,8 @@ import ButtonSwitcher from '/@/components/ButtonSwitcher.vue';
 
 
 const genres: Genre[] = (shikimoriAnimeGenres as Genre[]).sort((a, b) => {
-  const name1 = a.russian || a.name || a.id;
-  const name2 = b.russian || b.name || b.id;
+  const name1 = a.name || a.id;
+  const name2 = b.name || b.id;
   return name1 < name2 ? -1 : name1 > name2 ? 1 : 0;
 });
 
@@ -54,10 +54,10 @@ const update = (id: number, state: '' | 'include' | 'exclude') => {
       :states="['', 'include', 'exclude']"
       :model-value="selectedGenres.get(genre.id) || ''"
       :group-name="genre.id + genre.name"
-      :aria-label="genre.russian"
+      :aria-label="genre.name"
       @update:modelValue="state => update(genre.id, state)"
     >
-      {{ genre.russian }}
+      {{ genre.name }}
     </button-switcher>
   </section>
 </template>
