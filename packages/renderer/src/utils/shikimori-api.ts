@@ -281,6 +281,4 @@ export async function saveUserRate(seriesId: number, episodes: number): Promise<
 export interface Genre {
   id: number;
   name: string;
-  russian: string;
-  kind: 'anime';
 }
