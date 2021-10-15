@@ -5,6 +5,8 @@ import type {Anime as AnimeType} from '/@/pages/Home/AnimeCollection/Anime';
 import {formatDate} from '/@/utils/formatDate';
 import AnimeLink from '/@/components/AnimeLink.vue';
 import {getLang} from '/@/pages/Options/OptionsAnimeTitleLang/OptionsAnimeTitleLangController';
+import {getSeriesKindLocal} from '/@/utils/GetSeriesKindLocal';
+
 
 declare module 'csstype' {
   interface Properties {
@@ -60,18 +62,7 @@ const scoreColor = computed(() => {
           : '#ef4444';
 });
 
-const kindRussian = computed(() => {
-  switch (props.anime.kind) {
-    case 'tv' :
-      return 'TV Сериал';
-    case 'movie' :
-      return 'Фильм';
-    case 'special' :
-      return 'Спешл';
-    default :
-      return props.anime.kind?.toUpperCase();
-  }
-});
+const kindRussian = computed(() => props.anime.kind ? getSeriesKindLocal(props.anime.kind) : '');
 
 const airedOnFormat = computed(() => props.anime.aired_on ? formatDate(Date.parse(props.anime.aired_on)) : null);
 

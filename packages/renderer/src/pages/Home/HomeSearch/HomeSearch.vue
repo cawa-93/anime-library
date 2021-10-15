@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import {nextTick, ref, watch} from 'vue';
-
 import {Popover as Popover, PopoverPanel as PopoverPanel} from '@headlessui/vue';
 import {useSearchResults} from '/@/pages/Home/HomeSearch/useSearchResults';
 import {useRouter} from 'vue-router';
 import ButtonSpinner from '/@/components/ButtonSpinner.vue';
 import AnimeLink from '/@/components/AnimeLink.vue';
+import {getSeriesKindLocal} from '/@/utils/GetSeriesKindLocal';
 
 
 /**
@@ -142,16 +142,11 @@ const handlerSubmit = () => {
             <!--              :src="result.poster"-->
             <!--              alt="Постер"-->
             <!--            >-->
-            {{ result.title }}
-            <!--            <strong>{{ result.title }}</strong>-->
-            <!--            <small>{{ result.altTitle }}</small>-->
-            <!--            <span>-->
-            <!--              <span-->
-            <!--                v-for="genre of result.genres"-->
-            <!--                :key="genre"-->
-            <!--                class="badge bg-gray-200 text-black not-first:ml-1 dark:(bg-gray-800 text-white)"-->
-            <!--              >{{ genre }}</span>-->
-            <!--            </span>-->
+            <strong class="font-medium dark:font-normal"> {{ result.title }}</strong>
+            <p class="text-true-gray-500 dark:text-true-gray-400 flex flex-wrap gap-2">
+              <small>{{ getSeriesKindLocal(result.kind) }}</small>
+              <small>{{ result.year }} год</small>
+            </p>
           </anime-link>
         </template>
         <p

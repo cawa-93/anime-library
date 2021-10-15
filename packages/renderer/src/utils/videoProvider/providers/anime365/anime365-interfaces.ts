@@ -40,7 +40,7 @@ export interface Episode {
   episodeFull: string;
   episodeInt: string;
   episodeTitle?: string;
-  episodeType: string;
+  episodeType: SeriesKind;
   firstUploadedDateTime: string;
   isActive: 1 | 0;
   isFirstUploaded: 1 | 0;
@@ -74,7 +74,7 @@ export interface Series {
   numberOfEpisodes: number;
   season: string;
   year: number;
-  type: string;
+  type: SeriesKind;
   typeTitle: string;
   titles: Titles;
   posterUrl: string;

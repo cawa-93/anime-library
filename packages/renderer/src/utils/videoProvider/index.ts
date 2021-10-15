@@ -17,6 +17,8 @@ interface HasTitle {
 export interface Series extends HasID, HasTitle {
   poster?: string;
   numberOfEpisodes?: number;
+  kind: 'tv' | 'movie' | 'ova' | 'ona' | 'special' | 'music'
+  year: string | number
 }
 
 

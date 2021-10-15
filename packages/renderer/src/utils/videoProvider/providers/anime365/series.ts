@@ -4,9 +4,12 @@ import {getLang} from '/@/pages/Options/OptionsAnimeTitleLang/OptionsAnimeTitleL
 import type {Series} from '/@/utils/videoProvider';
 
 
-const SERIES_FIELDS = ['titles', 'myAnimeListId', 'posterUrl', 'numberOfEpisodes'] as const;
+/**
+ * Массив полей которые будут загружены
+ * @see sm.Series
+ */
+const SERIES_FIELDS = ['titles', 'myAnimeListId', 'posterUrl', 'numberOfEpisodes', 'type', 'year'] as const;
 type RequestedFields = typeof SERIES_FIELDS[number]
-
 
 export async function searchSeries<RequestedFields extends keyof sm.Series>(
   searchParams: URLSearchParams,
@@ -37,6 +40,8 @@ function resolveSeries(targetSeries: Pick<sm.Series, RequestedFields>): Series {
     title: resolvedTitle,
     poster: targetSeries.posterUrl,
     numberOfEpisodes: targetSeries.numberOfEpisodes,
+    kind: targetSeries.type,
+    year: targetSeries.year,
   };
 }
 

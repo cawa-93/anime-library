@@ -4,30 +4,22 @@ import {getHistoryItems} from '/@/utils/history-views';
 import {useDebounceFn} from '@vueuse/core';
 import {SECOND_MS} from '/@/utils/time';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
+import type {Series} from '/@/utils/videoProvider';
 import {getSeries, getSeriesByQuery} from '/@/utils/videoProvider';
 
 
-interface SearchResult {
-  id: number;
-  title: string;
-  altTitle?: string
-  poster?: string
-  genres?: string[]
-}
+const resultsCache = new Map<string, Series[]>();
 
 
-const resultsCache = new Map<string, SearchResult[]>();
-
-
-export function useSearchResults(input: Ref<string>): { results: Ref<SearchResult[]>, evaluating: Ref<boolean> } {
+export function useSearchResults(input: Ref<string>): { results: Ref<Series[]>, evaluating: Ref<boolean> } {
   const evaluating = ref(false);
 
-  const results = ref<SearchResult[]>(resultsCache.get(unref(input)) || []);
+  const results = ref(resultsCache.get(unref(input)) || []);
 
   const updateResultsDebounced = useDebounceFn<() => void>(async () => {
     const query = unref(input);
 
-    type ResolverFn = (query: string) => SearchResult[] | Promise<SearchResult[]>
+    type ResolverFn = (query: string) => Series[] | Promise<Series[]>
     const resolver: ResolverFn = query === ''
       ? getResultsFromHistory
       : query.startsWith('http')
@@ -64,18 +56,12 @@ export function useSearchResults(input: Ref<string>): { results: Ref<SearchResul
 }
 
 
-async function getResultsFromSearch(query: string): Promise<SearchResult[]> {
-  const series = await getSeriesByQuery(query);
-  return series.map(s => ({
-    id: s.id,
-    title: s.title,
-    poster: s.poster,
-    // genres: s.genres.map(g => g.title),
-  }));
+function getResultsFromSearch(query: string): Promise<Series[]> {
+  return getSeriesByQuery(query);
 }
 
 
-async function getResultsFromHistory(): Promise<SearchResult[]> {
+async function getResultsFromHistory(): Promise<Series[]> {
   const history = await getHistoryItems();
   if (history.length === 0) {
     return [];
@@ -103,15 +89,16 @@ async function getResultsFromHistory(): Promise<SearchResult[]> {
       id: relevantSeries.id,
       title: relevantSeries.title,
       poster: relevantSeries.poster,
-      // genres: relevantSeries.genres.map(g => g.title),
+      kind: relevantSeries.kind,
+      year: relevantSeries.year,
     });
 
     return accum;
-  }, [] as SearchResult[]);
+  }, [] as Series[]);
 }
 
 
-async function getResultsFromURL(query: string): Promise<SearchResult[]> {
+async function getResultsFromURL(query: string): Promise<Series[]> {
   const id = getSeriesId(query);
 
   if (!id) return [];
@@ -123,6 +110,7 @@ async function getResultsFromURL(query: string): Promise<SearchResult[]> {
     id,
     title: series.title,
     poster: series.poster,
-    genres: [],
+    kind: series.kind,
+    year: series.year,
   }];
 }
