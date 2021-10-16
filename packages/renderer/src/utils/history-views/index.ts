@@ -2,6 +2,7 @@ import type {DBSchema, IDBPDatabase} from 'idb';
 import {openDB} from 'idb';
 import {getUserRate, isLoggedIn, saveUserRate} from '/@/utils/shikimori-api';
 import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
+import {DAY} from '/@/utils/time';
 
 
 // type HistoryViewsItemStates = 'planned' | 'watching' | 'rewatching' | 'completed' | 'on_hold' | 'dropped'
@@ -134,8 +135,8 @@ export async function getViewHistoryItem(seriesId: number, allowNetworkFetch = t
 }
 
 
-export function getHistoryItems(limit = 5): Promise<HistoryViewsItem[]> {
+export function getHistoryItems(limit = 10): Promise<HistoryViewsItem[]> {
   return getDB()
-    .then(db => db.getAllFromIndex('history', 'by-updated-at'))
+    .then(db => db.getAllFromIndex('history', 'by-updated-at', IDBKeyRange.lowerBound((Date.now()/1000) - DAY * 20)))
     .then(items => items.splice(-limit).reverse());
 }

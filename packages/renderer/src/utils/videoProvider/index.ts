@@ -106,7 +106,8 @@ export function getSeries(malId: number | number[]): Promise<Series | Series[] |
   );
 }
 
-export function getSeriesByQuery(query: string, limit = 10): Promise<Series[]> {
+
+export function getSeriesByQuery(query: string, limit?: number): Promise<Series[]> {
   return deDuplicatedRequest(
     `series-${query}${limit}`,
     () => providerGetSeriesByQuery(query, limit),
