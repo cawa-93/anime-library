@@ -8,7 +8,7 @@ import type {Series} from '/@/utils/videoProvider';
  * Массив полей которые будут загружены
  * @see sm.Series
  */
-const SERIES_FIELDS = ['titles', 'myAnimeListId', 'posterUrl', 'numberOfEpisodes', 'type', 'year'] as const;
+const SERIES_FIELDS = ['titles', 'myAnimeListId', 'posterUrlSmall', 'numberOfEpisodes', 'type', 'year'] as const;
 type RequestedFields = typeof SERIES_FIELDS[number]
 
 export async function searchSeries<RequestedFields extends keyof sm.Series>(
@@ -38,7 +38,7 @@ function resolveSeries(targetSeries: Pick<sm.Series, RequestedFields>): Series {
   return {
     id: targetSeries.myAnimeListId,
     title: resolvedTitle,
-    poster: targetSeries.posterUrl,
+    poster: targetSeries.posterUrlSmall,
     numberOfEpisodes: targetSeries.numberOfEpisodes,
     kind: targetSeries.type,
     year: targetSeries.year,
@@ -68,7 +68,7 @@ export async function getSeries(myAnimeListId: number | number[]): Promise<Serie
 }
 
 
-export async function getSeriesByQuery(query: string, limit = 10): Promise<Series[]> {
+export async function getSeriesByQuery(query: string, limit= 30): Promise<Series[]> {
   const params = new URLSearchParams({
     query,
     limit: String(limit),

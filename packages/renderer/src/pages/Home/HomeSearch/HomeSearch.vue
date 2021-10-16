@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {nextTick, ref, watch} from 'vue';
+import {computed, nextTick, ref, watch} from 'vue';
 import {Popover as Popover, PopoverPanel as PopoverPanel} from '@headlessui/vue';
 import {useSearchResults} from '/@/pages/Home/HomeSearch/useSearchResults';
 import {useRouter} from 'vue-router';
@@ -48,6 +48,8 @@ watch(results, () => {
   nextTick(scrollToActive);
 });
 
+const activeResult = computed(() => results.value[activeIndex.value]);
+
 /**
  * Прокручивает область просмотра к активному элементу
  */
@@ -77,12 +79,14 @@ const activatePrevItem = () => {
   nextTick(scrollToActive);
 };
 
+
+
 const getRoute = (seriesId: string | number) => ({name: 'Watch', params: {seriesId}});
 
+
 const router = useRouter();
-const handlerSubmit = () => {
-  const activeElement = results.value[activeIndex.value];
-  router.push(getRoute(activeElement.id));
+const gotoActiveSearchResult = () => {
+  router.push(getRoute(activeResult.value.id));
 };
 </script>
 
@@ -90,7 +94,7 @@ const handlerSubmit = () => {
 <template>
   <form
     class="grid grid-cols-[1fr,auto] grid-rows-[auto] relative shadow-lg bg-white dark:bg-dark-900"
-    @submit.prevent="handlerSubmit"
+    @submit.prevent="gotoActiveSearchResult"
     @keydown.down="activateNextItem"
     @keydown.up="activatePrevItem"
     @focusin="setSearchTextFromClipboardIfPossible"
@@ -112,10 +116,11 @@ const handlerSubmit = () => {
     <button
       class="btn btn-outline border-l-0 rounded-tl-none rounded-bl-none win-icon focus:ring-accent focus:ring-opacity-30 focus:border-accent transition-none"
       type="submit"
-      title="Найти"
-      aria-label="Найти"
+      :disabled="!activeResult"
+      :title="activeResult ? `Открыть ${activeResult.title}` : ''"
+      :aria-label="activeResult ? `Открыть ${activeResult.title}` : ''"
     >
-      &#xF78B;
+      &#xebe7;
     </button>
 
     <Popover as="template">
@@ -131,19 +136,21 @@ const handlerSubmit = () => {
             :id="result.id"
             :key="result.id"
             :ref="activeIndex === index ? 'activeElement' : ''"
-            class="btn block transition-none grid-cols-[auto,1fr] grid-rows-[min-content,min-content,1fr] gap-x-4 gap-y-2 items-start"
+            class="btn block transition-none grid grid-cols-[35px,1fr] grid-rows-[min-content,1fr] gap-x-2 items-start overflow-hidden not-first:mt-1"
             :class="{'active': activeIndex === index}"
             :aria-label="result.title"
           >
-            <!--            <img-->
-            <!--              v-if="result.poster"-->
-            <!--              class="h-[90px] row-span-full"-->
-            <!--              role="presentation"-->
-            <!--              :src="result.poster"-->
-            <!--              alt="Постер"-->
-            <!--            >-->
-            <strong class="font-medium dark:font-normal"> {{ result.title }}</strong>
-            <p class="text-true-gray-500 dark:text-true-gray-400 flex flex-wrap gap-2">
+            <img
+              v-if="result.poster"
+              class="poster row-span-full max-w-[3em] max-h-[59px]"
+              role="presentation"
+              :src="result.poster"
+              alt="Постер"
+              :loading="index > 10 ? 'lazy' : ''"
+              crossorigin="anonymous"
+            >
+            <strong class="title font-medium dark:font-normal dark:opacity-90">{{ result.title }}</strong>
+            <p class="meta opacity-60 dark:opacity-50 flex flex-wrap gap-2">
               <small>{{ getSeriesKindLocal(result.kind) }}</small>
               <small v-if="result.year > 0">{{ result.year }} год</small>
             </p>
@@ -169,23 +176,23 @@ const handlerSubmit = () => {
 </template>
 
 <style scoped>
-
 #search-field {
-  @apply border-r-0 rounded-tr-none rounded-br-none focus:border-accent z-2 transition-none ;
+  @apply border-r-0 rounded-tr-none rounded-br-none focus:border-accent z-2 transition-none;
 }
 
 .search-results {
-  @apply absolute top-full z-1 rounded-t-none border-t-0 overflow-y-auto shadow-lg dark:bg-dark-900 invisible ;
+  @apply absolute top-full z-1 rounded-t-none border-t-0 overflow-y-auto shadow-lg dark:bg-dark-900 invisible;
   width: 100%;
-  max-height: 70vh;
+  max-height: 50vh;
+  scroll-padding: calc(var(--card-padding, 1em) / 2);
+}
+
+.search-results .active {
+  @apply bg-black bg-opacity-5 dark:(bg-white bg-opacity-5);
 }
 
 form:focus-within .search-results {
   @apply visible;
-}
-
-.search-results:not(:hover) .btn.active {
-  @apply bg-black bg-opacity-5 dark:(bg-white bg-opacity-5);
 }
 
 form:focus-within #search-field,
@@ -198,5 +205,9 @@ form:focus-within #search-field,
 form:focus-within .search-results,
 form:focus-within .btn.btn-outline {
   border-color: theme('colors.accent.DEFAULT');
+}
+
+.poster {
+  margin: -8px 12px -8px -12px;
 }
 </style>
