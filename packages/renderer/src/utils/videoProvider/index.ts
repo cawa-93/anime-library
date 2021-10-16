@@ -1,7 +1,10 @@
 import * as provider from '/@/utils/videoProvider/providers/anime365/anime365';
 import {deDuplicatedRequest} from '/@/utils/deDuplicatedRequest';
 import {getEpisodesMeta} from '/@/utils/videoProvider/providers/mal/getEpisodesMeta';
-import {getSeries as providerGetSeries, getSeriesByQuery as providerGetSeriesByQuery} from '/@/utils/videoProvider/providers/anime365/series';
+import {
+  getSeries as providerGetSeries,
+  getSeriesByQuery as providerGetSeriesByQuery,
+} from '/@/utils/videoProvider/providers/anime365/series';
 
 
 interface HasID {
@@ -16,9 +19,23 @@ interface HasTitle {
 
 export interface Series extends HasID, HasTitle {
   poster?: string;
-  numberOfEpisodes?: number;
-  kind: 'tv' | 'movie' | 'ova' | 'ona' | 'special' | 'music'
-  year: string | number
+
+  /**
+   * Количество заявленных эпизодов.
+   * 0 -- Если количество эпизодов не известно
+   */
+  numberOfEpisodes: number;
+
+  /**
+   * Тип аниме
+   */
+  kind: 'tv' | 'movie' | 'ova' | 'ona' | 'special' | 'music';
+
+  /**
+   * Год выхода аниме.
+   * 0 -- Если аниме ещё не вышло или год не известен
+   */
+  year: number;
 }
 
 

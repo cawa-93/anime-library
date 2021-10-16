@@ -85,13 +85,7 @@ async function getResultsFromHistory(): Promise<Series[]> {
       return accum;
     }
 
-    accum.push({
-      id: relevantSeries.id,
-      title: relevantSeries.title,
-      poster: relevantSeries.poster,
-      kind: relevantSeries.kind,
-      year: relevantSeries.year,
-    });
+    accum.push(relevantSeries);
 
     return accum;
   }, [] as Series[]);
@@ -100,17 +94,10 @@ async function getResultsFromHistory(): Promise<Series[]> {
 
 async function getResultsFromURL(query: string): Promise<Series[]> {
   const id = getSeriesId(query);
-
   if (!id) return [];
 
   const series = await getSeries(id);
-
   if (!series) return [];
-  return [{
-    id,
-    title: series.title,
-    poster: series.poster,
-    kind: series.kind,
-    year: series.year,
-  }];
+
+  return [series];
 }

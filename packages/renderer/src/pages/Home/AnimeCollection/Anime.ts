@@ -6,7 +6,7 @@ export interface Anime {
     original: string
     preview: string
   },
-  status: 'anons' | 'ongoing' | 'released',
+  status: SeriesStatus,
   episodes: number
   episodes_aired: number
   score: string
