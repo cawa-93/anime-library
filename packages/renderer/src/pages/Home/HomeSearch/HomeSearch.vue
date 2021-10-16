@@ -131,7 +131,7 @@ const handlerSubmit = () => {
             :id="result.id"
             :key="result.id"
             :ref="activeIndex === index ? 'activeElement' : ''"
-            class="btn block transition-none  grid-cols-[auto,1fr] grid-rows-[min-content,min-content,1fr] gap-x-4 gap-y-2 items-start"
+            class="btn block transition-none grid-cols-[auto,1fr] grid-rows-[min-content,min-content,1fr] gap-x-4 gap-y-2 items-start"
             :class="{'active': activeIndex === index}"
             :aria-label="result.title"
           >
@@ -145,7 +145,7 @@ const handlerSubmit = () => {
             <strong class="font-medium dark:font-normal"> {{ result.title }}</strong>
             <p class="text-true-gray-500 dark:text-true-gray-400 flex flex-wrap gap-2">
               <small>{{ getSeriesKindLocal(result.kind) }}</small>
-              <small>{{ result.year }} год</small>
+              <small v-if="result.year > 0">{{ result.year }} год</small>
             </p>
           </anime-link>
         </template>
