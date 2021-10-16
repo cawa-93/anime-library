@@ -56,7 +56,7 @@ const scrollToActive = () => {
   if (activeEl) {
     activeEl.scrollIntoView({
       behavior: 'smooth',
-      block: 'center',
+      block: 'nearest',
     });
   }
 };
