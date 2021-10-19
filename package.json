@@ -63,7 +63,7 @@
     "simple-git-hooks": "2.6.1",
     "ts-jest": "27.0.7",
     "typescript": "4.4.4",
-    "vite": "2.6.7",
+    "vite": "2.6.10",
     "vite-plugin-pwa": "0.11.3",
     "vite-plugin-windicss": "1.4.11",
     "vue-tsc": "0.28.6",
