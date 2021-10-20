@@ -53,7 +53,7 @@ onMounted(() => {
         v-for="b of item.badges"
         :key="b.text"
         style="margin-left: 0.1em"
-        class="badge self-center"
+        class="self-center"
         :class="b.class"
       >{{ b.text }}</small>
     </a>

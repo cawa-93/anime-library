@@ -69,14 +69,14 @@ const playListItems = computed<EpisodePlayListItem[]>(
     if (meta?.recap) {
       badges.push({
         text: 'Рекап',
-        class: 'bg-blue-500 dark:bg-blue-600',
+        class: 'badge-recap',
       });
     }
 
     if (meta?.filler) {
       badges.push({
         text: 'Филлер',
-        class: 'bg-red-500 dark:bg-red-600',
+        class: 'badge-filler',
       });
     }
 
