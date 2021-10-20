@@ -87,7 +87,7 @@ const onSourceError = (qualityToReload: number) => {
 
 
 /**
- * Предзагрузка переводов и видео для следующей серии
+ * Предварительная загрузка переводов и видео для следующей серии
  */
 watch([nextEpisode, duration, currentTime], async () => {
   if (!(nextEpisode.value && duration.value > 0 && isEpisodeCompleted(currentTime.value, duration.value))) { return; }
@@ -165,12 +165,12 @@ const setInFullScreenState = (v: boolean) => v ? enterFullscreen() : exitFullscr
           {{ displayedTitle }}
           <small
             v-if="selectedEpisodeMeta?.filler"
-            class="badge bg-red-500"
+            class="badge-filler"
           >Филлер</small>
 
           <small
             v-if="selectedEpisodeMeta?.recap"
-            class="badge bg-info text-dark"
+            class="badge-recap"
           >Рекап</small>
         </h2>
 

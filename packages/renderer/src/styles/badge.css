@@ -12,4 +12,11 @@
     border-radius: .25rem;
   }
 
+  .badge-filler {
+    @apply badge bg-red-500 dark:bg-red-600;
+  }
+
+  .badge-recap {
+    @apply badge bg-blue-500 dark:bg-blue-600;
+  }
 }
