@@ -1,13 +1,11 @@
 # Anime library
 
-![GitHub all releases](https://img.shields.io/github/downloads/cawa-93/anime-library/total?style=for-the-badge)
-
-> [Скачать самую свежую версию 👉🏻](https://github.com/cawa-93/anime-library/releases/latest)
-
-
-https://user-images.githubusercontent.com/1662812/126297159-60b25421-9888-4bb4-9ad2-f0aff21a14d5.mp4
-
-
+![GitHub all releases](https://img.shields.io/github/downloads/cawa-93/anime-library/total?style=for-the-badge) **[Скачать самую свежую версию 👉🏻](https://github.com/cawa-93/anime-library/releases/latest)**
+![зображення](https://user-images.githubusercontent.com/1662812/138271729-b6004bd9-f8cb-4d92-a0ef-784c7694108d.png) | ![зображення](https://user-images.githubusercontent.com/1662812/138271791-7d1b32ec-c989-4f9c-bddf-86a89177b075.png)
+--- | --- 
+![зображення](https://user-images.githubusercontent.com/1662812/138271883-dbf360fd-244d-4bf3-a546-21554337ce18.png) | ![зображення](https://user-images.githubusercontent.com/1662812/138271926-4f0b2bc8-8acc-44bc-9c15-0f3c501363ef.png)
+--- | --- 
+![зображення](https://user-images.githubusercontent.com/1662812/138272119-40405411-20fd-4c4d-b81f-c0aa80d4c903.png) | ![зображення](https://user-images.githubusercontent.com/1662812/138272147-a7b2a25f-f9d7-4752-a4c1-cb17dc3b8c29.png)
 
 
 
