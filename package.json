@@ -57,7 +57,7 @@
     "eslint-plugin-vue": "7.20.0",
     "fake-indexeddb": "3.1.7",
     "jest": "27.3.1",
-    "lint-staged": "11.2.3",
+    "lint-staged": "11.2.4",
     "playwright": "1.15.2",
     "rollup-plugin-copy": "3.4.0",
     "simple-git-hooks": "2.6.1",
