@@ -1,4 +1,4 @@
-# Anime library ![GitHub all releases](https://img.shields.io/github/downloads/cawa-93/anime-library/total?label=%D0%92%D1%81%D0%B5%D0%B3%D0%BE%20%D1%81%D0%BA%D0%B0%D1%87%D0%B0%D0%BB%D0%B8&style=plastic)
+# Anime library ![GitHub all releases](https://img.shields.io/github/downloads/cawa-93/anime-library/total?label=%D0%92%D1%81%D0%B5%D0%B3%D0%BE%20%D1%81%D0%BA%D0%B0%D1%87%D0%B0%D0%BB%D0%B8)
 - **[Скачать самую свежую версию 👉🏻](https://github.com/cawa-93/anime-library/releases/latest)**
 - [История обновлений](https://github.com/cawa-93/anime-library/releases)
 
