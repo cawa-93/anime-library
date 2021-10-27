@@ -63,8 +63,20 @@ export interface Translation extends HasID, HasTitle {
    */
   author: TranslationAuthor;
 
+  /**
+   * Тип источника видео
+   */
   qualityType: 'bd' | 'dvd' | 'tv';
+
+  /**
+   * Есть ли в видео цензура
+   */
   censored: boolean;
+
+  /**
+   * Максимальное доступное качество
+   */
+  maxQuality: number
 }
 
 

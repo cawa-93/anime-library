@@ -54,7 +54,7 @@ describe('savePreferredTranslation', () => {
 
     await savePreferredTranslation(
       ++seriesId,
-      {type: 'sub', id: 1, title: '', qualityType: 'tv', censored: false, author: {team: '', id: null, members: []}},
+      {type: 'sub', id: 1, title: '', qualityType: 'tv', censored: false, maxQuality: 720, author: {team: '', id: null, members: []}},
     );
 
     const db = await getDB();

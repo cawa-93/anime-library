@@ -15,6 +15,7 @@ export const t = (type: TranslationType, author: TranslationAuthor = a()): Trans
   title: '',
   type,
   author,
+  maxQuality: 720,
 });
 
 
