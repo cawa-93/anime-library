@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import {openExternalURL} from '/@/use/openExternalURL';
+import {trackEvent} from '/@/utils/telemetry';
 
 
-defineProps({
+const props = defineProps({
   href: {
     type: String,
     required: true,
@@ -15,6 +16,10 @@ defineProps({
   },
 });
 
+const trackAndOpenURL = () => {
+  trackEvent('social', 'open_external_uel', props.href);
+  openExternalURL(props.href);
+};
 
 </script>
 
@@ -23,6 +28,6 @@ defineProps({
     :href="href"
     :title="title"
     target="_blank"
-    @click.prevent="openExternalURL(href)"
+    @click.prevent="trackAndOpenURL"
   ><slot /></a>
 </template>

@@ -24,3 +24,8 @@ export const VK_CHAT = 'https://vk.com/im?sel=-185683833';
  * Ссылка на GITHUB репозиторий
  */
 export const GITHUB = 'https://github.com/cawa-93/anime-library';
+
+/**
+ * Ссылка для доната
+ */
+export const DONATE = 'https://send.monobank.ua/6SmojkkR9i';
