@@ -162,6 +162,7 @@ export async function getTranslations(episodeId: number | string): Promise<Trans
         author,
         qualityType,
         censored: !uncensored,
+        maxQuality: t.height,
       });
     });
 }

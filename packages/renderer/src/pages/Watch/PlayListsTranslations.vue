@@ -60,11 +60,20 @@ const groups = computed<{ title: string, playListItems: PlayListItem[] }[]>(() =
     }
 
     /**
-     * Бейдж качества видео
+     * Максимального качества видео
+     */
+    badges.push({
+      class: 'opacity-50',
+      text: `${t.maxQuality}p`,
+    });
+
+
+    /**
+     * Тип источника
      */
     if (t.qualityType !== 'tv') {
       badges.push({
-        class: 'bg-green-500 dark:bg-green-600',
+        class: 'badge bg-green-500 dark:bg-green-600',
         text: t.qualityType.toLocaleUpperCase(),
       });
     }
@@ -74,7 +83,7 @@ const groups = computed<{ title: string, playListItems: PlayListItem[] }[]>(() =
      */
     if (!t.censored) {
       badges.push({
-        class: 'bg-red-500 dark:bg-red-600',
+        class: 'badge bg-red-500 dark:bg-red-600',
         text: 'CE',
       });
     }

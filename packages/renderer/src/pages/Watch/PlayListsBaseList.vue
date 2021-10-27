@@ -44,7 +44,7 @@ onMounted(() => {
       :key="item.id"
       href="#"
       :class="{'bg-accent': item.id === selectedItemId}"
-      class="btn rounded-none flex items-center"
+      class="btn rounded-none flex items-center gap-1"
       :title="item.title || ''"
       @click.prevent="$emit('item-click', item)"
     >
@@ -52,7 +52,6 @@ onMounted(() => {
       <small
         v-for="b of item.badges"
         :key="b.text"
-        style="margin-left: 0.1em"
         class="self-center"
         :class="b.class"
       >{{ b.text }}</small>
