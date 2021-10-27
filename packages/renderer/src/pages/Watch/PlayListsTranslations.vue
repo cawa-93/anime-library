@@ -49,15 +49,6 @@ const groups = computed<{ title: string, playListItems: PlayListItem[] }[]>(() =
 
     let badges: PlayListItem['badges'] = [];
 
-    /**
-     * Бейдж Украинского языка
-     */
-    if (navigator.language === 'uk' && (/^укр/i.test(t.title) || /^ua/i.test(t.title) || /^uk/i.test(t.title))) {
-      badges.push({
-        class: 'light',
-        text: '🇺🇦',
-      });
-    }
 
     /**
      * Максимального качества видео
@@ -67,6 +58,15 @@ const groups = computed<{ title: string, playListItems: PlayListItem[] }[]>(() =
       text: `${t.maxQuality}p`,
     });
 
+    /**
+     * Бейдж Украинского языка
+     */
+    if (navigator.language === 'uk' && (/(укр)/i.test(t.title) || /^ua/i.test(t.title) || /^uk/i.test(t.title))) {
+      badges.push({
+        class: '',
+        text: '🇺🇦',
+      });
+    }
 
     /**
      * Тип источника
