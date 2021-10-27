@@ -58,7 +58,7 @@
     "fake-indexeddb": "3.1.7",
     "jest": "27.3.1",
     "lint-staged": "11.2.6",
-    "playwright": "1.16.1",
+    "playwright": "1.16.2",
     "rollup-plugin-copy": "3.4.0",
     "simple-git-hooks": "2.7.0",
     "ts-jest": "27.0.7",
