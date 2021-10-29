@@ -1,14 +1,7 @@
 <script lang="ts" setup>
 import type {PropType} from 'vue';
 import {onMounted, ref} from 'vue';
-
-
-export interface PlayListItem {
-  id: number,
-  label: string,
-  title?: string,
-  badges?: { text: string, class: string }[]
-}
+import type {PlayListItem} from '/@/pages/Watch/PlayListItem';
 
 
 defineProps({

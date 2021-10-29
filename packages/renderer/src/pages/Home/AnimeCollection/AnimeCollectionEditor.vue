@@ -109,7 +109,7 @@ const deleteHandler = () => {
   <app-dialog
     :title="header"
     :is-open="isOpen"
-    @update:isOpen="v => $emit('update:isOpen', v)"
+    @update:is-open="v => $emit('update:isOpen', v)"
   >
     <DialogDescription
       as="p"

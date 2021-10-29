@@ -203,10 +203,10 @@ const setInFullScreenState = (v: boolean) => v ? enterFullscreen() : exitFullscr
       :in-fullscreen="inFullscreen"
       :video="video"
       :has-next-episode="!!nextEpisode"
-      @goToNextEpisode="selectNextEpisode"
+      @go-to-next-episode="selectNextEpisode"
       @source-error="onSourceError"
-      @update:controlsVisible="handleControlsVisibilityChanged"
-      @update:inFullscreen="setInFullScreenState"
+      @update:controls-visible="handleControlsVisibilityChanged"
+      @update:in-fullscreen="setInFullScreenState"
     />
     <error-message
       v-if="loadWatchDataError"

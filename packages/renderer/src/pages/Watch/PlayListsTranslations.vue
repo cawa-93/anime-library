@@ -3,9 +3,9 @@ import type {PropType} from 'vue';
 import {computed} from 'vue';
 import type {Translation} from '/@/utils/videoProvider';
 import {formatList} from '/@/utils/formatList';
-import type {PlayListItem} from '/@/pages/Watch/PlayListsBaseList.vue';
 import PlayListsBaseList from '/@/pages/Watch/PlayListsBaseList.vue';
 import {savePreferredTranslation} from '/@/utils/translationRecommendations/savePreferredTranslation';
+import type {PlayListItem} from '/@/pages/Watch/PlayListItem';
 
 
 interface TranslationPlayListItem extends PlayListItem {

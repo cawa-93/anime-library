@@ -55,7 +55,7 @@ const update = (id: number, state: '' | 'include' | 'exclude') => {
       :model-value="selectedGenres.get(genre.id) || ''"
       :group-name="genre.id + genre.name"
       :aria-label="genre.name"
-      @update:modelValue="state => update(genre.id, state)"
+      @update:model-value="state => update(genre.id, state)"
     >
       {{ genre.name }}
     </button-switcher>
