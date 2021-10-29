@@ -17,7 +17,7 @@ const props = defineProps({
 });
 
 const trackAndOpenURL = () => {
-  trackEvent('social', 'open_external_uel', props.href);
+  trackEvent('social', 'open_external_url', props.href);
   openExternalURL(props.href);
 };
 
