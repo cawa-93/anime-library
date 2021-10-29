@@ -90,7 +90,7 @@ defineEmits({
             :selected-episode="selectedEpisode"
             :series-id="seriesId"
             :episodes="episodes"
-            @update:selectedEpisode="v => $emit('update:selectedEpisode', v)"
+            @update:selected-episode="v => $emit('update:selectedEpisode', v)"
           />
         </TabPanel>
         <TabPanel>
@@ -98,7 +98,7 @@ defineEmits({
             :selected-translation="selectedTranslation"
             :series-id="seriesId"
             :translations="translations"
-            @update:selectedTranslation="v => $emit('update:selectedTranslation', v)"
+            @update:selected-translation="v => $emit('update:selectedTranslation', v)"
           />
         </TabPanel>
       </TabPanels>

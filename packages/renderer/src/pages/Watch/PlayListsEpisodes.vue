@@ -2,10 +2,10 @@
 import type {PropType} from 'vue';
 import {computed} from 'vue';
 import type {Episode} from '/@/utils/videoProvider';
-import type {PlayListItem} from '/@/pages/Watch/PlayListsBaseList.vue';
 import PlayListsBaseList from '/@/pages/Watch/PlayListsBaseList.vue';
 import {getEpisodeMeta} from '/@/utils/videoProvider';
 import {asyncComputed} from '@vueuse/core';
+import type {PlayListItem} from '/@/pages/Watch/PlayListItem';
 
 
 interface EpisodePlayListItem extends PlayListItem {
