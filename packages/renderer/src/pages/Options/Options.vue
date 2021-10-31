@@ -5,13 +5,10 @@ import OptionAnime365 from '/@/pages/Options/OptionsAnime365/OptionsAnime365.vue
 import TimelineThumbnails from '/@/pages/Options/OptionsTimelineThumbnails.vue';
 import ColorScheme from '/@/pages/Options/OptionsColorScheme.vue';
 import HomeFooter from '/@/components/HomeFooter.vue';
-import ExternalLink from '/@/components/ExternalLink.vue';
-import {GITHUB, VK, TG} from '/@/utils/social-links';
 import OptionsAnimeTitleLang from '/@/pages/Options/OptionsAnimeTitleLang/OptionsAnimeTitleLang.vue';
 
 
 useTitle('Параметры');
-const appVersion = import.meta.env.VITE_APP_VERSION;
 </script>
 
 <template>
@@ -28,10 +25,6 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
           class="btn rounded-none block px-4 py-2 not-first:border-t border-opacity-25 border-black dark:border-white dark:border-opacity-25"
           href="#app-settings"
         >Настройки приложения</a>
-        <a
-          class="btn rounded-none block px-4 py-2 not-first:border-t border-opacity-25 border-black dark:border-white dark:border-opacity-25"
-          href="#help"
-        >Справка</a>
       </nav>
 
       <section
@@ -118,53 +111,6 @@ const appVersion = import.meta.env.VITE_APP_VERSION;
             Названия аниме
           </h3>
           <options-anime-title-lang aria-labelledby="anime-title-lang-head" />
-        </section>
-      </section>
-
-      <section
-        id="help"
-        class="col-start-2"
-        aria-labelledby="help-head"
-      >
-        <h2 id="help-head">
-          Справка
-        </h2>
-        <section
-          class="card"
-          aria-labelledby="about"
-        >
-          <h3
-            id="about"
-            class="card-header text-base"
-          >
-            О приложении
-          </h3>
-          <p>
-            Версия: <strong>{{ appVersion }}</strong>
-            <br>
-            Исходный код на GitHub:
-            <external-link
-              class="underline"
-              :href="GITHUB"
-            >
-              cawa-93/anime-library
-            </external-link>
-            <br>
-            Сообщество пользователей в
-            <external-link
-              :href="VK"
-              class="underline"
-            >
-              Вконтакте
-            </external-link>
-            и в
-            <external-link
-              :href="TG"
-              class="underline"
-            >
-              Telegram
-            </external-link>
-          </p>
         </section>
       </section>
     </div>

@@ -6,7 +6,6 @@ import CloseButton from '/@/components/TitleBar/TitleBarCloseWindowButton.vue';
 import MaximizeButton from '/@/components/TitleBar/TitleBarMaximizeWindowButton.vue';
 import HomeButton from '/@/components/TitleBar/TitleBarGoHomeButton.vue';
 import OptionsButton from '/@/components/TitleBar/TitleBarOptionsButton.vue';
-import HelpButton from '/@/components/TitleBar/TitleBarHelpButton.vue';
 import OpenShikimori from '/@/components/TitleBar/TitleBarGoToShikimori.vue';
 </script>
 
@@ -15,7 +14,6 @@ import OpenShikimori from '/@/components/TitleBar/TitleBarGoToShikimori.vue';
   <header class="flex region-drag max-w-screen h-8">
     <back-button />
     <home-button />
-    <help-button />
     <open-shikimori />
     <window-title class="px-3 align-self-center" />
     <options-button />
