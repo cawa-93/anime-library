@@ -8,7 +8,8 @@ import type {IndexKey} from 'idb/build/esm/entry';
  * Возвращает массив авторов, отфильтрованных по типу и отсортированный по приоритету для пользователя
  */
 export async function getPreferredTranslationAuthorsByType(preferredType: IndexKey<TranslationRecommendations, 'preferences', 'by-type'>): Promise<string[]> {
-  const translations = await getDB().then(db => db.getAllFromIndex('preferences', 'by-type', preferredType));
+  const db = await getDB();
+  const translations = await db.getAllFromIndex('preferences', 'by-type', preferredType);
   if (translations.length === 0) {
     return [];
   }

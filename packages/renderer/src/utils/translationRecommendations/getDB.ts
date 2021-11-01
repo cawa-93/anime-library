@@ -3,9 +3,16 @@ import {openDB} from 'idb';
 import type {TranslationAuthor, TranslationType} from '/@/utils/videoProvider';
 
 
+export interface TranslationRecommendationValue {
+  seriesId: number;
+  type: TranslationType;
+  author: string[];
+}
+
+
 export interface TranslationRecommendations extends DBSchema {
   preferences: {
-    value: { seriesId: number, type: TranslationType, author: string[] };
+    value: TranslationRecommendationValue;
     key: number;
     indexes: {
       'by-type': 'sub' | 'voice'

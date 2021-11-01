@@ -25,6 +25,9 @@ useTitle('Параметры');
           class="btn rounded-none block px-4 py-2 not-first:border-t border-opacity-25 border-black dark:border-white dark:border-opacity-25"
           href="#app-settings"
         >Настройки приложения</a>
+        <router-link :to="{name: 'TranslationsPrioritization'}">
+          TranslationsPrioritization
+        </router-link>
       </nav>
 
       <section
