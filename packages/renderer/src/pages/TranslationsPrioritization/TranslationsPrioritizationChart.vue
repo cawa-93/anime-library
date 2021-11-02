@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import type { PropType} from 'vue';
+import type {PropType} from 'vue';
 import {computed} from 'vue';
 import type {TranslationRecommendationValue} from '/@/utils/translationRecommendations/getDB';
 import type {TranslationType} from '/@/utils/videoProvider';
 import {numToPercent} from '/@/utils/numToPercent';
+
 
 const props = defineProps({
   preferences: {
@@ -70,38 +71,45 @@ const authorsStatByType = (targetType: TranslationType) => (): AuthorsStat[] => 
 
 const authorsVoiceStat = computed(authorsStatByType('voice'));
 const authorsSubStat = computed(authorsStatByType('sub'));
+
+const sections = computed(() => {
+  const sections = [];
+
+  if (authorsSubStat.value.length) {
+    sections.push({
+      label: 'Субтитры',
+      stat: typeStat.value.sub,
+      authors: authorsSubStat.value,
+    });
+  }
+
+  if (authorsVoiceStat.value.length) {
+    sections.push({
+      label: 'Озвучка',
+      stat: typeStat.value.voice,
+      authors: authorsVoiceStat.value,
+    });
+  }
+
+  return sections.sort((s1, s2) => s2.stat - s1.stat);
+});
 </script>
 
 <template>
   <div class="flex">
     <section
-      v-if="authorsVoiceStat.length"
+      v-for="{label, stat, authors} of sections"
+      :key="label"
       class="flex-1"
     >
-      <h4>Озвучка {{ typeStat.voice < 1 ? numToPercent(typeStat.voice) : '' }}</h4>
+      <h4>{{ label }} {{ stat < 1 ? numToPercent(stat) : '' }}</h4>
       <ol class="flex flex-wrap gap-2">
         <li
-          v-for="entity of authorsVoiceStat"
-          :key="entity.author"
+          v-for="author of authors"
+          :key="author.author"
           class=" capitalize"
         >
-          {{ entity.author }} {{ showPercents ? `(${numToPercent(entity.stat)})` : '' }}
-        </li>
-      </ol>
-    </section>
-
-    <section
-      v-if="authorsSubStat.length"
-      class="flex-1"
-    >
-      <h4>Субтитры {{ typeStat.sub < 1 ? numToPercent(typeStat.sub) : '' }}</h4>
-      <ol class="flex flex-wrap">
-        <li
-          v-for="entity of authorsSubStat"
-          :key="entity.author"
-          class=" capitalize"
-        >
-          {{ entity.author }} {{ showPercents ? `(${numToPercent(entity.stat)})` : '' }}
+          {{ author.author }} {{ showPercents ? `(${numToPercent(author.stat)})` : '' }}
         </li>
       </ol>
     </section>
