@@ -17,7 +17,35 @@ const props = defineProps({
     required: false,
     default: false,
   },
+
+  onIncrement: {
+    type: Function,
+    required: false,
+    default: undefined,
+  },
+
+  onDecrement: {
+    type: Function,
+    required: false,
+    default: undefined,
+  },
+
+  onRemove: {
+    type: Function,
+    required: false,
+    default: undefined,
+  },
 });
+
+defineEmits({
+  increment: null,
+  decrement: null,
+  remove: null,
+});
+
+const allowIncrement = computed(() => typeof props.onIncrement === 'function');
+const allowDecrement = computed(() => typeof props.onDecrement === 'function');
+const allowRemove = computed(() => typeof props.onRemove === 'function');
 
 
 interface TypeStat {
@@ -78,6 +106,7 @@ const sections = computed(() => {
   if (authorsSubStat.value.length) {
     sections.push({
       label: 'Субтитры',
+      type: 'sub',
       stat: typeStat.value.sub,
       authors: authorsSubStat.value,
     });
@@ -86,6 +115,7 @@ const sections = computed(() => {
   if (authorsVoiceStat.value.length) {
     sections.push({
       label: 'Озвучка',
+      type: 'voice',
       stat: typeStat.value.voice,
       authors: authorsVoiceStat.value,
     });
@@ -98,20 +128,80 @@ const sections = computed(() => {
 <template>
   <div class="flex">
     <section
-      v-for="{label, stat, authors} of sections"
+      v-for="{label, type, stat, authors} of sections"
       :key="label"
       class="flex-1"
     >
-      <h4>{{ label }} {{ stat < 1 ? numToPercent(stat) : '' }}</h4>
-      <ol class="flex flex-wrap gap-2">
+      <h4 class="mb-3">
+        {{ label }} {{ stat < 1 ? numToPercent(stat) : '' }}
+      </h4>
+      <ol class="flex flex-wrap gap-x-4 gap-y-2">
         <li
-          v-for="author of authors"
+          v-for="(author, index) of authors"
           :key="author.author"
-          class=" capitalize"
+          class="capitalize rounded overflow-hidden flex items-center border-1"
         >
-          {{ author.author }} {{ showPercents ? `(${numToPercent(author.stat)})` : '' }}
+          <button
+            v-if="index > 0 && allowIncrement"
+            class="btn win-icon"
+            title="Повысить приоритет"
+            aria-label="Повысить приоритет"
+            @click="$emit('increment', author.author, type)"
+          >
+            &#xe72b;
+          </button>
+          <span class="label">{{ author.author }} {{ showPercents ? `(${numToPercent(author.stat)})` : '' }}</span>
+          <button
+            v-if="index < authors.length - 1 && allowDecrement"
+            class="btn win-icon"
+            title="Понизить приоритет"
+            aria-label="Понизить приоритет"
+            @click="$emit('decrement', author.author, type)"
+          >
+            &#xe72a;
+          </button>
+          <button
+            v-else-if="allowRemove"
+            class="btn win-icon"
+            title="Забыть автора"
+            aria-label="Забыть автора"
+            @click="$emit('remove', author.author, type)"
+          >
+            &#xe74d;
+          </button>
         </li>
       </ol>
     </section>
   </div>
 </template>
+
+<style scoped>
+li > * {
+  @apply p-1;
+}
+
+li:not(:hover) > .win-icon {
+  opacity: 0;
+}
+
+.label {
+  @apply px-2;
+}
+
+.label:first-child {
+  margin-left: 33px;
+}
+
+.label:last-child {
+  margin-right: 33px;
+}
+
+.btn {
+  border-radius: 0;
+}
+
+.win-icon {
+  @apply first:border-r last:border-l;
+  width: 32px;
+}
+</style>
