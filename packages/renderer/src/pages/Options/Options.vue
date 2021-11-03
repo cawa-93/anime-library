@@ -6,6 +6,7 @@ import TimelineThumbnails from '/@/pages/Options/OptionsTimelineThumbnails.vue';
 import ColorScheme from '/@/pages/Options/OptionsColorScheme.vue';
 import HomeFooter from '/@/components/HomeFooter.vue';
 import OptionsAnimeTitleLang from '/@/pages/Options/OptionsAnimeTitleLang/OptionsAnimeTitleLang.vue';
+import TranslationsPrioritization from '/@/pages/Options/TranslationsPrioritization/TranslationsPrioritization.vue';
 
 
 useTitle('Параметры');
@@ -25,6 +26,10 @@ useTitle('Параметры');
           class="btn rounded-none block px-4 py-2 not-first:border-t border-opacity-25 border-black dark:border-white dark:border-opacity-25"
           href="#app-settings"
         >Настройки приложения</a>
+        <a
+          class="btn rounded-none block px-4 py-2 not-first:border-t border-opacity-25 border-black dark:border-white dark:border-opacity-25"
+          href="#translations-prioritization"
+        >Авто выбор переводов</a>
       </nav>
 
       <section
@@ -112,6 +117,21 @@ useTitle('Параметры');
           </h3>
           <options-anime-title-lang aria-labelledby="anime-title-lang-head" />
         </section>
+      </section>
+
+      <section
+        id="translations-prioritization"
+        aria-labelledby="translations-prioritization-head"
+        class="col-start-2"
+      >
+        <h2 id="translations-prioritization-head">
+          Авто выбор переводов
+        </h2>
+        <p class="mb-4">
+          При переключении серии приложение автоматически выбирает перевод основываясь на вашей истории просмотров.
+          В этом разделе вы можете изменить приоритет переводов для каждого отдельно взятого аниме.
+        </p>
+        <translations-prioritization />
       </section>
     </div>
 

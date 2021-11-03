@@ -1,10 +1,10 @@
 @layer base {
   html {
-    @apply h-full
+    @apply h-full overflow-hidden;
   }
 
   body {
-    @apply grid grid-rows-[min-content,auto] bg-true-gray-100 dark:bg-true-gray-900 h-full overflow-hidden
+    @apply grid grid-rows-[min-content,auto] bg-true-gray-100 dark:bg-true-gray-900 h-full overflow-hidden;
   }
 
   /**
