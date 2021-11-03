@@ -96,6 +96,8 @@ const removeAuthorPriorityForAll = (author: string, type: TranslationType) => {
   [...preferences.value].forEach(s => removeAuthorPriorityForSeries(s.seriesId, author, type));
 };
 
+// Повышение приоритета автору для всех аниме отключил так как поведение не очевидно для пользователя.
+// Боюсь это добавит больше путаницы чем удобства.
 // const incrementAuthorPriorityForAll = (author: string, type: TranslationType) => {
 //   [...preferences.value].forEach(s => incrementAuthorPriorityForSeries(s.seriesId, author, type));
 // };
