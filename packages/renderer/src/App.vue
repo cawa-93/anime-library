@@ -1,11 +1,13 @@
 <script lang="ts" setup>
-// import {isWindowMaximized} from '/@/use/isWindowMaximized';
-// import {computed} from 'vue';
+import {isWindowMaximized} from '/@/use/isWindowMaximized';
 import TitleBar from '/@/components/TitleBar/TitleBar.vue';
+import {watch} from 'vue';
 
 
-// const {isMaximized} = isWindowMaximized();
-// const borderWidth = computed(() => isMaximized.value ? '0px' : '1px');
+const {isMaximized} = isWindowMaximized();
+watch(isMaximized, (isMaximized) => {
+  document.body.style.border = `${isMaximized ? 0 : 1}px solid black`;
+}, {immediate: true});
 </script>
 
 <template>

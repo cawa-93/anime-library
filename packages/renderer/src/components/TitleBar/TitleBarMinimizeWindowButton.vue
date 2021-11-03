@@ -1,3 +1,7 @@
+<script lang="ts" setup>
+const minimize = window.minimize;
+</script>
+
 <template>
   <button
     class="btn-title-bar win-icon win-icon-xs w-[45px]"
@@ -9,10 +13,6 @@
     &#xE921;
   </button>
 </template>
-
-<script lang="ts" setup>
-import {minimize} from '/@/utils/window-controllers';
-</script>
 
 <style scoped>
 @import "./btn-titlebar.css";

@@ -3,12 +3,12 @@ import {join} from 'path';
 import {createProtocol} from '/@/createCustomProtocol';
 import windowStateKeeper from 'electron-window-state';
 import {registerIpcHost} from '/@/ipc';
-import WindowControllersHost from '/@/ipc/WindowControllersHost';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
 import {URL} from 'url';
 import DialogsHost from '/@/ipc/DialogsHost';
 import * as UserSettings from './userSettingController';
 import ColorSchemeHost from '/@/ipc/ColorSchemeHost';
+import {WindowControls} from '/@/ipc/WindowControls';
 
 
 const isSingleInstance = app.requestSingleInstanceLock();
@@ -127,7 +127,10 @@ const createWindow = async (pageUrl?: string) => {
 
   mainWindow.once('ready-to-show', () => {
     if (mainWindow) {
+
       mainWindowState.manage(mainWindow);
+      new WindowControls(mainWindow);
+
       mainWindow.show();
       if (import.meta.env.MODE === 'development') {
         mainWindow.webContents.openDevTools();
@@ -212,7 +215,6 @@ app.whenReady()
       createProtocol(PROTOCOL);
     }
 
-    registerIpcHost('WindowControllers', WindowControllersHost);
     registerIpcHost('DialogsControllers', DialogsHost);
     registerIpcHost('ColorSchemeController', ColorSchemeHost);
     registerIpcHost('UserSettingsController', {

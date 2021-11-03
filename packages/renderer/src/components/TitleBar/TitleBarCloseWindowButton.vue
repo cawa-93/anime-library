@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {close} from '/@/utils/window-controllers';
+const close = window.close;
 </script>
 
 <template>

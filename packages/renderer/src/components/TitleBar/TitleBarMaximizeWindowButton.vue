@@ -1,13 +1,10 @@
 <script lang="ts" setup>
 import {isWindowMaximized} from '/@/use/isWindowMaximized';
-import {toggle} from '/@/utils/window-controllers';
 
-
-const {isMaximized, forceUpdate} = isWindowMaximized();
+const {isMaximized} = isWindowMaximized();
 
 const toggleMaximizeState = () => {
-  forceUpdate();
-  toggle();
+  isMaximized.value ? window.unmaximize() : window.maximize();
 };
 </script>
 
