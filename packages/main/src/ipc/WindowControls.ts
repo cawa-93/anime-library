@@ -10,12 +10,8 @@ export class WindowControls {
     this.window = window;
 
     const eventsForSend = [
-      'focus',
-      'blur',
       'maximize',
       'unmaximize',
-      'minimize',
-      'restore',
     ] as const;
 
     // @ts-expect-error У Electron нет общего типа для возможных событий

@@ -7,11 +7,20 @@ import MaximizeButton from '/@/components/TitleBar/TitleBarMaximizeWindowButton.
 import HomeButton from '/@/components/TitleBar/TitleBarGoHomeButton.vue';
 import OptionsButton from '/@/components/TitleBar/TitleBarOptionsButton.vue';
 import OpenShikimori from '/@/components/TitleBar/TitleBarGoToShikimori.vue';
+import {useInFocus} from '/@/use/useInFocus';
+
+
+const {inFocus} = useInFocus();
 </script>
 
 
 <template>
-  <header class="flex region-drag max-w-screen h-8">
+  <header
+    class="flex region-drag max-w-screen h-8"
+    :class="{
+      'opacity-50': !inFocus
+    }"
+  >
     <back-button />
     <home-button />
     <open-shikimori />
