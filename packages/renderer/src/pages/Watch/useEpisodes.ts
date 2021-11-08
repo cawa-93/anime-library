@@ -4,6 +4,8 @@ import type {Episode} from '/@/utils/videoProvider';
 import {getEpisodes} from '/@/utils/videoProvider';
 import {getViewHistoryItem} from '/@/utils/history-views';
 import {asyncComputed} from '@vueuse/core';
+import {isEpisodeCompleted} from '/@/utils/isEpisodeCompleted';
+import {getState as shouldSkipCompletedEpisode} from '/@/pages/Options/OptionsSkipCompletedEpisode/store';
 
 
 type useEpisodesReturn = {
@@ -46,7 +48,22 @@ export function useEpisodes(seriesId: Ref<number | string>, episodeNumRaw?: numb
        */
       const targetEpisodeNum = episodeNumRaw
         ? Number(episodeNumRaw)
-        : await getViewHistoryItem(Number(seriesId.value)).then(h => h?.episode?.number);
+        : await getViewHistoryItem(Number(seriesId.value)).then(h => {
+          const {number, time, duration} = h?.episode || {};
+
+          if (!number) {
+            return;
+          }
+
+          const shouldChoseNextEpisode = Boolean(
+            time
+            && duration
+            && isEpisodeCompleted(time, duration)
+            && shouldSkipCompletedEpisode(),
+          );
+
+          return shouldChoseNextEpisode ? number + 1 : number;
+        });
 
       targetEpisodeNum ? selectEpisode(targetEpisodeNum) : $selectedEpisodeIndex.value = 0;
     }

@@ -7,6 +7,7 @@ import ColorScheme from '/@/pages/Options/OptionsColorScheme.vue';
 import HomeFooter from '/@/components/HomeFooter.vue';
 import OptionsAnimeTitleLang from '/@/pages/Options/OptionsAnimeTitleLang/OptionsAnimeTitleLang.vue';
 import TranslationsPrioritization from '/@/pages/Options/TranslationsPrioritization/TranslationsPrioritization.vue';
+import OptionsSkipCompletedEpisode from '/@/pages/Options/OptionsSkipCompletedEpisode/OptionsSkipCompletedEpisode.vue';
 
 
 useTitle('Параметры');
@@ -116,6 +117,19 @@ useTitle('Параметры');
             Названия аниме
           </h3>
           <options-anime-title-lang aria-labelledby="anime-title-lang-head" />
+        </section>
+
+        <section
+          class="card"
+          aria-labelledby="skip-completed-episode-head"
+        >
+          <h3
+            id="skip-completed-episode-head"
+            class="card-header text-base"
+          >
+            Пропускать законченные эпизоды
+          </h3>
+          <options-skip-completed-episode />
         </section>
       </section>
 
