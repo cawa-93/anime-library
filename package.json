@@ -32,7 +32,7 @@
     "typecheck:renderer": "vue-tsc --noEmit -p packages/renderer/tsconfig.json"
   },
   "browserslist": [
-    "Chrome 94"
+    "Chrome 96"
   ],
   "simple-git-hooks": {
     "pre-commit": "./scripts/tsc-staged.sh && npx lint-staged"
