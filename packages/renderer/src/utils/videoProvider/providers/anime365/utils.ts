@@ -2,7 +2,7 @@ import type * as sm from '/@/utils/videoProvider/providers/anime365/anime365-int
 import {getAccessToken} from '/@/utils/videoProvider/providers/anime365/anime365';
 
 
-export const ANIME365_ORIGIN = 'https://smotret-anime.online';
+export const ANIME365_ORIGIN = 'https://anime365.ru';
 export const API_BASE = `${ANIME365_ORIGIN}/api/`;
 
 
