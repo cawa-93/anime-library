@@ -2,8 +2,8 @@ import type * as sm from '/@/utils/videoProvider/providers/anime365/anime365-int
 import {getAccessToken} from '/@/utils/videoProvider/providers/anime365/anime365';
 
 
-export const HOST_ROOT = 'https://smotret-anime.online';
-export const API_BASE = `${HOST_ROOT}/api/`;
+export const ANIME365_ORIGIN = 'https://smotret-anime.online';
+export const API_BASE = `${ANIME365_ORIGIN}/api/`;
 
 
 export async function request<T>(

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import ExternalLink from '/@/components/ExternalLink.vue';
+import {ANIME365_ORIGIN} from '/@/utils/videoProvider/providers/anime365/utils';
 </script>
 
 <template>
@@ -7,9 +8,9 @@ import ExternalLink from '/@/components/ExternalLink.vue';
     Откройте страницу авторизации в вашем браузере
     <external-link
       class="underline"
-      href="https://smotret-anime.online/users/login"
+      :href="`${ANIME365_ORIGIN}/users/login`"
     >
-      smotret-anime.online
+      {{ ANIME365_ORIGIN }}
     </external-link>
     и авторизуйтесь. Если вы уже авторизованы — можете перейти к следующему шагу.
   </p>
@@ -17,7 +18,7 @@ import ExternalLink from '/@/components/ExternalLink.vue';
     <strong>Важно</strong>: вы должны авторизоваться в аккаунте в котором оформлена
     <external-link
       class="underline"
-      href="https://smotret-anime.online/support/index"
+      :href="`${ANIME365_ORIGIN}/support/index`"
     >
       премиум подписка
     </external-link>.

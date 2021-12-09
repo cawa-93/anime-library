@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import {getAccessToken} from '/@/utils/videoProvider/providers/anime365/anime365';
 import ExternalLink from '/@/components/ExternalLink.vue';
+import {ANIME365_ORIGIN} from '/@/utils/videoProvider/providers/anime365/utils';
 
 
 const isConnected = !!getAccessToken();
@@ -12,14 +13,14 @@ const isConnected = !!getAccessToken();
       Все аниме в этом приложении загружаются с сайта
       <external-link
         class="underline"
-        href="https://smotret-anime.online"
+        :href="ANIME365_ORIGIN"
       >
         Anime.365
       </external-link>.
       А он требует для просмотра наличие аккаунта и оплаченной
       <external-link
         class="underline"
-        href="https://smotret-anime.online/support/index"
+        :href="`${ANIME365_ORIGIN}/support/index`"
       >
         премиум подпиской
       </external-link>.

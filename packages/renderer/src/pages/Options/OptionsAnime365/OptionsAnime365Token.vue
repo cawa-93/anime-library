@@ -2,6 +2,7 @@
 import {computed, ref} from 'vue';
 import type * as sm from '/@/utils/videoProvider/providers/anime365/anime365-interfaces';
 import {getAccessToken, saveAccessToken} from '/@/utils/videoProvider/providers/anime365/anime365';
+import {ANIME365_ORIGIN} from '/@/utils/videoProvider/providers/anime365/utils';
 import {useTokenValidator} from '/@/pages/Options/OptionsAnime365/useTokenValidator';
 import ButtonSpinner from '/@/components/ButtonSpinner.vue';
 import ExternalLink from '/@/components/ExternalLink.vue';
@@ -72,7 +73,7 @@ const save = () => {
     <p class="col-span-full">
       <external-link
         class="font-bold underline"
-        href="https://smotret-anime.online/api/accessToken?app=play-shikimori-online"
+        :href="`${ANIME365_ORIGIN}/api/accessToken?app=play-shikimori-online`"
       >
         Нажмите сюда
       </external-link>
@@ -124,7 +125,7 @@ const save = () => {
         ❌ Введённый ключ не валидный.
         Возможно вы не авторизованы или авторизованы в аккаунте в котором не оформлена <external-link
           class="underline"
-          href="https://smotret-anime.online/support/index"
+          :href="`${ANIME365_ORIGIN}/support/index`"
         >премиум подписка</external-link>.
       </span>
     </p>

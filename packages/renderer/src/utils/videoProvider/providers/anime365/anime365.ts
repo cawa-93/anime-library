@@ -2,7 +2,7 @@ import type * as sm from '/@/utils/videoProvider/providers/anime365/anime365-int
 import type {Episode, Translation, Video, VideoTrack} from '/@/utils/videoProvider';
 import {getAuthor} from '/@/utils/videoProvider/providers/anime365/anime365-authors';
 import {resolveEpisodesList} from '/@/utils/videoProvider/providers/anime365/resolveEpisodesList';
-import {API_BASE, HOST_ROOT, isFailureResponse, request} from '/@/utils/videoProvider/providers/anime365/utils';
+import {API_BASE, ANIME365_ORIGIN, isFailureResponse, request} from '/@/utils/videoProvider/providers/anime365/utils';
 import {searchSeries} from '/@/utils/videoProvider/providers/anime365/series';
 import type {
   TranslationRaw,
@@ -192,8 +192,8 @@ export async function getStream(translationId: number | string, access_token?: s
     const resolvedSubtitlesUrl = subtitlesUrl.startsWith('http')
       ? subtitlesUrl
       : subtitlesUrl.startsWith('/')
-        ? `${HOST_ROOT}${subtitlesUrl}`
-        : `${HOST_ROOT}/${subtitlesUrl}`;
+        ? `${ANIME365_ORIGIN}${subtitlesUrl}`
+        : `${ANIME365_ORIGIN}/${subtitlesUrl}`;
 
     tracks.push({
       src: resolvedSubtitlesUrl,
