@@ -55,3 +55,4 @@ types/env.d.ts
 # Editor-based Rest Client
 .idea/httpRequests
 /.idea/csv-plugin.xml
+/.idea/git_toolbox_prj.xml
