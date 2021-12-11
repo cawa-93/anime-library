@@ -1,47 +1,40 @@
-import type {BrowserWindow} from 'electron';
-import {ipcMain} from 'electron';
+import {app, BrowserWindow, ipcMain} from 'electron';
 import {IpcChannels} from '/@shared/ipcChannels';
 
 
-export class WindowControls {
-  public window: BrowserWindow;
+/**
+ * При создании нового окна начать следить за его состоянием
+ * и отправлять изменения состояния в webContents
+ */
+app.on('browser-window-created', (_, window) => {
+
+  const sendState = () => window.webContents.send(
+    IpcChannels.WindowControls,
+    window.isMaximized() ? 'maximize' : 'unmaximize',
+  );
+
+  window.on('maximize', sendState);
+  window.on('unmaximize', sendState);
+
+  window.webContents.on('dom-ready', sendState);
+  sendState();
+});
 
 
-  constructor(window: BrowserWindow) {
-    this.window = window;
+/**
+ * Обработка команд из webContents и изменение состояния окна по запросу
+ */
+ipcMain.on(IpcChannels.WindowControls, (event, command: string) => {
 
-    const eventsForSend = [
-      'maximize',
-      'unmaximize',
-    ] as const;
-
-    // @ts-expect-error У Electron нет общего типа для возможных событий
-    eventsForSend.forEach(event => this.window.on(event, () => this.sendEvent(event)));
-
-
-    const eventsToHandle = [
-      'minimize',
-      'maximize',
-      'unmaximize',
-    ] as const;
-
-    ipcMain.on(IpcChannels.WindowControls, (_, event: unknown) => {
-      if (typeof event !== 'string' || !eventsToHandle.includes(event as typeof eventsToHandle[number])) {
-        return;
-      }
-      this.window[event as typeof eventsToHandle[number]]();
-    });
-
-    // Send initial state
-    this.sendEvent(this.window.isMaximized() ? 'maximize' : 'unmaximize');
-    this.window.webContents.on(
-      'dom-ready',
-      () => this.sendEvent(this.window.isMaximized() ? 'maximize' : 'unmaximize'));
+  if (command !== 'maximize' && command !== 'unmaximize' && command !== 'minimize') {
+    return;
   }
 
+  const window = BrowserWindow.fromWebContents(event.sender);
 
-
-  private sendEvent(event: string) {
-    this.window.webContents.send(IpcChannels.WindowControls, event);
+  if (!window) {
+    return;
   }
-}
+
+  window[command]();
+});

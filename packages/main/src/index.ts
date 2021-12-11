@@ -5,10 +5,10 @@ import windowStateKeeper from 'electron-window-state';
 import {registerIpcHost} from '/@/ipc';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
 import {URL} from 'url';
-import '/@/ipc/DialogsHost';
 import * as UserSettings from './userSettingController';
 import ColorSchemeHost from '/@/ipc/ColorSchemeHost';
-import {WindowControls} from '/@/ipc/WindowControls';
+import '/@/ipc/DialogsHost';
+import '/@/ipc/WindowControls';
 
 
 const isSingleInstance = app.requestSingleInstanceLock();
@@ -129,7 +129,6 @@ const createWindow = async (pageUrl?: string) => {
     if (mainWindow) {
 
       mainWindowState.manage(mainWindow);
-      new WindowControls(mainWindow);
 
       mainWindow.show();
       if (import.meta.env.MODE === 'development') {

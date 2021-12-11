@@ -2,7 +2,12 @@ import {contextBridge, ipcRenderer} from 'electron';
 import {IpcChannels} from '/@shared/ipcChannels';
 
 
-ipcRenderer.on(IpcChannels.WindowControls, (_, event: string) => globalThis.dispatchEvent(new Event(`electron-window:${event}`)));
+ipcRenderer.on(
+  IpcChannels.WindowControls,
+  (_, event: string) => {
+    globalThis.dispatchEvent(new Event(`electron-window:${event}`));
+  },
+);
 
 
 contextBridge.exposeInMainWorld('maximize', () => ipcRenderer.send(IpcChannels.WindowControls, 'maximize'));
