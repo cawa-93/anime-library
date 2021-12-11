@@ -1,0 +1,3 @@
+{
+  "pre-commit": "./scripts/tsc-staged.sh && npx nano-staged"
+}
