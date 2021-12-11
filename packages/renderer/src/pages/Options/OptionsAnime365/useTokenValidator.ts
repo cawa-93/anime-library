@@ -2,7 +2,6 @@ import type {Ref} from 'vue';
 import {ref, unref, watch} from 'vue';
 import {tryOnBeforeUnmount} from '@vueuse/core';
 import {getStream} from '/@/utils/videoProvider/providers/anime365/anime365';
-import {showErrorMessage} from '/@/utils/dialogs';
 import {isFailureResponse} from '/@/utils/videoProvider/providers/anime365/utils';
 
 
@@ -50,7 +49,7 @@ export function useTokenValidator(token: Ref<string>): { isLoading: Ref<boolean>
       }
     }
 
-    await showErrorMessage({title: 'Не удалось проверить ключ', message: 'Проверьте соединение с сетью'});
+    await window.dialog.showError('Не удалось проверить ключ', 'Проверьте соединение с сетью');
     isLoading.value = false;
   };
 

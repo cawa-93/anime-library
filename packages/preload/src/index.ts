@@ -2,6 +2,7 @@ import {contextBridge, ipcRenderer} from 'electron';
 import './openExternalURL/index';
 import './randomUUID/index';
 import './WindowControls/index';
+import './dialogs';
 
 // const apiKey = 'electron';
 /**

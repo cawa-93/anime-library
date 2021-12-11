@@ -5,7 +5,7 @@ import windowStateKeeper from 'electron-window-state';
 import {registerIpcHost} from '/@/ipc';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
 import {URL} from 'url';
-import DialogsHost from '/@/ipc/DialogsHost';
+import '/@/ipc/DialogsHost';
 import * as UserSettings from './userSettingController';
 import ColorSchemeHost from '/@/ipc/ColorSchemeHost';
 import {WindowControls} from '/@/ipc/WindowControls';
@@ -215,7 +215,6 @@ app.whenReady()
       createProtocol(PROTOCOL);
     }
 
-    registerIpcHost('DialogsControllers', DialogsHost);
     registerIpcHost('ColorSchemeController', ColorSchemeHost);
     registerIpcHost('UserSettingsController', {
       get: UserSettings.get,

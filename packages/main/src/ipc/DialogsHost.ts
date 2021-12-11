@@ -1,11 +1,16 @@
-import type {DialogsControllers} from '/@shared/types/ipc/DialogsControllers';
-import {dialog} from 'electron';
+import type {Dialog} from 'electron';
+import {dialog, ipcMain} from 'electron';
+import {IpcChannels} from '/@shared/ipcChannels';
 
-class DialogsHost implements DialogsControllers {
-  showError(title: string, content: string): void {
-    return dialog.showErrorBox(title, content);
+
+
+ipcMain.handle(IpcChannels.Dialog, (_, method: keyof Dialog, ...args: any[]) => {
+  const validateMethod = (m: keyof typeof dialog): m is keyof Electron.Dialog => typeof dialog[m] === 'function';
+
+  if (!validateMethod(method)) {
+    throw new TypeError(`Electron.Dialog.${method} is not a function`);
   }
 
-}
-
-export default new DialogsHost();
+  // @ts-expect-error Предотвращение ошибки типов выполняется шагом ранее в рантайме
+  return dialog[method](...args);
+});
