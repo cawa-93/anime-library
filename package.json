@@ -31,9 +31,6 @@
     "typecheck:preload": "tsc --noEmit -p packages/preload/tsconfig.json",
     "typecheck:renderer": "vue-tsc --noEmit -p packages/renderer/tsconfig.json"
   },
-  "browserslist": [
-    "Chrome 96"
-  ],
   "devDependencies": {
     "@types/electron-devtools-installer": "2.2.0",
     "@types/jest": "27.0.3",
