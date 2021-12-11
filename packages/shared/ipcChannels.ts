@@ -1,3 +1,4 @@
 export enum IpcChannels {
-  Dialog = 'Dialog'
+  Dialog = 'Dialog',
+  WindowControls = 'WindowControls'
 }

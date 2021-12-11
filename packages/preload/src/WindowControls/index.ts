@@ -1,9 +1,10 @@
 import {contextBridge, ipcRenderer} from 'electron';
+import {IpcChannels} from '/@shared/ipcChannels';
 
 
-ipcRenderer.on('WindowControls', (_, event: string) => globalThis.dispatchEvent(new Event(`electron-window:${event}`)));
+ipcRenderer.on(IpcChannels.WindowControls, (_, event: string) => globalThis.dispatchEvent(new Event(`electron-window:${event}`)));
 
 
-contextBridge.exposeInMainWorld('maximize', () => ipcRenderer.send('WindowControls', 'maximize'));
-contextBridge.exposeInMainWorld('unmaximize', () => ipcRenderer.send('WindowControls', 'unmaximize'));
-contextBridge.exposeInMainWorld('minimize', () => ipcRenderer.send('WindowControls', 'minimize'));
+contextBridge.exposeInMainWorld('maximize', () => ipcRenderer.send(IpcChannels.WindowControls, 'maximize'));
+contextBridge.exposeInMainWorld('unmaximize', () => ipcRenderer.send(IpcChannels.WindowControls, 'unmaximize'));
+contextBridge.exposeInMainWorld('minimize', () => ipcRenderer.send(IpcChannels.WindowControls, 'minimize'));

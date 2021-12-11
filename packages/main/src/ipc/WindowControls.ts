@@ -1,5 +1,6 @@
 import type {BrowserWindow} from 'electron';
 import {ipcMain} from 'electron';
+import {IpcChannels} from '/@shared/ipcChannels';
 
 
 export class WindowControls {
@@ -24,7 +25,7 @@ export class WindowControls {
       'unmaximize',
     ] as const;
 
-    ipcMain.on('WindowControls', (_, event: unknown) => {
+    ipcMain.on(IpcChannels.WindowControls, (_, event: unknown) => {
       if (typeof event !== 'string' || !eventsToHandle.includes(event as typeof eventsToHandle[number])) {
         return;
       }
@@ -41,6 +42,6 @@ export class WindowControls {
 
 
   private sendEvent(event: string) {
-    this.window.webContents.send('WindowControls', event);
+    this.window.webContents.send(IpcChannels.WindowControls, event);
   }
 }
