@@ -34,9 +34,6 @@
   "browserslist": [
     "Chrome 96"
   ],
-  "nano-staged": {
-    "*.{js,ts,vue}": "eslint --cache --fix"
-  },
   "devDependencies": {
     "@types/electron-devtools-installer": "2.2.0",
     "@types/jest": "27.0.3",
