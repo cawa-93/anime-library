@@ -21,7 +21,7 @@
     "build-assets:main": "cd ./packages/main && vite build",
     "build-assets:preload": "cd ./packages/preload && vite build",
     "build-assets:renderer": "cd ./packages/renderer && vite build",
-    "compile": "npm run build && electron-builder build --config electron-builder.config.js --dir --config.asar=false",
+    "compile": "npm run build && electron-builder build --config .electron-builder.config.js --dir --config.asar=false",
     "pretest": "npm run build",
     "test": "jest",
     "watch": "node scripts/watch.js",
