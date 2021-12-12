@@ -1,5 +1,5 @@
-import './openExternalURL/index';
-import './randomUUID/index';
-import './WindowControls/index';
+import '/@/openExternalURL';
+import '/@/randomUUID';
+import '/@/windowControls';
 import './dialogs';
 
