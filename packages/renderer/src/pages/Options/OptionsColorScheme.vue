@@ -1,10 +1,8 @@
 <script lang="ts" setup>
 import {computed, ref} from 'vue';
-import {getScheme, setScheme} from '/@/pages/Options/settingColorScheme';
-
 
 const _colorScheme = ref<'system' | 'light' | 'dark'>('system');
-getScheme().then(v => _colorScheme.value = v || 'system');
+window.colorScheme.get().then(v => _colorScheme.value = v || 'system');
 
 const colorScheme = computed({
   get() {
@@ -12,7 +10,7 @@ const colorScheme = computed({
   },
   set(v: 'system' | 'light' | 'dark') {
     _colorScheme.value = v;
-    setScheme(v);
+    window.colorScheme.set(v);
   },
 });
 </script>

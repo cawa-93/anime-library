@@ -6,7 +6,7 @@ import {registerIpcHost} from '/@/ipc';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
 import {URL} from 'url';
 import * as UserSettings from './userSettingController';
-import ColorSchemeHost from '/@/ipc/ColorSchemeHost';
+import '/@/ipc/ColorSchemeHost';
 import '/@/ipc/DialogsHost';
 import '/@/ipc/WindowControls';
 
@@ -214,7 +214,6 @@ app.whenReady()
       createProtocol(PROTOCOL);
     }
 
-    registerIpcHost('ColorSchemeController', ColorSchemeHost);
     registerIpcHost('UserSettingsController', {
       get: UserSettings.get,
       set: UserSettings.set,

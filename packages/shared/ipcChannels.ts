@@ -1,4 +1,5 @@
 export enum IpcChannels {
   Dialog = 'Dialog',
-  WindowControls = 'WindowControls'
+  WindowControls = 'WindowControls',
+  ColorScheme = 'ColorScheme',
 }
