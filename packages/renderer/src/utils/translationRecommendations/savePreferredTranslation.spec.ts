@@ -43,13 +43,13 @@ describe('savePreferredTranslation', () => {
 
   test('Не должен сохранять переводы с недействительным автором', async () => {
     let seriesId = 0;
-    // @ts-expect-error Test case
+    // @ts-expect-error Не валидный перевод передаётся умышленно и не должен сохраняться
     await savePreferredTranslation(++seriesId, {});
 
-    // @ts-expect-error Test case
+    // @ts-expect-error Не валидный перевод передаётся умышленно и не должен сохраняться
     await savePreferredTranslation(++seriesId, {type: 'sub', id: 1, title: '', qualityType: 'tv'});
 
-    // @ts-expect-error Test case
+    // @ts-expect-error Не валидный перевод передаётся умышленно и не должен сохраняться
     await savePreferredTranslation(++seriesId, {type: 'sub', id: 1, title: '', qualityType: 'tv', author: {}});
 
     await savePreferredTranslation(
