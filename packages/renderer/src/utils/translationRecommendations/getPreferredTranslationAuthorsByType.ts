@@ -1,6 +1,6 @@
 import type {TranslationRecommendations} from '/@/utils/translationRecommendations/getDB';
 import {getDB} from '/@/utils/translationRecommendations/getDB';
-import type {IndexKey} from 'idb/build/esm/entry';
+import type {IndexKey} from 'idb';
 
 
 /**
