@@ -8,6 +8,7 @@ import HomeFooter from '/@/components/HomeFooter.vue';
 import OptionsAnimeTitleLang from '/@/pages/Options/OptionsAnimeTitleLang/OptionsAnimeTitleLang.vue';
 import TranslationsPrioritization from '/@/pages/Options/TranslationsPrioritization/TranslationsPrioritization.vue';
 import OptionsSkipCompletedEpisode from '/@/pages/Options/OptionsSkipCompletedEpisode/OptionsSkipCompletedEpisode.vue';
+import OptionsEnableHardwareAcceleration from '/@/pages/Options/OptionsEnableHardwareAcceleration.vue';
 
 
 useTitle('Параметры');
@@ -91,6 +92,7 @@ useTitle('Параметры');
             Настройки видеоплейера
           </h3>
           <timeline-thumbnails />
+          <options-enable-hardware-acceleration class="mt-3" />
         </section>
 
         <section

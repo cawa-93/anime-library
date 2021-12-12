@@ -2,13 +2,12 @@ import {app, BrowserWindow, nativeTheme, protocol, session} from 'electron';
 import {join} from 'path';
 import {createProtocol} from '/@/createCustomProtocol';
 import windowStateKeeper from 'electron-window-state';
-import {registerIpcHost} from '/@/ipc';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
 import {URL} from 'url';
-import DialogsHost from '/@/ipc/DialogsHost';
-import * as UserSettings from './userSettingController';
-import ColorSchemeHost from '/@/ipc/ColorSchemeHost';
-import {WindowControls} from '/@/ipc/WindowControls';
+import '/@/ipc/ColorSchemeHost';
+import '/@/ipc/DialogsHost';
+import '/@/ipc/WindowControls';
+import '/@/ipc/hardwareAccelerationService';
 
 
 const isSingleInstance = app.requestSingleInstanceLock();
@@ -32,15 +31,6 @@ if (import.meta.env.MODE !== 'development') {
   app.setAsDefaultProtocolClient(PROTOCOL);
 }
 
-
-/**
- * Загрузка настроек приложения
- */
-if (!UserSettings.getSync('enable_hardware_acceleration')) {
-  app.disableHardwareAcceleration();
-}
-
-nativeTheme.themeSource = UserSettings.getSync('color_scheme') || 'system';
 
 
 /**
@@ -129,7 +119,6 @@ const createWindow = async (pageUrl?: string) => {
     if (mainWindow) {
 
       mainWindowState.manage(mainWindow);
-      new WindowControls(mainWindow);
 
       mainWindow.show();
       if (import.meta.env.MODE === 'development') {
@@ -214,13 +203,6 @@ app.whenReady()
     if (import.meta.env.MODE !== 'development') {
       createProtocol(PROTOCOL);
     }
-
-    registerIpcHost('DialogsControllers', DialogsHost);
-    registerIpcHost('ColorSchemeController', ColorSchemeHost);
-    registerIpcHost('UserSettingsController', {
-      get: UserSettings.get,
-      set: UserSettings.set,
-    });
 
     return createWindow();
   })

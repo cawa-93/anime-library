@@ -8,5 +8,5 @@ export function openExternalURL(url: string): void {
     return;
   }
 
-  return window.openExternalURL(url);
+  window.openExternalURL(url).catch(console.error);
 }

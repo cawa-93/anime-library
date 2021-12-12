@@ -2,7 +2,7 @@ import {contextBridge} from 'electron';
 import {randomUUID} from 'crypto';
 
 
-const uuid: Window['uuid'] = () => {
+const uuid = () => {
   return randomUUID();
 };
 

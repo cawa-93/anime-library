@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import {computed, ref} from 'vue';
-import {isEnabled, setEnabled} from '/@/pages/Options/settingHardwareAcceleration';
 
 
 const _enable = ref(false);
@@ -10,13 +9,13 @@ const enable = computed({
   },
   set(value: boolean) {
     _enable.value = value;
-    setEnabled(value);
+    window.hardwareAcceleration.set(value);
   },
 });
 
 let origValue = ref();
 
-isEnabled().then(value => {
+window.hardwareAcceleration.get().then(value => {
   origValue.value = value;
   _enable.value = value;
 });
@@ -34,16 +33,15 @@ const showNotice = computed(() => {
         type="checkbox"
         aria-describedby="enable-hardware-acceleration-help"
       >
-      Включить рендеринг на видеокарте
+      Включить аппаратное ускорение
     </label>
 
     <p
       id="enable-hardware-acceleration-help"
       class="text-sm opacity-60 ml-4"
     >
-      В редких случаях загрузка превью для тайм лайна видео приводит к прерывистому зависанию приложения во время
-      просмотра видео в высоком качестве.
-      В зависимости от вашей системы этот параметр может решить эту проблему в ущерб автономности.
+      Включите если вы столкнулись с зависаниями видео или интерфейса.
+      В зависимости от вашей системы этот параметр может улучшить плавность отрисовки в ущерб автономности.
     </p>
     <p
       v-if="showNotice"

@@ -75,7 +75,11 @@ const updateCollection = (newCollectionData: AnimeCollection['requestParams'] & 
 
   let needReloadAnimes = Object
     .keys(newCollection.requestParams)
-    .some((key) => newCollection.requestParams[key] !== localSearchParams.value[key]);
+    .some(
+      (key) =>
+        newCollection.requestParams[key as keyof typeof newCollection.requestParams]
+        !== localSearchParams.value[key as keyof typeof newCollection.requestParams],
+    );
 
 
   if (!needReloadAnimes) {

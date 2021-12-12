@@ -20,10 +20,9 @@
   "include": [
     "src/**/*.vue",
     "src/**/*.ts",
-    "src/**/*.tsx",
     "types/**/*.d.ts",
     "../../types/**/*.d.ts",
-    "../preload/**/*.d.ts",
+    "../preload/exposed.d.ts",
     "../../node_modules/@types/wicg-mediasession/index.d.ts"
   ]
 }

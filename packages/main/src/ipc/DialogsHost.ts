@@ -1,11 +1,17 @@
-import type {DialogsControllers} from '/@shared/types/ipc/DialogsControllers';
-import {dialog} from 'electron';
+import type {Dialog, IpcMainInvokeEvent} from 'electron';
+import {dialog, ipcMain} from 'electron';
+import {IpcChannels} from '/@shared/ipcChannels';
 
-class DialogsHost implements DialogsControllers {
-  showError(title: string, content: string): void {
+
+
+function listener(_: IpcMainInvokeEvent, method: keyof Dialog, ...args: unknown[]) {
+  if (method === 'showErrorBox') {
+    const [title, content] = args as Parameters<Dialog[typeof method]>;
     return dialog.showErrorBox(title, content);
   }
 
+  throw new TypeError(`Electron.Dialog.${method} method is not implemented`);
 }
 
-export default new DialogsHost();
+
+ipcMain.handle(IpcChannels.Dialog, listener);
