@@ -1,6 +1,5 @@
 import type {EventParams, PageViewParams, ScreenViewParams, TimingParams} from '/@/utils/telemetry/types';
 import {isLoggedIn} from '/@/utils/shikimori-api';
-import {isEnabled as isEnableHardwareAccelerationEnabled} from '/@/pages/Options/settingHardwareAcceleration';
 import {isEnabled as isTimelineThumbnailsEnabled} from '/@/pages/Options/settingTimelineThumbnails';
 
 
@@ -12,7 +11,7 @@ const TRACKING_ENABLED = TRACKING_ID !== undefined;
  * Параметр не изменяется без перезагрузки страницы
  */
 let _isEnableHardwareAccelerationEnabled: boolean | undefined = undefined;
-isEnableHardwareAccelerationEnabled().then(v => _isEnableHardwareAccelerationEnabled = v);
+window.hardwareAcceleration.get().then(v => _isEnableHardwareAccelerationEnabled = v);
 
 
 function getBaseParams() {

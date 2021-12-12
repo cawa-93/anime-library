@@ -1,11 +1,9 @@
 <script lang="ts" setup>
 import {computed, ref} from 'vue';
-import EnableHardwareAcceleration from '/@/pages/Options/OptionsEnableHardwareAcceleration.vue';
 import {
   isEnabled as isThumbnailsEnabled,
   setEnabled as setThumbnailsEnabled,
 } from '/@/pages/Options/settingTimelineThumbnails';
-import {setEnabled as setHardwareAccelerationEnabled} from '/@/pages/Options/settingHardwareAcceleration';
 
 
 const _enable = ref(isThumbnailsEnabled());
@@ -16,9 +14,6 @@ const enable = computed({
   set(value: boolean) {
     _enable.value = value;
     setThumbnailsEnabled(value);
-    if (!value) {
-      setHardwareAccelerationEnabled(false);
-    }
   },
 });
 </script>
@@ -40,9 +35,4 @@ const enable = computed({
     В некоторых случаях эта функция может сильно повлиять на скорость загрузки видео, поэтому она выключена
     по-умолчанию.
   </p>
-
-  <enable-hardware-acceleration
-    v-if="enable"
-    class="mt-3 ml-4"
-  />
 </template>

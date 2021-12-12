@@ -9,6 +9,7 @@ import * as UserSettings from './userSettingController';
 import '/@/ipc/ColorSchemeHost';
 import '/@/ipc/DialogsHost';
 import '/@/ipc/WindowControls';
+import '/@/ipc/hardwareAccelerationService';
 
 
 const isSingleInstance = app.requestSingleInstanceLock();
@@ -32,15 +33,6 @@ if (import.meta.env.MODE !== 'development') {
   app.setAsDefaultProtocolClient(PROTOCOL);
 }
 
-
-/**
- * Загрузка настроек приложения
- */
-if (!UserSettings.getSync('enable_hardware_acceleration')) {
-  app.disableHardwareAcceleration();
-}
-
-nativeTheme.themeSource = UserSettings.getSync('color_scheme') || 'system';
 
 
 /**

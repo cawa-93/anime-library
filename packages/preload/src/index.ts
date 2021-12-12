@@ -3,3 +3,4 @@ import './randomUUID';
 import './windowControls';
 import './dialogs';
 import './colorScheme';
+import './hardwareAcceleration';
