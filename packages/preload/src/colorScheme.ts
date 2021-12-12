@@ -6,7 +6,7 @@ import {IpcChannels} from '/@shared/ipcChannels';
 contextBridge.exposeInMainWorld(
   'colorScheme',
   {
-    set: (scheme: NativeTheme['themeSource']) => ipcRenderer.invoke(IpcChannels.ColorScheme, scheme),
+    set: (scheme: NativeTheme['themeSource']): Promise<void> => ipcRenderer.invoke(IpcChannels.ColorScheme, scheme),
     get: (): Promise<NativeTheme['themeSource']> => ipcRenderer.invoke(IpcChannels.ColorScheme),
   },
 );
