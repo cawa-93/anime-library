@@ -21,7 +21,7 @@ export async function savePreferredTranslation(seriesId: number, translationRef:
   const db = await getDB();
   const tx = db.transaction('preferences', 'readwrite');
   const savedTranslation = await tx.store.get(seriesId);
-  const savedAuthors = savedTranslation?.type === translation.type
+  const savedAuthors = (savedTranslation && savedTranslation.type === translation.type && savedTranslation.author)
     ? savedTranslation.author
     : [];
 

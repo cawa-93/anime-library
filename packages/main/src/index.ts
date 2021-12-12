@@ -2,10 +2,8 @@ import {app, BrowserWindow, nativeTheme, protocol, session} from 'electron';
 import {join} from 'path';
 import {createProtocol} from '/@/createCustomProtocol';
 import windowStateKeeper from 'electron-window-state';
-import {registerIpcHost} from '/@/ipc';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
 import {URL} from 'url';
-import * as UserSettings from './userSettingController';
 import '/@/ipc/ColorSchemeHost';
 import '/@/ipc/DialogsHost';
 import '/@/ipc/WindowControls';
@@ -205,11 +203,6 @@ app.whenReady()
     if (import.meta.env.MODE !== 'development') {
       createProtocol(PROTOCOL);
     }
-
-    registerIpcHost('UserSettingsController', {
-      get: UserSettings.get,
-      set: UserSettings.set,
-    });
 
     return createWindow();
   })
