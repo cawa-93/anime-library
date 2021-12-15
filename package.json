@@ -67,7 +67,7 @@
     "electron-updater": "4.6.5",
     "electron-window-state": "5.0.3",
     "idb": "7.0.0",
-    "nano-staged": "0.4.5",
+    "nano-staged": "0.5.0",
     "vue": "3.2.26",
     "vue-router": "4.0.12"
   }
