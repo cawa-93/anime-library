@@ -33,7 +33,7 @@
     "typecheck:renderer": "vue-tsc --noEmit -p packages/renderer/tsconfig.json"
   },
   "devDependencies": {
-    "@types/electron-devtools-installer": "2.2.0",
+    "@types/electron-devtools-installer": "2.2.1",
     "@types/jest": "27.0.3",
     "@types/uuid": "8.3.3",
     "@types/wicg-mediasession": "1.1.3",
