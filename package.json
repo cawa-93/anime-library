@@ -34,9 +34,6 @@
     "typecheck:renderer": "vue-tsc --noEmit -p packages/renderer/tsconfig.json"
   },
   "devDependencies": {
-    "@types/electron-devtools-installer": "2.2.1",
-    "@types/jest": "27.4.0",
-    "@types/uuid": "8.3.3",
     "@types/wicg-mediasession": "1.1.3",
     "@typescript-eslint/eslint-plugin": "5.8.1",
     "@vitejs/plugin-vue": "2.0.1",
