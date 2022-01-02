@@ -1,17 +1,19 @@
-/* eslint-env node, jest */
+/* eslint-env node */
 
-const {_electron: electron} = require('playwright');
+import type {ElectronApplication, Page} from 'playwright';
+import {_electron as electron} from 'playwright';
+import {afterAll, beforeAll, describe, expect, test} from 'vitest';
 
 
-/** @type {import('playwright').ElectronApplication} */
-let electronApp;
-let page;
+let electronApp: ElectronApplication;
+let page: Page;
+
 beforeAll(async () => {
   electronApp = await electron.launch({args: ['.']});
   page = await electronApp.firstWindow();
 });
 
-describe('Параметры гланого окна', () => {
+describe('Параметры главного окна', () => {
   /**
    * App main window state
    * @type {{isVisible: boolean; isDevToolsOpened: boolean; isCrashed: boolean}}
@@ -50,7 +52,7 @@ describe('Параметры гланого окна', () => {
 });
 
 describe('Веб-страница', () => {
-  test('Рутовый елемент не должен быть пустым', async () => {
+  test('Рутовый элемент не должен быть пустым', async () => {
     const element = await page.$('#app-root', {strict: true});
     expect(element).not.toBe(null);
     const content = (await element.innerHTML()).trim();

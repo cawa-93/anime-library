@@ -2,6 +2,7 @@ import {savePreferredTranslation} from '/@/utils/translationRecommendations/save
 import 'fake-indexeddb/auto';
 import {getPreferredTranslationType} from '/@/utils/translationRecommendations/getPreferredTranslationType';
 import {t} from '/@/utils/translationRecommendations/testsCommon';
+import {describe, test, expect} from 'vitest';
 
 
 describe('getPreferredTranslationType', () => {

@@ -5,6 +5,7 @@ import type {Translation} from '/@/utils/videoProvider';
 import type {Ref} from 'vue';
 import {reactive, ref} from 'vue';
 import {t} from '/@/utils/translationRecommendations/testsCommon';
+import {describe, test, expect, beforeEach, afterEach} from 'vitest';
 
 
 describe('savePreferredTranslation', () => {

@@ -3,6 +3,7 @@ import 'fake-indexeddb/auto';
 import {getDB} from '/@/utils/translationRecommendations/getDB';
 import {getPreferredTranslationAuthorsByType} from '/@/utils/translationRecommendations/getPreferredTranslationAuthorsByType';
 import {t} from '/@/utils/translationRecommendations/testsCommon';
+import {describe, test, expect, beforeEach} from 'vitest';
 
 
 describe('getPreferredTranslationAuthorsByType', () => {
