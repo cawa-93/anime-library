@@ -56,7 +56,7 @@
     "vite-plugin-pwa": "0.11.12",
     "vite-plugin-windicss": "1.6.1",
     "vitest": "0.0.131",
-    "vue-tsc": "0.30.1",
+    "vue-tsc": "0.30.2",
     "windicss": "3.4.2"
   },
   "dependencies": {
