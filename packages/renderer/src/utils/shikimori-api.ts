@@ -145,7 +145,17 @@ function getFreshCredentials(): Promise<Credentials | undefined> {
 
 }
 
+export class ApiError extends Error {
+  status: number;
+  statusText?: string;
 
+  constructor(message: string, options: {cause?: string, status: number, statusText?: string}) {
+    super(message, options);
+    this.name = 'ApiRequestError';
+    this.status = options.status;
+    this.statusText = options.statusText;
+  }
+}
 
 export async function apiFetch<T>(input: RequestInfo, init: RequestInit = {}): Promise<T> {
   const credentials = await getFreshCredentials();
@@ -169,9 +179,9 @@ export async function apiFetch<T>(input: RequestInfo, init: RequestInit = {}): P
       }
 
       return r.text().then(text => {
-        const e = new Error(text);
-        e.name = 'API Error';
-        return Promise.reject(e);
+        return Promise.reject(
+          new ApiError(text, {status: r.status, statusText: r.statusText}),
+        );
       });
     });
 }

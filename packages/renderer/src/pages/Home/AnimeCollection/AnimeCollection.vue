@@ -2,7 +2,7 @@
 import type {PropType} from 'vue';
 import {defineAsyncComponent, ref} from 'vue';
 import type {Anime} from '/@/pages/Home/AnimeCollection/Anime';
-import {apiFetch} from '/@/utils/shikimori-api';
+import {ApiError, apiFetch} from '/@/utils/shikimori-api';
 import type {AnimeCollection} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
 import {
   deleteCollection as deleteCollectionFromDB,
@@ -10,6 +10,7 @@ import {
 } from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';
 import HorizontalScroller from '/@/pages/Home/HorizontalScroller.vue';
 import CustomListSingleCard from '/@/pages/Home/AnimeCollection/AnimeCollectionSingleCard.vue';
+import {SECOND_MS} from '/@/utils/time';
 
 
 const AnimeCollectionEditor = defineAsyncComponent(() => import('/@/pages/Home/AnimeCollection/AnimeCollectionEditor.vue'));
@@ -54,7 +55,31 @@ const searchAnime = async (params: AnimeCollection['requestParams']) => {
     censored: 'false',
   });
 
-  return apiFetch<Anime[]>(`animes?${paramsNormalized}`)
+  const fetchAndRetry = async <T>(input: string) => {
+    let timeout = 0;
+    const MAX_TIMEOUT = 90;
+    const timeoutStep = () => 1 + Math.random() * 3;
+
+    let lastException = null;
+
+    while (timeout <= MAX_TIMEOUT) {
+      try {
+        return await apiFetch<T>(input);
+      } catch (exception) {
+        lastException = exception;
+        if (!(exception instanceof ApiError) || exception.status !== 429) {
+          return Promise.reject(exception);
+        }
+
+        timeout += timeoutStep();
+        await new Promise(r => setTimeout(r, timeout * SECOND_MS));
+      }
+    }
+
+    return Promise.reject(lastException);
+  };
+
+  return fetchAndRetry<Anime[]>(`animes?${paramsNormalized}`)
     .then(_anime => anime.value = _anime)
     .catch(e => {
       anime.value = [];
