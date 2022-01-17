@@ -57,7 +57,7 @@
     "vite-plugin-windicss": "1.6.3",
     "vitest": "0.1.17",
     "vue-tsc": "0.30.5",
-    "windicss": "3.4.2"
+    "windicss": "3.4.3"
   },
   "dependencies": {
     "@headlessui/vue": "1.4.3",
