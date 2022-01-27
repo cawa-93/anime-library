@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@headlessui/vue": "1.4.3",
-    "@vueuse/core": "7.5.4",
+    "@vueuse/core": "7.5.5",
     "electron-updater": "4.6.5",
     "electron-window-state": "5.0.3",
     "idb": "7.0.0",
