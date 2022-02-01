@@ -44,7 +44,7 @@ useTitle('Параметры');
         </h2>
 
         <section
-          class="card border-accent !shadow-accent"
+          class="card border-accent !shadow-accent/20"
           aria-labelledby="connections-anime365-head"
         >
           <h3
