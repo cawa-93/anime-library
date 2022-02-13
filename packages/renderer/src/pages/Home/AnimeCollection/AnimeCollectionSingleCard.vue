@@ -1,3 +1,10 @@
+<script lang="ts">
+declare module 'csstype' {
+  interface Properties {
+    '--bullet-color'?: string;
+  }
+}
+</script>
 <script lang="ts" setup>
 import type {PropType} from 'vue';
 import {computed} from 'vue';
@@ -6,13 +13,6 @@ import {formatDate} from '/@/utils/formatDate';
 import AnimeLink from '/@/components/AnimeLink.vue';
 import {getLang} from '/@/pages/Options/OptionsAnimeTitleLang/OptionsAnimeTitleLangController';
 import {getSeriesKindLocal} from '/@/utils/GetSeriesKindLocal';
-
-
-declare module 'csstype' {
-  interface Properties {
-    '--bullet-color'?: string;
-  }
-}
 
 const props = defineProps({
   anime: {

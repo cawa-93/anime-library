@@ -1,16 +1,18 @@
-<script lang="ts" setup>
-import type {PropType} from 'vue';
-import {computed, ref, watch} from 'vue';
-import {useEventListener, useMouseInElement, useVModel} from '@vueuse/core';
-import {getFormattedVideoTime} from '/@/utils/getFormattedVideoTime';
-
-
+<script lang="ts">
 declare module 'csstype' {
   interface Properties {
     '--buffered-gradient'?: string;
     '--cursor-gradient'?: string;
   }
 }
+</script>
+
+<script lang="ts" setup>
+import type {PropType} from 'vue';
+import {computed, ref, watch} from 'vue';
+import {useEventListener, useMouseInElement, useVModel} from '@vueuse/core';
+import {getFormattedVideoTime} from '/@/utils/getFormattedVideoTime';
+
 
 const props = defineProps({
   duration: {
