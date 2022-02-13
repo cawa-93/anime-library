@@ -20,6 +20,7 @@
   ],
   "ignorePatterns": [
     "types/env.d.ts",
+    "packages/preload/exposed.d.ts",
     "node_modules/**",
     "**/dist/**"
   ],
