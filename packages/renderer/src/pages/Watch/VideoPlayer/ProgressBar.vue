@@ -182,7 +182,7 @@ progress {
 }
 
 progress:not(:hover) {
-  padding-top: 12px;
+  padding-top: 14px;
 }
 
 

@@ -511,7 +511,7 @@ video {
   --control-panel-right-padding: 10px;
   @apply absolute grid bottom-0 w-full text-white z-1;
   grid-template-columns: repeat(4, min-content) 1fr repeat(4, min-content);
-  grid-template-rows: 15px min-content;
+  grid-template-rows: 17px min-content;
   gap: 5px 10px;
   grid-template-areas:
     "progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar"
