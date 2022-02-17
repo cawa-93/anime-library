@@ -6,15 +6,16 @@ import {SECOND_MS} from '/@/utils/time';
 import {getSeriesId} from '/@shared/utils/getSeriesId';
 import type {Series} from '/@/utils/videoProvider';
 import {getSeries, getSeriesByQuery} from '/@/utils/videoProvider';
+import {Anime365ApiError} from '/@/utils/videoProvider/providers/anime365/utils';
 
 
 const resultsCache = new Map<string, Series[]>();
 
 
-export function useSearchResults(input: Ref<string>): { results: Ref<Series[]>, evaluating: Ref<boolean> } {
+export function useSearchResults(input: Ref<string>): { evaluating: Ref<boolean>; error: Ref<string | null>; results: Ref<Series[]> } {
   const evaluating = ref(false);
-
   const results = ref(resultsCache.get(unref(input)) || []);
+  const error = ref<null | string>(null);
 
   const updateResultsDebounced = useDebounceFn<() => void>(async () => {
     const query = unref(input);
@@ -28,8 +29,14 @@ export function useSearchResults(input: Ref<string>): { results: Ref<Series[]>, 
 
     try {
       results.value = await resolver(query);
+      error.value = null;
       resultsCache.set(query, results.value);
     } catch (e) {
+      if (e instanceof Anime365ApiError && e.status >= 500) {
+        error.value = 'Anime365 не доступен. Повторите попытку позже.';
+      } else {
+        error.value = 'Что-то пошло не так. Свяжитесь с разработчиком.';
+      }
       console.error(e);
     } finally {
       evaluating.value = false;
@@ -52,7 +59,7 @@ export function useSearchResults(input: Ref<string>): { results: Ref<Series[]>, 
     updateResultsDebounced();
   }, {immediate: true});
 
-  return {results, evaluating};
+  return {results, evaluating, error};
 }
 
 

@@ -29,7 +29,7 @@ const setSearchTextFromClipboardIfPossible = () => {
 /**
  * Результаты поиска
  */
-const {results, evaluating: isLoading} = useSearchResults(searchText);
+const {results, evaluating: isLoading, error} = useSearchResults(searchText);
 
 /**
  * Индекс активного элемента в результатах
@@ -158,11 +158,16 @@ const gotoActiveSearchResult = () => {
         </template>
         <p
           v-else
-          class="opacity-80"
         >
           <template v-if="isLoading">
-            <button-spinner class="mr-4" />
+            <button-spinner class="mr-2" />
             {{ searchText !== '' ? 'Поиск ...' : 'Загрузка недавних просмотров ...' }}
+          </template>
+          <template v-else-if="error">
+            <span class="flex gap-2 text-red-600 dark:text-red-500">
+              <span class="win-icon">&#xEA6A;</span>
+              {{ error }}
+            </span>
           </template>
           <template v-else>
             {{
