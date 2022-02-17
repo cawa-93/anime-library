@@ -45,6 +45,11 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  seriesId: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
 });
 
 const emit = defineEmits({
@@ -135,21 +140,35 @@ const {
   waiting,
   volume: videoVolume,
   muted: videoMuted,
+  /** Скорость воспроизведения видео текущего */
+  rate: videoPlaybackRate,
 } = useMediaControls(videoElement);
 
 const volume = useStorage('volume', videoVolume.value);
 const muted = useStorage('muted', videoMuted.value);
 
+/** Скорость воспроизведения видео выбранная пользователем */
+const userPlaybackRate = useStorage(`playbackRate-${props.seriesId}`, videoPlaybackRate.value);
+
+
+/**
+ * При обновлении источника видео `video.load()`
+ * Браузер автоматически изменяет скорость воспроизведения на 1.
+ * Поэтому нужно следить за `videoPlaybackRate` и восстанавливать скорость воспроизведения выбранную пользователем
+ */
+watch(videoPlaybackRate, () => {
+  if (videoPlaybackRate.value !== userPlaybackRate.value) {
+    videoPlaybackRate.value = userPlaybackRate.value;
+  }
+});
+
+
+
 onMounted(() => {
   syncRef(volume, videoVolume, {immediate: true});
   syncRef(muted, videoMuted, {immediate: true});
+  syncRef(userPlaybackRate, videoPlaybackRate, {immediate: true});
 });
-
-//
-// переключение полноэкранного режима
-// const mainEl = ref();
-// onUnmounted(() => mainEl.value = document.querySelector('main'));
-// const {isFullscreen, toggle: toggleFullscreen} = useFullscreen(mainEl);
 
 const toggleFullscreen = () => emit('update:inFullscreen', !props.inFullscreen);
 
@@ -420,6 +439,26 @@ const onProgressHandler = () => {
           </option>
         </select>
 
+        <select
+          v-model="userPlaybackRate"
+          title="Скорость воспроизведения"
+          aria-label="Скорость воспроизведения"
+          class="playback-rate w-auto px-1 py-0"
+          :style="{
+            width: userPlaybackRate.toString().length >= 4 ? '67px' : userPlaybackRate.toString().length >=3 ? '58px' : '47px'
+          }"
+        >
+          <optgroup label="Скорость&nbsp;">
+            <option
+              v-for="speed of [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 3, 4]"
+              :key="speed"
+              :value="speed"
+            >
+              {{ speed }}x
+            </option>
+          </optgroup>
+        </select>
+
 
         <toggle-pip-button
           class="picture-in-picture"
@@ -473,8 +512,8 @@ video {
   grid-template-rows: 15px min-content;
   gap: 5px 10px;
   grid-template-areas:
-    "progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar"
-    "play-button next-button volume-area time space subtitles settings picture-in-picture fullscreen";
+    "progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar progress-bar"
+    "play-button next-button volume-area time space subtitles settings playback-rate picture-in-picture fullscreen";
   padding: 0 var(--control-panel-right-padding) var(--control-panel-bottom-padding) var(--control-panel-left-padding);
 }
 
@@ -528,18 +567,25 @@ video {
 
 .settings {
   grid-area: settings;
+}
+
+.playback-rate {
+  grid-area: playback-rate;
+}
+
+select {
   border: none;
   background: none;
   color: inherit;
   cursor: pointer;
 }
 
-.settings:hover {
+select:hover {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 3px;
 }
 
-select.settings option {
+select option, select optgroup {
   background: rgba(0, 0, 0, 0.8);
 }
 

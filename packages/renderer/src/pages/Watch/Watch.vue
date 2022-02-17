@@ -200,6 +200,7 @@ const setInFullScreenState = (v: boolean) => v ? enterFullscreen() : exitFullscr
       id="video-container"
       v-model:current-time="currentTime"
       v-model:duration="duration"
+      :series-id="seriesIdNumber"
       :in-fullscreen="inFullscreen"
       :video="video"
       :has-next-episode="!!nextEpisode"
