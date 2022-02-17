@@ -430,13 +430,15 @@ const onProgressHandler = () => {
           aria-label="Качество видео"
           class="settings w-auto px-1 py-0"
         >
-          <option
-            v-for="quality of qualities"
-            :key="quality"
-            :value="quality"
-          >
-            {{ quality }}p
-          </option>
+          <optgroup label="Качество&nbsp;">
+            <option
+              v-for="quality of qualities"
+              :key="quality"
+              :value="quality"
+            >
+              {{ quality }}p
+            </option>
+          </optgroup>
         </select>
 
         <select
