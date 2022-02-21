@@ -1,11 +1,5 @@
 <script lang="ts" setup>
-import {
-  Dialog as Dialog,
-  DialogOverlay as DialogOverlay,
-  DialogTitle as DialogTitle,
-  TransitionChild as TransitionChild,
-  TransitionRoot as TransitionRoot,
-} from '@headlessui/vue';
+import {Dialog, DialogOverlay, DialogTitle, TransitionChild, TransitionRoot} from '@headlessui/vue';
 
 
 defineProps({

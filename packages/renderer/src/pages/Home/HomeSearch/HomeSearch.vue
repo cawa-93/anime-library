@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import {computed, nextTick, ref, watch} from 'vue';
-import {Popover as Popover, PopoverPanel as PopoverPanel} from '@headlessui/vue';
+import {Popover, PopoverPanel} from '@headlessui/vue';
 import {useSearchResults} from '/@/pages/Home/HomeSearch/useSearchResults';
 import {useRouter} from 'vue-router';
 import ButtonSpinner from '/@/components/ButtonSpinner.vue';

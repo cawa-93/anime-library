@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import {DialogDescription as DialogDescription} from '@headlessui/vue';
+import {DialogDescription} from '@headlessui/vue';
 import AnimeCollectionEditorForm from '/@/pages/Home/AnimeCollection/AnimeCollectionEditorForm.vue';
 import {ref} from 'vue';
 import type {AnimeCollection} from '/@/pages/Home/AnimeCollection/AnimeCollectionDB';

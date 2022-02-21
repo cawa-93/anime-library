@@ -4,13 +4,7 @@ import type {Episode, Translation} from '/@/utils/videoProvider';
 import SidePanel from '/@/components/SidePanel.vue';
 import PlayListsEpisodes from '/@/pages/Watch/PlayListsEpisodes.vue';
 import PlayListsTranslations from '/@/pages/Watch/PlayListsTranslations.vue';
-import {
-  Tab as Tab,
-  TabGroup as TabGroup,
-  TabList as TabList,
-  TabPanel as TabPanel,
-  TabPanels as TabPanels,
-} from '@headlessui/vue';
+import {Tab, TabGroup, TabList, TabPanel, TabPanels} from '@headlessui/vue';
 
 
 defineProps({
