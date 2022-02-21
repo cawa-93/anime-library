@@ -30,7 +30,8 @@
     leading-8
     transition-colors
     duration-200
-    ease-in-out;
+    ease-in-out
+    leading-4;
   }
 }
 
