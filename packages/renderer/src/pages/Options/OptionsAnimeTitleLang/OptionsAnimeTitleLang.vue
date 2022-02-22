@@ -9,7 +9,7 @@ const lang = useStorage(KEY, 'ru');
 <template>
   <form>
     <p>
-      Выберите на каком языке отображать названия аниме:
+      Выберите, на каком языке отображать названия аниме:
     </p>
     <label class="block mt-3">
       <input
