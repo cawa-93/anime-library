@@ -209,6 +209,7 @@ app.whenReady()
   .then(() => {
     session.defaultSession.webRequest.onHeadersReceived({
       urls: ['https://*/*'],
+
     }, (details, callback) => {
 
       if (details.responseHeaders) {
