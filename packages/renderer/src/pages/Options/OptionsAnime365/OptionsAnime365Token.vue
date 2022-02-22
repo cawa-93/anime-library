@@ -2,11 +2,9 @@
 import {computed, ref} from 'vue';
 import type * as sm from '/@/utils/videoProvider/providers/anime365/anime365-interfaces';
 import {getAccessToken, saveAccessToken} from '/@/utils/videoProvider/providers/anime365/anime365';
-import {ANIME365_ORIGIN} from '/@/utils/videoProvider/providers/anime365/utils';
-import {useTokenValidator} from '/@/pages/Options/OptionsAnime365/useTokenValidator';
-import ButtonSpinner from '/@/components/ButtonSpinner.vue';
+import {ANIME365_ORIGIN, isFailureResponse} from '/@/utils/videoProvider/providers/anime365/utils';
 import ExternalLink from '/@/components/ExternalLink.vue';
-import {isFailureResponse} from '/@/utils/videoProvider/providers/anime365/utils';
+import Anime365SubscribeStatus from '/@/pages/Options/OptionsAnime365/Anime365SubscribeStatus.vue';
 
 
 const emit = defineEmits({
@@ -54,23 +52,22 @@ const token = computed(() =>
     : (inputObjValue.value as sm.ApiResponseSuccess<Token>).data.access_token || '',
 );
 
-const {isValid, isLoading, check} = useTokenValidator(token);
-
 
 const save = () => {
-  if (isValid.value === true || isValid.value === undefined) {
-    saveAccessToken(token.value ? token.value : null);
-    emit('save');
-  }
+  saveAccessToken(token.value ? token.value : null);
+  emit('save');
+  savedAccessToken.value = token.value;
 };
+
+
+let savedAccessToken = ref(getAccessToken() || undefined);
 </script>
 
 <template>
   <form
-    class="grid grid-cols-[min-content,auto,1fr] auto-rows-auto gap-3 items-center"
     @submit.prevent="save"
   >
-    <p class="col-span-full">
+    <p class="mb-3">
       <external-link
         class="font-bold underline"
         :href="`${ANIME365_ORIGIN}/api/accessToken?app=play-shikimori-online`"
@@ -81,53 +78,51 @@ const save = () => {
       скопируйте полученный от сайта ключ и вставьте его в поле ниже.
     </p>
 
-    <label class="col-span-full flex gap-3 items-center">
-      Ключ:
+    <p class="field">
+      <label class="col-span-full gap-3 items-center">
+        Ключ:
+      </label>
+
       <input
         v-model="inputStrValue"
         type="text"
       >
-    </label>
+
+      <button
+        class="btn bg-accent"
+        type="submit"
+        :disabled="errorMessage !== ''"
+      >
+        Сохранить
+      </button>
+    </p>
 
     <p
       v-if="errorMessage"
-      class="text-sm text-red-500"
+      class="text-sm text-red-500 mt-3"
     >
       {{ errorMessage }}
     </p>
 
-    <button
-      class="btn bg-accent"
-      type="submit"
-      :disabled="errorMessage !== ''"
-    >
-      Сохранить
-    </button>
-    <button
-      class="btn btn-outline"
-      type="button"
-      :disabled="token === '' || errorMessage !== '' || isValid !== undefined || isLoading"
-      @click="check"
-    >
-      <button-spinner v-if="isLoading" />
-      Проверить
-    </button>
-
-    <p
-      v-if="isValid !== undefined"
-      :class="{
-        'text-red-500': !isValid,
-        'text-green-500': isValid,
-      }"
-    >
-      <span v-if="isValid">✔ Введённый ключ валидный</span>
-      <span v-else>
-        ❌ Введённый ключ не валидный.
-        Возможно вы не авторизованы или авторизованы в аккаунте в котором не оформлена <external-link
-          class="underline"
-          :href="`${ANIME365_ORIGIN}/support/index`"
-        >премиум подписка</external-link>.
-      </span>
+    <p class="mt-3">
+      <anime365-subscribe-status :access-token="savedAccessToken" />
     </p>
   </form>
 </template>
+
+<style scoped>
+.field {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: repeat(2, auto);
+  gap: 0.2rem 0.5rem;
+  grid-template-areas:
+    "label label"
+    "input button";
+}
+
+.field label { grid-area: label; }
+.field input { grid-area: input; }
+.field button { grid-area: button; }
+</style>

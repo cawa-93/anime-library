@@ -219,7 +219,7 @@ export function clearVideosCache(translationId: number | string): Promise<boolea
 }
 
 
-const ACCESS_TOKEN_STORAGE_KEY = 'sm-access-token';
+export const ACCESS_TOKEN_STORAGE_KEY = 'sm-access-token';
 
 
 export function getAccessToken(): string | null {

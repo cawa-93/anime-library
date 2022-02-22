@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import {TabList, TabGroup, Tab, TabPanel, TabPanels} from '@headlessui/vue';
+import {Tab, TabGroup, TabList, TabPanel, TabPanels} from '@headlessui/vue';
 import OptionsAnime365Status from '/@/pages/Options/OptionsAnime365/OptionsAnime365Status.vue';
 import OptionsAnime365Token from '/@/pages/Options/OptionsAnime365/OptionsAnime365Token.vue';
 import OptionsAnime365Login from '/@/pages/Options/OptionsAnime365/OptionsAnime365Login.vue';
+
 
 defineEmits({
   'save': null,
@@ -47,9 +48,15 @@ defineEmits({
       </Tab>
     </TabList>
     <TabPanels>
-      <TabPanel><options-anime365-status /></TabPanel>
-      <TabPanel><options-anime365-login /></TabPanel>
-      <TabPanel><options-anime365-token @save="$emit('save')" /></TabPanel>
+      <TabPanel>
+        <options-anime365-status />
+      </TabPanel>
+      <TabPanel>
+        <options-anime365-login />
+      </TabPanel>
+      <TabPanel>
+        <options-anime365-token @save="$emit('save')" />
+      </TabPanel>
     </TabPanels>
   </TabGroup>
 </template>

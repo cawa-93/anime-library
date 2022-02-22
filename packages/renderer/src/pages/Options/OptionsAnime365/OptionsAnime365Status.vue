@@ -1,11 +1,7 @@
 <script lang="ts" setup>
-import {getAccessToken} from '/@/utils/videoProvider/providers/anime365/anime365';
 import ExternalLink from '/@/components/ExternalLink.vue';
 import {ANIME365_ORIGIN} from '/@/utils/videoProvider/providers/anime365/utils';
-
-
-const isConnected = !!getAccessToken();
-</script>
+import Anime365SubscribeStatus from '/@/pages/Options/OptionsAnime365/Anime365SubscribeStatus.vue';</script>
 
 <template>
   <div>
@@ -16,25 +12,19 @@ const isConnected = !!getAccessToken();
         :href="ANIME365_ORIGIN"
       >
         Anime.365
-      </external-link>.
+      </external-link>
+      .
       А он требует для просмотра наличие аккаунта и оплаченной
       <external-link
         class="underline"
         :href="`${ANIME365_ORIGIN}/support/index`"
       >
         премиум подпиской
-      </external-link>.
+      </external-link>
+      .
       Без этого вы не сможете наслаждаться аниме ни на самом сайте Anime.365 ни в этом приложении 😓.
     </p>
 
-    <p>
-      В настоящий момент ваш аккаунт Anime365:
-      <strong :class="[isConnected ? 'text-green-500' : 'text-red-500']">{{
-        isConnected ? 'Подключен' : 'Не Подключен'
-      }}</strong>.
-    </p>
-    <p v-if="!isConnected">
-      Выполните два простых шага чтобы подключить ваш аккаунт.
-    </p>
+    <anime365-subscribe-status />
   </div>
 </template>
