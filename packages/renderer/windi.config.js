@@ -6,7 +6,7 @@ export default defineConfig({
    * Префиксы нельзя выключать так как это удаляет свойства -webkit-app-region
    * Которые обеспечивают возможность перетаскивать окно
    */
-  prefixer: !false,
+  prefixer: true,
   darkMode: 'media',
   extract: {
     include: ['./index.html', './src/**/*.vue', './src/**/*.css'],
