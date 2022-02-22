@@ -41,28 +41,9 @@ ul {
   padding-inline: var(--local-gap);
   scroll-padding-inline: var(--local-gap);
   padding-block: calc(var(--local-gap) / 2); /* make space for scrollbar and focus outline */
-  /*justify-content: flex-start;*/
   scroll-behavior: smooth;
+  scrollbar-width: thin;
 }
-
-/*li {*/
-/*  display: inline-block;*/
-/*  min-width: fit-content;*/
-/*  min-height: fit-content;*/
-/*}*/
-
-/*li:last-of-type {*/
-/*  position: relative;*/
-/*}*/
-
-/*li:last-of-type::after {*/
-/*  content: "";*/
-/*  position: absolute;*/
-/*  inline-size: var(--local-gap);*/
-/*  block-size: 100%;*/
-/*  inset-block-start: 0;*/
-/*  inset-inline-end: calc(var(--local-gap) * -1);*/
-/*}*/
 
 ul:not(:hover)::-webkit-scrollbar {
   opacity: 0;
