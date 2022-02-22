@@ -68,7 +68,7 @@ const config = {
 
           /** Список серий */
           {
-            urlPattern: /^https:\/\/smotret-anime\.online\/api\/series.*episodes/,
+            urlPattern: /^https:\/\/anime365\.ru\/api\/series.*episodes/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'sm-episodes',
@@ -80,7 +80,7 @@ const config = {
 
           /** Базовая информация про аниме */
           {
-            urlPattern: /^https:\/\/smotret-anime\.online\/api\/series.*/,
+            urlPattern: /^https:\/\/anime365\.ru\/api\/series.*/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'sm-series',
@@ -92,7 +92,7 @@ const config = {
 
           /** embed данные видео */
           {
-            urlPattern: /^https:\/\/smotret-anime\.online\/api\/translations\/embed\/.*access_token/,
+            urlPattern: /^https:\/\/anime365\.ru\/api\/translations\/embed\/.*access_token/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'sm-embeds',
@@ -104,7 +104,7 @@ const config = {
 
           /** Любые другие обращения к API smotret-anime */
           {
-            urlPattern: /^https:\/\/smotret-anime\.online\/api\/.*/,
+            urlPattern: /^https:\/\/anime365\.ru\/api\/.*/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'sm-api-calls',
@@ -116,7 +116,7 @@ const config = {
 
           /** Файлы субтитров со smotret-anime */
           {
-            urlPattern: /^https:\/\/sub\.smotret-anime\.online\/.*/,
+            urlPattern: /^https:\/\/sub\.anime365\.ru\/.*/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'sm-subtitles',
