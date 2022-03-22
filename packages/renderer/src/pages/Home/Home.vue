@@ -9,6 +9,7 @@ import AnimeCollection from '/@/pages/Home/AnimeCollection/AnimeCollection.vue';
 import AnimeCollectionCreateButton from '/@/pages/Home/AnimeCollection/AnimeCollectionCreateButton.vue';
 import UserRating from '/@/components/UserRating.vue';
 import WelcomeDialog from '/@/pages/Home/WelcomeDialog.vue';
+import GloryToUkraine from '/@/pages/Home/GloryToUkraine.vue';
 
 
 //
@@ -46,6 +47,8 @@ const onCollectionDeleted = (deletedId: number) => {
 <template>
   <main class="grid auto-rows-min grid-cols-1 gap-6 pt-6 content-between">
     <user-rating />
+
+    <glory-to-ukraine />
 
     <div class="grid auto-rows-min grid-cols-1 gap-4">
       <h2 class="text-center text-lg opacity-50">
