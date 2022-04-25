@@ -64,7 +64,7 @@
     "electron-updater": "4.6.5",
     "electron-window-state": "5.0.3",
     "idb": "7.0.1",
-    "vue": "3.2.31",
+    "vue": "3.2.33",
     "vue-router": "4.0.12"
   }
 }
