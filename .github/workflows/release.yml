@@ -148,7 +148,7 @@ jobs:
           # Password for decrypting `mac_certs`
           # mac_certs_password: ''
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: builded-assets
           path: packages/**/dist/**
