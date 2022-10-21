@@ -34,7 +34,7 @@
     "typecheck:renderer": "vue-tsc --noEmit -p packages/renderer/tsconfig.json"
   },
   "devDependencies": {
-    "@types/wicg-mediasession": "1.1.3",
+    "@types/wicg-mediasession": "1.1.4",
     "@typescript-eslint/eslint-plugin": "5.12.1",
     "@vitejs/plugin-vue": "2.3.4",
     "autoprefixer": "10.4.8",
